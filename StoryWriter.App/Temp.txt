@@ -1,0 +1,98 @@
+﻿ ●  
+
+Person
+  Character
+    Neris
+  Historic  
+Location
+  Planet
+    Darky
+  Satellite
+  Continent
+  Country
+    Rona
+  City
+  Village
+  Mountain
+  See
+  River
+  Lake
+  Volcano  
+Peoples
+Cultures
+HistoricEvent
+Artifacts
+
+ComponentType
+  Id
+  ParentId
+  Name
+  Notes
+  ------
+  Person
+  Location
+  Peoples
+  Culture
+  HistoricEvent
+  Artifact
+  
+ComponentSubType
+  Id
+  TypeId
+  Name
+  Notes  
+
+ComponentTypeTag
+  Id
+  TypeId
+  Tag
+
+Component
+  Id
+  Type
+  Name
+  Tag1
+  Tag2
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"B9AD36CA-9719-4482-8CFE-0B4A76555AE7"
+"088AD4DB-B183-4F72-82B4-DE7E3FA9C8E0"
+"11B3B723-3442-48C8-AA3B-44660C667D99"
+"A812AE37-2E52-4536-9362-469C2329E688"
+"BC7578F9-905E-4CA0-A562-4AD818D3B18C"
+"3D9383DE-F758-430C-A187-C559DFDF0CA3"
+"BE01D9C4-C062-495A-9D08-757D8DC31024"
+"1CBBD174-067D-42E8-BA0C-437756433C79"
+"DDF0400C-28F7-4787-9DA9-F9A0B395BB11"
+"E1BE7984-5AD4-4DB8-90DF-1E3299BF3CCD"
+"63160745-CEB7-49CE-9075-F5090FF1B4C6"
+"F2F7D91E-2136-488E-ADDB-84065FE9257C"
+"75C02932-9732-4835-96FE-9FFAA8890AB1"
+"14CAAE6F-EA60-48BF-94C6-286E4C9A2BC9"
+"B9D03208-E922-454F-8E44-5CE1D7D2AB8E"
+"98C55623-5153-498D-AEFE-E6603D0C7D5F"
+"756AF57F-E908-42F8-A628-C38626BBA2BC"
+"0238D4BB-3360-455E-93B1-71EB431F54E3"
+"70AC325E-D511-4620-A9F7-D6B747D5A92B" 

@@ -1,0 +1,10 @@
+{
+    "SqlConnections": [
+        {
+            "Name": "Default",
+            "Provider": "SQLite",
+            "ConnectionString": "Data Source=[AppPath]\\Default.db3",
+            "CommandTimeoutSeconds": 300
+        }
+    ]
+}
