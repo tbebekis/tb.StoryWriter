@@ -73,25 +73,32 @@ Chapters
 ## Clone, Build, Run
 
 ```bash
-git clone https://github.com/<your-account>/tb.StoryWriter.git
+git clone https://github.com/tbebekis/tb.StoryWriter.git
 cd tb.StoryWriter
 dotnet build
-dotnet run --project src/tb.StoryWriter
+dotnet run --project StoryWriter.App/StoryWriter.App.csproj
 ```
  
+## Exports
+
+Currently the application can export a project/book to the following.
+
+- RTF
+- DOCX
+- ODT
+
 ## Usage Notes
 
 * **Projects**: tb.StoryWriter uses a Sqlite database file (default extension: `.db3`). Each project/book has its own database.
 * **Chapters**: Add, edit, remove and reorder chapters. Double-click a chapter to open its editor tabs. Reorder, edit its body text, synopsis, concept, and outcome texts, add scenes, etc.
 * **Scenes**: Maintain a per-chapter scene list. Add, edit, remove and reorder scenes.
 * **Fonts**: Choose editor font family & size from *Settings → Editor*.
-* **Auto-save**: Optional; can be toggled in settings (not yet implemented).
+* **Auto-save**: Optional; can be toggled in settings.
 * **Load last project**: Re-open your last project on startup if enabled.
 
 ## Roadmap Ideas
 
-* Global search (across chapters, scenes, notes)
-* Exports (Markdown, Docx)
+* Exports (Markdown)
 * Graph view of relationships (characters ↔ locations ↔ chapters)
 
 

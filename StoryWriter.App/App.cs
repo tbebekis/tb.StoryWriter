@@ -4,7 +4,28 @@
     {
         // ● private
         const string SProjectsFolder = "Projects";
-        static SqlProvider SqlProvider; 
+        static SqlProvider SqlProvider;
+
+        static AutoSaveService AutoSaveService;
+        static System.Threading.Lock syncLock = new();
+        static List<UC_RichText> DirtyEditors = new();
+
+        static void AutoSaveProc()
+        {
+            //LogBox.AppendLine("AutoSaveProc");
+            lock (syncLock)
+            {
+                if (DirtyEditors.Count > 0)
+                {
+                    while (DirtyEditors.Count > 0)
+                    {
+                        UC_RichText ucRichText = DirtyEditors[0];
+                        DirtyEditors.RemoveAt(0);
+                        ucRichText.SaveText();
+                    }
+                }
+            }
+        }
 
         // ● public 
         /// <summary>
@@ -14,63 +35,20 @@
         {
             if (!IsInitialized)
             {
-                App.MainForm = MainForm;
- 
+                App.MainForm = MainForm; 
 
-                SqlProvider = SqlProviders.GetSqlProvider(SqlProvider.SQLite);
-
-                //LoadConnectionStrings();
-                //CreateDatabases();
+                SqlProvider = SqlProviders.GetSqlProvider(SqlProvider.SQLite); 
 
                 if (!Directory.Exists(ProjectsPath))
                     Directory.CreateDirectory(ProjectsPath);
 
                 LoadAll();
+
+                AutoSaveService = new AutoSaveService(AutoSaveProc);
+                AutoSaveService.Enabled = Settings.AutoSave;
             }
         }
-        /// <summary>
-        /// Loads database configuration settings.
-        /// </summary>
-        static void LoadConnectionStrings()
-        {
-            SysConfig.SqlConnectionsFolder = typeof(App).Assembly.GetFolder();
-            SqlConnectionInfoList ConnectionInfoList = new ();
-            Db.Connections = ConnectionInfoList.SqlConnections;
-        }
-        /// <summary>
-        /// Creates any non-existing creatable database.
-        /// </summary>
-        static void CreateDatabases()
-        {
-            SqlProvider Provider;
-            string ConnectionString;
-
-            SqlConnectionInfo DefaultConnectionInfo = Db.DefaultConnectionInfo;
-
-            Provider = DefaultConnectionInfo.GetSqlProvider();
-            ConnectionString = DefaultConnectionInfo.ConnectionString;
-
-            if (!Provider.DatabaseExists(ConnectionString) && Provider.CanCreateDatabases)
-            {
-                Provider.CreateDatabase(ConnectionString);
-            }
-
-            foreach (var ConInfo in Db.Connections)
-            {
-                if (ConInfo != DefaultConnectionInfo)
-                {
-                    Provider = ConInfo.GetSqlProvider();
-                    ConnectionString = ConInfo.ConnectionString;
-
-                    if (!Provider.DatabaseExists(ConnectionString) && Provider.CanCreateDatabases)
-                    {
-                        Provider.CreateDatabase(ConnectionString);
-                    }
-                }
-            }
-
-        }
-
+ 
         /// <summary>
         /// Closes all opened UI.
         /// </summary>
@@ -107,6 +85,7 @@ Do you want to continue?
             {
                 App.Settings.Save();
                 App.LoadAll();
+                AutoSaveService.Enabled = Settings.AutoSave;
             }
         }
  
@@ -265,8 +244,109 @@ Do you want to continue?
                 LogBox.AppendLine(Message);            
             }
         }
+ 
+        /// <summary>
+        /// Exports the current project to RTF format
+        /// </summary>
+        static public void ExportCurrentProjectToRtf(string FilePath)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
 
+            using var rtb = new RichTextBox { DetectUrls = false };
+            rtb.Clear();
 
+            for (int i = 0; i < CurrentProject.ChapterList.Count; i++)
+            {
+                var ch = CurrentProject.ChapterList[i];
+                var title = string.IsNullOrWhiteSpace(ch?.Name) ? $"Chapter {i + 1}" : ch!.Name;
+
+                // Τίτλος κεφαλαίου (bold, λίγο μεγαλύτερο)
+                rtb.Select(rtb.TextLength, 0);
+                rtb.SelectionFont = new Font("Arial", 14, FontStyle.Bold);
+                rtb.AppendText(title + Environment.NewLine + Environment.NewLine);
+
+                // Κείμενο κεφαλαίου ως RTF (κρατά format)
+                if (!string.IsNullOrWhiteSpace(ch?.BodyText))
+                {
+                    rtb.Select(rtb.TextLength, 0);
+                    rtb.SelectedRtf = ch!.BodyText;   // merge με τους πίνακες format του RTB
+                }
+
+                // Page break μεταξύ κεφαλαίων
+                if (i < CurrentProject.ChapterList.Count - 1)
+                {
+                    rtb.Select(rtb.TextLength, 0);
+                    // μικρό RTF fragment για page break
+                    rtb.SelectedRtf = @"{\rtf1\ansi\pard\page\par}";
+                    rtb.AppendText(Environment.NewLine);
+                }
+            }
+
+            rtb.SaveFile(FilePath, RichTextBoxStreamType.RichText);
+        }
+        /// <summary>
+        /// Exports the current project to DOCX format
+        /// </summary>
+        static public void ExportCurrentProjectToDocx(string FilePath)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
+
+            var opts = new DocxExportOptions
+            {
+                IncludeToc = true,
+                PageBreakBetweenChapters = true,
+                Mode = ChapterExportMode.AltChunkRtf // ή PlainText για συμβατότητα με Libre/μη-Word viewers
+            };
+
+            OpenXmlExporter.ExportProjectToDocx(CurrentProject, FilePath, opts);
+        }
+        /// <summary>
+        /// Exports the current project to ODT format
+        /// </summary>
+        static public void ExportCurrentProjectToOdt(string FilePath)
+        {
+            if (!LibreOfficeExporter.LibreOfficeExists())
+            {
+                string Message = "LibreOffice is not installed. Please install it and try again.";
+                ErrorBox(Message);
+                LogBox.AppendLine(Message);
+                return;
+            }
+
+            Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
+
+            string RtfFilePath = Path.ChangeExtension(FilePath, ".rtf");
+            ExportCurrentProjectToRtf(RtfFilePath);
+
+            LibreOfficeExporter.Export(RtfFilePath, DocFormatType.Odt);
+        }
+
+        /// <summary>
+        /// Adds a dirty editor to the list or dirty editors for auto-save.
+        /// </summary>
+        static public void AddDirtyEditor(RichTextBox Editor)
+        {
+            lock(syncLock)
+            {
+                try
+                {
+                    if (Editor.Modified && Editor.Parent is UC_RichText)
+                    {
+                        UC_RichText ucRichText = Editor.Parent as UC_RichText;
+                        if (!DirtyEditors.Contains(ucRichText))
+                        {
+                            DirtyEditors.Add(ucRichText);
+                            AutoSaveService.MarkAsDirty();
+                        }                            
+                    }
+                }
+                catch
+                {
+
+                }
+            }
+
+        }
 
         // ● properties 
         /// <summary>
@@ -303,6 +383,7 @@ Do you want to continue?
 
         static public PagerHandler SideBarPagerHandler { get; set; }
         static public PagerHandler ContentPagerHandler { get; set; }
+        //static public AutoSaveService AutoSaveService { get; set; }
 
         // ● events
         static public event EventHandler ProjectClosed;

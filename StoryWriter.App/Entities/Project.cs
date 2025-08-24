@@ -370,8 +370,7 @@ create table {TableName} (
             foreach (var Chapter in ChapterList)
                 Chapter.UpdateOrderIndex();
         }
-
-
+ 
         // ● links
         public void OpenLinkItem(LinkItem LinkItem)
         {

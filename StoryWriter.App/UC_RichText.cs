@@ -186,12 +186,6 @@
             Editor.Focus();
         }
 
-        void SaveText()
-        {
-            if (EditorHandler != null)
-                EditorHandler.SaveEditorText(this.Editor);
-        }
-
         // ● formatting, find/replace and links
         void ToggleBold()
         {
@@ -364,7 +358,14 @@
         {
             InitializeComponent();            
         }
- 
+
+        // ● public
+        public void SaveText()
+        {
+            if (EditorHandler != null)
+                EditorHandler.SaveEditorText(this.Editor);
+        }
+
         // ● properties
         public RichTextBox Editor => edtRichText;
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

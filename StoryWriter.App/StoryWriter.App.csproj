@@ -10,6 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
       <PackageReference Include="System.Data.SQLite" Version="1.0.119" />
       <PackageReference Include="Tripous5" Version="5.25.8.24" />
       <PackageReference Include="Tripous5.Forms" Version="5.25.8.24" />

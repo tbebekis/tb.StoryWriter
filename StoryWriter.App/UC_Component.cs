@@ -20,7 +20,7 @@
 
             Ui.RunOnce((Info) => {
                 ucComponentText.Editor.Modified = false;
-                ucComponentText.Editor.ModifiedChanged += EditorTextModified;                
+                ucComponentText.Editor.ModifiedChanged += EditorModifiedChanged;                
                 ucComponentText.Focus();
                 ucComponentText.EditorHandler = this;
             }, 1500, null);
@@ -54,7 +54,7 @@
             ParentTabPage.Text = ucComponentText.Editor.Modified ? TitleText + "*": TitleText;
         }
 
-        public void EditorTextModified(object Sender, EventArgs e)
+        public void EditorModifiedChanged(object Sender, EventArgs e)
         {
             RichTextBox Editor = Sender as RichTextBox;            
 
@@ -62,7 +62,10 @@
             {
                 IsFirstTimeModified = true;
                 Editor.Modified = false;
-            }
+            } 
+
+            if (Editor.Modified)
+                App.AddDirtyEditor(Editor);
 
             AdjustTabTitle();
         }

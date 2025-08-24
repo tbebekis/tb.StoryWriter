@@ -303,6 +303,10 @@
                 return;
             }
 
+            if (Editor.Modified)
+                App.AddDirtyEditor(Editor);
+                
+
             AdjustTabTitle(Page, Editor.Modified);
         }
         public void SaveEditorText(RichTextBox Editor)

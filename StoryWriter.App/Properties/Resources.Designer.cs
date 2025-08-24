@@ -143,6 +143,16 @@ namespace StoryWriter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap document_export {
+            get {
+                object obj = ResourceManager.GetObject("document_export", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap door_out {
             get {
                 object obj = ResourceManager.GetObject("door_out", resourceCulture);
@@ -153,9 +163,49 @@ namespace StoryWriter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap error_log {
+            get {
+                object obj = ResourceManager.GetObject("error_log", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap file_extension_doc {
+            get {
+                object obj = ResourceManager.GetObject("file_extension_doc", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap file_extension_log {
             get {
                 object obj = ResourceManager.GetObject("file_extension_log", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap file_extension_pdf {
+            get {
+                object obj = ResourceManager.GetObject("file_extension_pdf", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap file_extension_rtf {
+            get {
+                object obj = ResourceManager.GetObject("file_extension_rtf", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
