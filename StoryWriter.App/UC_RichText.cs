@@ -5,10 +5,19 @@
         // ● fields
         FindReplaceForm _findReplaceForm;
 
-        bool _bulletMode = false;       // List state (simple, per-editor)
-        bool _numberMode = false;
-        int _currentNumber = 0;        
-        int _listIndent = 20;           // base indent for bullets (pixels)
+        
+        NumericUpDown nudFontSize;
+        ToolStripControlHost hostFontSize;
+
+        NumericUpDown nudZoom;
+        ToolStripControlHost hostZoom;
+
+        RichTextBoxListHandler ListHandler;
+
+        bool _syncingFromCode;
+
+      
+ 
 
         // ● private
         void ControlInitialize()
@@ -18,24 +27,25 @@
             btnBold.Click += (s, e) => ToggleBold();
             btnItalic.Click += (s, e) => ToggleItalic();
             btnUnderline.Click += (s, e) => ToggleUnderline();
+            btnResetSelectionToDefault.Click += (s, e) => ResetSelectionToDefault();
             btnLink.Click += (s, e) => GoToLink();
-            btnFind.Click += (s, e) => ShowFindReplaceDialog();
-            btnReplace.Click += (s, e) => ShowFindReplaceDialog();
+            btnFind.Click += (s, e) => ShowFindReplaceDialog();            
             btnSave.Click += (s, e) => SaveText();
-
-            // Menu item clicks
-            btnBullets.Click += btnBullets_Click;
-            btnNumbers.Click += btnNumbers_Click;
+            //btnBullets.Click += btnBullets_Click;
+           // btnNumbers.Click += btnNumbers_Click;
+            btnFontColor.Click += btnFontColor_Click;
+            btnBackColor.Click += btnBackColor_Click;
             
-            Editor.KeyDown += Editor_KeyDown; 
-            Editor.MouseDown += Editor_MouseDown;
+            //Editor.KeyDown += Editor_KeyDown; 
+            //Editor.MouseDown += Editor_MouseDown;
+            //Editor.TextChanged += (s, e) => Editor.Modified = true;
+            Editor.SelectionChanged += Editor_SelectionChanged;
 
             btnBullets.CheckOnClick = true;
             btnNumbers.CheckOnClick = true;
 
-            Ui.RunOnce((Info) => {
-               SetEditorFont();
-            }, 1000, null);      
+            ListHandler = new(Editor, btnBullets, btnNumbers);  // bullet/number list handler
+
 
         }
         void SetEditorFont()
@@ -49,8 +59,111 @@
             //Editor.SelectAll();
             //Editor.SelectionFont = new Font(family, size, FontStyle.Regular);
             //Editor.Select(selStart, selLen);
-            Editor.Font = new Font(family, size, FontStyle.Regular);
+            Editor.Font = new System.Drawing.Font(family, size, FontStyle.Regular);
             Editor.Update();
+        }
+        void ApplySelectionFontSize(float size)
+        {
+            var rtb = Editor;
+
+            // Αν υπάρχουν mixed fonts στο selection, SelectionFont == null.
+            // Τότε χρησιμοποιούμε το τρέχον Font του RichTextBox ως βάση.
+            var baseFont = rtb.SelectionFont ?? rtb.Font;
+            var newFont = new Font(baseFont.FontFamily, size, baseFont.Style, GraphicsUnit.Point);
+
+            rtb.SelectionFont = newFont;
+            rtb.Focus();
+        }
+        void AddToolBarControls()
+        {
+            // ● Font Size
+            nudFontSize = new NumericUpDown
+            {
+                Minimum = 6,
+                Maximum = 96,
+                DecimalPlaces = 0,
+                Increment = 1,
+                Value = (decimal)App.Settings.FontSize, // προεπιλογή
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            nudFontSize.ValueChanged += (s, e) => ApplySelectionFontSize((float)nudFontSize.Value);
+
+            hostFontSize = new ToolStripControlHost(nudFontSize)
+            {              
+                AutoSize = false,
+                Width = 50
+            };
+ 
+            int Index = ToolBar.Items.IndexOf(btnBullets);
+
+            Index--;
+            ToolStripSeparator sepFontSize = new ();
+            ToolBar.Items.Insert(Index, sepFontSize);
+
+            Index++;
+            ToolBar.Items.Insert(Index, new ToolStripLabel("Font Size"));
+
+            Index++;
+            ToolBar.Items.Insert(Index, hostFontSize);
+
+            // ● Zoom Factor
+            nudZoom = new NumericUpDown
+            {
+                Minimum = 0.5M,
+                Maximum = 5.0M,
+                DecimalPlaces = 2,
+                Increment = 0.05M,
+                Value = 1.00M,
+                BorderStyle = BorderStyle.FixedSingle,
+
+            };
+            nudZoom.ValueChanged += (s, e) => Editor.ZoomFactor = (float)nudZoom.Value;
+
+            hostZoom = new ToolStripControlHost(nudZoom)
+            {
+                AutoSize = false,
+                Width = 50
+            };
+
+            Index = ToolBar.Items.IndexOf(btnSave);
+            
+            Index--;
+            ToolStripSeparator sepZoom = new ();
+            ToolBar.Items.Insert(Index, sepZoom);
+
+            Index++;
+            ToolBar.Items.Insert(Index, new ToolStripLabel("Zoom"));
+
+            Index++;
+            ToolBar.Items.Insert(Index, hostZoom);
+
+ 
+
+            // συγχρονισμός όταν αλλάζει το zoom με άλλο τρόπο
+            //richTextBoxNotes.ZoomFactorChanged += RichTextBoxNotes_ZoomFactorChanged;
+
+
+
+            //ToolBar.Items.Add(new ToolStripLabel("Size"));
+
+        }
+        void ResetSelectionToDefault()
+        {
+            var defaultSize = App.Settings.FontSize;
+            var defaultFont = new Font(Editor.Font.FontFamily, defaultSize, FontStyle.Regular);
+
+            Editor.SelectionFont = defaultFont;
+            Editor.SelectionColor = Color.Black;
+
+            try
+            {
+                Editor.SelectionBackColor = Color.White;
+            }
+            catch
+            {
+            }
+
+            Editor.Focus();
         }
 
         // ● event handlers
@@ -84,19 +197,29 @@
                         ShowFindReplaceDialog(); 
                         e.SuppressKeyPress = true;
                         break;
-                    case Keys.H:
-                        ShowFindReplaceDialog(); 
+ 
+                }
+            }
+
+            // ● reset any formatting (bold, italic, underline, colors, etc.) to default on current selection, if any.
+            if (e.Shift)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Escape:
+                        ResetSelectionToDefault();
                         e.SuppressKeyPress = true;
                         break;
                 }
             }
-
  
 
             // ● bullets and numbers
+            ListHandler.HandleKeyDown(e);
  
+            /*
             // Continue numbering on Enter
-            if (_numberMode && e.KeyCode == Keys.Enter)
+            if (ListHandler.NumberMode && e.KeyCode == Keys.Enter)
             {
                 e.SuppressKeyPress = true;
 
@@ -116,14 +239,15 @@
             }
 
             // Backspace at start-of-line while in bullet mode → stop bullets
-            if (_bulletMode && e.KeyCode == Keys.Back && IsAtLineStart(Editor))
+            if (_bulletMode && e.KeyCode == Keys.Back && Editor.IsAtLineStart())
             {
                 e.SuppressKeyPress = true;
-                ApplyBullets(false);
+                Editor.ApplyBullets(false);
                 _bulletMode = false;
                 btnBullets.Checked = false;
                 return;
             }
+            */
         }
         void Editor_MouseDown(object sender, MouseEventArgs e)
         {
@@ -136,54 +260,86 @@
 
             GoToLink();
         }
-        void btnBullets_Click(object sender, EventArgs e)
+        void Editor_SelectionChanged(object sender, EventArgs e)
         {
-            // toggle bullets
-            _bulletMode = !_bulletMode;
+            if (_syncingFromCode) return;
 
-            // numbering is mutually exclusive
-            if (_bulletMode)
+            var rtb = Editor;
+            try
             {
-                StopNumbering(updateButtons: false);
-                ApplyBullets(true);
-                btnBullets.Checked = true;
-            }
-            else
-            {
-                ApplyBullets(false);
-                btnBullets.Checked = false;
-            }
+                _syncingFromCode = true;
 
-            Editor.Focus();
+                var f = rtb.SelectionFont ?? rtb.Font;
+                if (nudFontSize.Value != (decimal)f.Size)
+                    nudFontSize.Value = (decimal)f.Size;
+
+                // Optional: θα μπορούσες να ενημερώνεις και κατάσταση bold/italic/underline κουμπιών εδώ.
+                // Optional: ενημέρωσε tooltip/preview χρωμάτων αν θέλεις.
+
+                // Αν η επιλογή είναι "μικτή" (διαφορετικά styles), το SelectionFont == null
+
+                // ● sync bold/italic/underline buttons
+                var selFont = rtb.SelectionFont;
+
+                if (selFont != null)
+                {
+                    btnBold.Checked = selFont.Bold;
+                    btnItalic.Checked = selFont.Italic;
+                    btnUnderline.Checked = selFont.Underline;
+
+                    // Αν θες και το NumericUpDown να συγχρονίζεται
+                    if (nudFontSize.Value != (decimal)selFont.Size)
+                        nudFontSize.Value = (decimal)selFont.Size;
+                }
+                else
+                {
+                    // Αν η επιλογή έχει μικτά styles, μπορείς να βάλεις "indeterminate" λογική.
+                    // Εδώ απλά ξετσεκάρω τα πάντα:
+                    btnBold.Checked = false;
+                    btnItalic.Checked = false;
+                    btnUnderline.Checked = false;
+                }
+            }
+            finally
+            {
+                _syncingFromCode = false;
+            }
         }
-        void btnNumbers_Click(object sender, EventArgs e)
+ 
+        void btnFontColor_Click(object sender, EventArgs e)
         {
-            // toggle numbering
-            if (_numberMode)
+            using var cd = new ColorDialog
             {
-                StopNumbering(updateButtons: true);
-                return;
-            }
+                AllowFullOpen = true,
+                FullOpen = true,
+                Color = Editor.SelectionColor.IsEmpty
+                ? Editor.ForeColor
+                : Editor.SelectionColor
+            };
 
-            _numberMode = true;
-            _currentNumber = 1;
-
-            // Bullets are mutually exclusive
-            if (_bulletMode)
+            if (cd.ShowDialog(this) == DialogResult.OK)
             {
-                ApplyBullets(false);
-                _bulletMode = false;
-                btnBullets.Checked = false;
+                Editor.SelectionColor = cd.Color;
+                Editor.Focus();
             }
+        }
+        void btnBackColor_Click(object sender, EventArgs e)
+        {
+            using var cd = new ColorDialog
+            {
+                AllowFullOpen = true,
+                FullOpen = true,
+                Color = Editor.SelectionBackColor.IsEmpty
+                ? Editor.BackColor
+                : Editor.SelectionBackColor
+            };
 
-            btnNumbers.Checked = true;
-
-            // Optional UX: start on a new line if not at line-start
-            if (!IsAtLineStart(Editor))
-                Editor.SelectedText = Environment.NewLine;
-
-            InsertNumberPrefix(_currentNumber);
-            Editor.Focus();
+            if (cd.ShowDialog(this) == DialogResult.OK)
+            {
+                // Απαιτεί .NET που υποστηρίζει SelectionBackColor (σύγχρονα WinForms το έχουν)
+                Editor.SelectionBackColor = cd.Color;
+                Editor.Focus();
+            }
         }
 
         // ● formatting, find/replace and links
@@ -210,7 +366,7 @@
                 Point clientPt = Editor.PointToClient(Cursor.Position);
                 int index = Editor.GetCharIndexFromPosition(clientPt);      //int index = Editor.GetCharIndexFromPosition(e.Location);
 
-                Term = GetWordAt(Editor.Text, index);
+                Term = Editor.GetWordAtIndex(index);
             }
 
             if (string.IsNullOrWhiteSpace(Term))
@@ -242,107 +398,9 @@
         }
 
         // ● helpers for links  
-        static string GetWordAt(string text, int index)
-        {
-            if (index < 0 || index >= text.Length) return string.Empty;
-
-            // Αν ο cursor είναι πάνω σε space/punct, μετακινήσου αριστερά στην πλησιέστερη λέξη
-            int i = index;
-            while (i > 0 && !IsWordChar(text[i])) i--;
-            int end = i;
-            while (end < text.Length && IsWordChar(text[end])) end++;
-            int start = i;
-            while (start > 0 && IsWordChar(text[start - 1])) start--;
-
-            var len = end - start;
-            if (len <= 0) return string.Empty;
-            return text.Substring(start, len);
-        }
-        static bool IsWordChar(char c)
-        {
-            // Γράμματα/Ψήφια από όλες τις γλώσσες + underscore
-            var cat = char.GetUnicodeCategory(c);
-            return char.IsLetterOrDigit(c) || c == '_' ||
-                   cat == System.Globalization.UnicodeCategory.NonSpacingMark ||
-                   cat == System.Globalization.UnicodeCategory.SpacingCombiningMark;
-        }
-
-        // ● helpers for bullets and numbers
-        void ApplyBullets(bool enable)
-        {
-            if (enable)
-            {
-                Editor.SelectionIndent = _listIndent;
-                Editor.BulletIndent = _listIndent / 2;
-                Editor.SelectionBullet = true;
-            }
-            else
-            {
-                Editor.SelectionBullet = false;
-                Editor.SelectionIndent = 0;
-                Editor.BulletIndent = 0;
-            }
-        }
-        void StopNumbering(bool updateButtons)
-        {
-            _numberMode = false;
-            _currentNumber = 0;
-            if (updateButtons) btnNumbers.Checked = false;
-        }
-        void InsertNumberPrefix(int n)
-        {
-            Editor.SelectedText = $"{n}. ";
-        }
-        bool IsAtLineStart(RichTextBox rtb)
-        {
-            int lineIndex = rtb.GetLineFromCharIndex(rtb.SelectionStart);
-            int lineStart = rtb.GetFirstCharIndexFromLine(lineIndex);
-            return rtb.SelectionStart <= lineStart;
-        }
-        static string GetCurrentLineText(RichTextBox rtb, out int lineStart, out int lineLength)
-        {
-            int lineIndex = rtb.GetLineFromCharIndex(rtb.SelectionStart);
-            lineStart = rtb.GetFirstCharIndexFromLine(lineIndex);
-            int nextStart = (lineIndex + 1 < rtb.Lines.Length)
-                                ? rtb.GetFirstCharIndexFromLine(lineIndex + 1)
-                                : rtb.TextLength;
-            lineLength = Math.Max(0, nextStart - lineStart);
-            if (lineLength == 0) return string.Empty;
-            return rtb.Text.Substring(lineStart, lineLength);
-        }
-        // "N. " and nothing else on the line
-        bool IsCurrentLineOnlyPrefix(RichTextBox rtb)
-        {
-            string line = GetCurrentLineText(rtb, out _, out _).TrimEnd('\r', '\n');
-            if (string.IsNullOrEmpty(line)) return false;
-
-            int dotIdx = line.IndexOf('.');
-            if (dotIdx <= 0) return false;
-
-            string digits = line.Substring(0, dotIdx);
-            if (!int.TryParse(digits, out _)) return false;
-
-            string after = line.Substring(dotIdx + 1);
-            return after == " ";
-        }
-        void RemoveCurrentLineIfOnlyPrefix(RichTextBox rtb)
-        {
-            string line = GetCurrentLineText(rtb, out int start, out int len).TrimEnd('\r', '\n');
-
-            int dotIdx = line.IndexOf('.');
-            if (dotIdx <= 0) return;
-
-            string digits = line.Substring(0, dotIdx);
-            if (!int.TryParse(digits, out _)) return;
-
-            string after = line.Substring(dotIdx + 1);
-            if (after != " ") return;
-
-            // Delete the entire line (prefix-only)
-            rtb.Select(start, len);
-            rtb.SelectedText = string.Empty;
-        }
  
+
+
         // ● overrides  
         protected override void OnLoad(EventArgs e)
         {
@@ -352,11 +410,13 @@
                 ControlInitialize();
         }
 
-
         // ● construction
         public UC_RichText()
         {
-            InitializeComponent();            
+            InitializeComponent();
+
+            SetEditorFont();
+            AddToolBarControls();
         }
 
         // ● public
@@ -364,6 +424,16 @@
         {
             if (EditorHandler != null)
                 EditorHandler.SaveEditorText(this.Editor);
+        }
+        public void InitializeEditor(bool NotesFormattingEnabled)
+        {
+            Editor.KeyDown += Editor_KeyDown;
+            Editor.MouseDown += Editor_MouseDown;
+            Editor.TextChanged += (s, e) => Editor.Modified = true;
+
+            hostFontSize.Enabled = NotesFormattingEnabled;
+            btnFontColor.Enabled = NotesFormattingEnabled;
+            btnBackColor.Enabled = NotesFormattingEnabled;
         }
 
         // ● properties
@@ -379,21 +449,6 @@
  
     }
 
-    /// <summary>
-    /// Extensions
-    /// </summary>
-    static public class RichTextBoxExtensions
-    {
-        /// <summary>
-        /// Returns the caret position in RichTextBox
-        /// </summary>
-        static public Point GetCaretPosition(this RichTextBox RichTextBox)
-        {
-            Point P = new ();
-            P.Y = (RichTextBox.GetLineFromCharIndex(RichTextBox.SelectionStart));
-            P.X = (RichTextBox.SelectionStart - RichTextBox.GetFirstCharIndexOfCurrentLine());
-            return P;
-        }
-    }
+
 
 }

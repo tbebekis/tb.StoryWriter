@@ -44,10 +44,7 @@
             if (!File.Exists(RftSourcePath)) 
                 throw new FileNotFoundException($"Cannot convert to {TargetFormat}. Source file {RftSourcePath} does not exist.");
 
-            string SOfficePath = FindSoffice();
-            if (SOfficePath == null) 
-                throw new FileNotFoundException($"Cannot convert source file {RftSourcePath} to {TargetFormat}. LibreOffice not found.");
-
+            string SOfficePath = FindSoffice() ?? throw new FileNotFoundException($"Cannot convert source file {RftSourcePath} to {TargetFormat}. LibreOffice not found.");
             string OutputFolder = Path.GetDirectoryName(RftSourcePath)!;
 
             var PSI = new ProcessStartInfo
@@ -58,10 +55,7 @@
                 CreateNoWindow = true
             };
 
-            using var OfficeProcess = Process.Start(PSI);
-            if (OfficeProcess == null) 
-                throw new Exception($"Cannot convert source file {RftSourcePath} to {TargetFormat}. Cannot start LibreOffice.");
-
+            using var OfficeProcess = Process.Start(PSI) ?? throw new Exception($"Cannot convert source file {RftSourcePath} to {TargetFormat}. Cannot start LibreOffice.");
             if (!OfficeProcess.WaitForExit(timeoutMs)) 
             { 
                 try 

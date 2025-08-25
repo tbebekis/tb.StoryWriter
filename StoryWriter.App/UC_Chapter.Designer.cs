@@ -120,7 +120,8 @@
             // 
             splitContainer1.Panel2.Controls.Add(ucSceneText);
             splitContainer1.Size = new Size(849, 693);
-            splitContainer1.SplitterDistance = 248;
+            splitContainer1.SplitterDistance = 160;
+            splitContainer1.SplitterWidth = 6;
             splitContainer1.TabIndex = 0;
             // 
             // lboScenes
@@ -129,7 +130,7 @@
             lboScenes.FormattingEnabled = true;
             lboScenes.Location = new Point(0, 31);
             lboScenes.Name = "lboScenes";
-            lboScenes.Size = new Size(248, 662);
+            lboScenes.Size = new Size(160, 662);
             lboScenes.TabIndex = 1;
             // 
             // ToolBarScenes
@@ -138,7 +139,7 @@
             ToolBarScenes.Items.AddRange(new ToolStripItem[] { btnAdd, btnEdit, btnDelete, toolStripSeparator1, btnUp, btnDown });
             ToolBarScenes.Location = new Point(0, 0);
             ToolBarScenes.Name = "ToolBarScenes";
-            ToolBarScenes.Size = new Size(248, 31);
+            ToolBarScenes.Size = new Size(160, 31);
             ToolBarScenes.TabIndex = 2;
             ToolBarScenes.Text = "toolStrip1";
             // 
@@ -197,7 +198,7 @@
             ucSceneText.Dock = DockStyle.Fill;
             ucSceneText.Location = new Point(0, 0);
             ucSceneText.Name = "ucSceneText";
-            ucSceneText.Size = new Size(597, 693);
+            ucSceneText.Size = new Size(683, 693);
             ucSceneText.TabIndex = 0;
             // 
             // tabSynopsis

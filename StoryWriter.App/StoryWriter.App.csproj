@@ -4,9 +4,16 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net9.0-windows</TargetFramework>
         <UseWindowsForms>true</UseWindowsForms>
-        <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>StoryWriter</RootNamespace>
         <AssemblyName>tbStoryWriter</AssemblyName>
+
+        <Title>tbStoryWriter</Title>
+        <Product>tbStoryWriter</Product>
+        <Version>5.25.08.26</Version>
+        <AssemblyVersion>5.25.08.26</AssemblyVersion>
+        <Authors>Theodoros Bebekis</Authors>      
+        <Description>A lightweight Windows app that helps novelists plan, write, and organize long-form fiction.</Description>
+        <Copyright>Theodoros Bebekis 2025</Copyright>        
     </PropertyGroup>
 
     <ItemGroup>

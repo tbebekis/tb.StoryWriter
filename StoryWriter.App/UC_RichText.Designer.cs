@@ -28,33 +28,36 @@
         /// </summary>
         private void InitializeComponent()
         {
-            toolStrip1 = new ToolStrip();
+            ToolBar = new ToolStrip();
             btnBold = new ToolStripButton();
             btnItalic = new ToolStripButton();
             btnUnderline = new ToolStripButton();
             toolStripSeparator1 = new ToolStripSeparator();
+            btnResetSelectionToDefault = new ToolStripButton();
             btnLink = new ToolStripButton();
             toolStripSeparator2 = new ToolStripSeparator();
             btnFind = new ToolStripButton();
-            btnReplace = new ToolStripButton();
             toolStripSeparator3 = new ToolStripSeparator();
             btnBullets = new ToolStripButton();
             btnNumbers = new ToolStripButton();
-            edtRichText = new RichTextBox();
+            btnFontColor = new ToolStripButton();
+            btnBackColor = new ToolStripButton();
             toolStripSeparator4 = new ToolStripSeparator();
             btnSave = new ToolStripButton();
-            toolStrip1.SuspendLayout();
+            edtRichText = new RichTextBox();
+            toolStripSeparator5 = new ToolStripSeparator();
+            ToolBar.SuspendLayout();
             SuspendLayout();
             // 
-            // toolStrip1
+            // ToolBar
             // 
-            toolStrip1.ImageScalingSize = new Size(24, 24);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { btnBold, btnItalic, btnUnderline, toolStripSeparator1, btnLink, toolStripSeparator2, btnFind, btnReplace, toolStripSeparator3, btnBullets, btnNumbers, toolStripSeparator4, btnSave });
-            toolStrip1.Location = new Point(0, 0);
-            toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(440, 31);
-            toolStrip1.TabIndex = 0;
-            toolStrip1.Text = "toolStrip1";
+            ToolBar.ImageScalingSize = new Size(24, 24);
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnBold, btnItalic, btnUnderline, toolStripSeparator1, btnFontColor, btnBackColor, toolStripSeparator2, btnBullets, btnNumbers, toolStripSeparator3, btnFind, toolStripSeparator5, btnResetSelectionToDefault, btnLink, toolStripSeparator4, btnSave });
+            ToolBar.Location = new Point(0, 0);
+            ToolBar.Name = "ToolBar";
+            ToolBar.Size = new Size(535, 31);
+            ToolBar.TabIndex = 0;
+            ToolBar.Text = "toolStrip1";
             // 
             // btnBold
             // 
@@ -63,7 +66,7 @@
             btnBold.ImageTransparentColor = Color.Magenta;
             btnBold.Name = "btnBold";
             btnBold.Size = new Size(28, 28);
-            btnBold.Text = "Bold";
+            btnBold.Text = "Bold (Ctrl + B)";
             // 
             // btnItalic
             // 
@@ -72,7 +75,7 @@
             btnItalic.ImageTransparentColor = Color.Magenta;
             btnItalic.Name = "btnItalic";
             btnItalic.Size = new Size(28, 28);
-            btnItalic.Text = "Italic";
+            btnItalic.Text = "Italic (Ctrl + I)";
             // 
             // btnUnderline
             // 
@@ -81,12 +84,21 @@
             btnUnderline.ImageTransparentColor = Color.Magenta;
             btnUnderline.Name = "btnUnderline";
             btnUnderline.Size = new Size(28, 28);
-            btnUnderline.Text = "Underline";
+            btnUnderline.Text = "Underline (Ctrl + U)";
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new Size(6, 31);
+            // 
+            // btnResetSelectionToDefault
+            // 
+            btnResetSelectionToDefault.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnResetSelectionToDefault.Image = Properties.Resources.color_picker_default;
+            btnResetSelectionToDefault.ImageTransparentColor = Color.Magenta;
+            btnResetSelectionToDefault.Name = "btnResetSelectionToDefault";
+            btnResetSelectionToDefault.Size = new Size(28, 28);
+            btnResetSelectionToDefault.Text = "Reset formatting to default (Shift + Esc)";
             // 
             // btnLink
             // 
@@ -95,7 +107,7 @@
             btnLink.ImageTransparentColor = Color.Magenta;
             btnLink.Name = "btnLink";
             btnLink.Size = new Size(28, 28);
-            btnLink.Text = "Go to link";
+            btnLink.Text = "Go to link (Ctrl + L or Ctrl + LeftClick)";
             // 
             // toolStripSeparator2
             // 
@@ -109,16 +121,7 @@
             btnFind.ImageTransparentColor = Color.Magenta;
             btnFind.Name = "btnFind";
             btnFind.Size = new Size(28, 28);
-            btnFind.Text = "Find";
-            // 
-            // btnReplace
-            // 
-            btnReplace.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnReplace.Image = Properties.Resources.text_replace;
-            btnReplace.ImageTransparentColor = Color.Magenta;
-            btnReplace.Name = "btnReplace";
-            btnReplace.Size = new Size(28, 28);
-            btnReplace.Text = "Replace";
+            btnFind.Text = "Find and Replace (Ctrl + F)";
             // 
             // toolStripSeparator3
             // 
@@ -143,14 +146,23 @@
             btnNumbers.Size = new Size(28, 28);
             btnNumbers.Text = "Start Number List";
             // 
-            // edtRichText
+            // btnFontColor
             // 
-            edtRichText.Dock = DockStyle.Fill;
-            edtRichText.Location = new Point(0, 31);
-            edtRichText.Name = "edtRichText";
-            edtRichText.Size = new Size(440, 170);
-            edtRichText.TabIndex = 1;
-            edtRichText.Text = "";
+            btnFontColor.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnFontColor.Image = Properties.Resources.font_colors;
+            btnFontColor.ImageTransparentColor = Color.Magenta;
+            btnFontColor.Name = "btnFontColor";
+            btnFontColor.Size = new Size(28, 28);
+            btnFontColor.Text = "Font Color";
+            // 
+            // btnBackColor
+            // 
+            btnBackColor.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnBackColor.Image = Properties.Resources.color_wheel;
+            btnBackColor.ImageTransparentColor = Color.Magenta;
+            btnBackColor.Name = "btnBackColor";
+            btnBackColor.Size = new Size(28, 28);
+            btnBackColor.Text = "Background Color";
             // 
             // toolStripSeparator4
             // 
@@ -166,23 +178,38 @@
             btnSave.Size = new Size(28, 28);
             btnSave.Text = "Save";
             // 
+            // edtRichText
+            // 
+            edtRichText.DetectUrls = false;
+            edtRichText.Dock = DockStyle.Fill;
+            edtRichText.Location = new Point(0, 31);
+            edtRichText.Name = "edtRichText";
+            edtRichText.Size = new Size(535, 170);
+            edtRichText.TabIndex = 1;
+            edtRichText.Text = "";
+            // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new Size(6, 31);
+            // 
             // UC_RichText
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(edtRichText);
-            Controls.Add(toolStrip1);
+            Controls.Add(ToolBar);
             Name = "UC_RichText";
-            Size = new Size(440, 201);
-            toolStrip1.ResumeLayout(false);
-            toolStrip1.PerformLayout();
+            Size = new Size(535, 201);
+            ToolBar.ResumeLayout(false);
+            ToolBar.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private ToolStrip toolStrip1;
+        private ToolStrip ToolBar;
         private ToolStripButton btnBold;
         private ToolStripButton btnItalic;
         private ToolStripButton btnUnderline;
@@ -191,11 +218,14 @@
         private ToolStripButton btnLink;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripButton btnFind;
-        private ToolStripButton btnReplace;
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripButton btnBullets;
         private ToolStripButton btnNumbers;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton btnSave;
+        private ToolStripButton btnFontColor;
+        private ToolStripButton btnBackColor;
+        private ToolStripButton btnResetSelectionToDefault;
+        private ToolStripSeparator toolStripSeparator5;
     }
 }

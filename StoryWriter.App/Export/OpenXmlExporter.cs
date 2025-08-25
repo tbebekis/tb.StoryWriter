@@ -27,13 +27,15 @@
         public ChapterExportMode Mode { get; set; } = ChapterExportMode.AltChunkRtf;
         public Func<int, Chapter, string> ChapterTitleResolver { get; set; } =
             (i, ch) => string.IsNullOrWhiteSpace(ch?.Name) ? $"Chapter {i + 1}" : ch!.Name;
-    } 
+    }
 
-    public static class OpenXmlExporter
+    static public class OpenXmlExporter
     {
+        static readonly char[] DoubleNewlineChars = new[] { '\r', '\n' };
+
         public static void ExportProjectToDocx(Project project, string filePath, DocxExportOptions options = null)
         {
-            if (project is null) throw new ArgumentNullException(nameof(project));
+            ArgumentNullException.ThrowIfNull(project);
             options ??= new DocxExportOptions();
 
             Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
@@ -91,13 +93,13 @@
         // ---------- Helpers ----------
 
         private static Paragraph Heading(string styleId, string text) =>
-            new Paragraph(
+            new (
                 new ParagraphProperties(new ParagraphStyleId { Val = styleId }),
                 new Run(new DocumentFormat.OpenXml.Wordprocessing.Text(text) { Space = SpaceProcessingModeValues.Preserve })
             );
 
         private static Paragraph PageBreak() =>
-            new Paragraph(new Run(new Break { Type = BreakValues.Page }));
+            new (new Run(new Break { Type = BreakValues.Page }));
 
         private static void InsertToc(DocumentFormat.OpenXml.Wordprocessing.Body body)
         {
@@ -169,7 +171,7 @@
             // - Αν έχεις WinForms reference, μπορείς να το κάνεις και με RichTextBox για καλύτερη ακρίβεια.
             string plain = RtfToPlainTextNaive(rtf);
 
-            var blocks = plain.Replace("\r\n", "\n").Split(new[] { "\n\n" }, StringSplitOptions.None);
+            var blocks = plain.Replace("\r\n", "\n").Split(DoubleNewlineChars, StringSplitOptions.None);
             foreach (var block in blocks)
             {
                 var lines = block.Split('\n');

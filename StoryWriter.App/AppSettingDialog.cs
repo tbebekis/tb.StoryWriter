@@ -49,15 +49,21 @@
 
         void ItemToControls()
         {
+            void SetNumericValue(NumericUpDown Control, int SettingsValue)
+            {
+                Control.Value = Math.Max((int)Control.Minimum, Math.Min((int)Control.Maximum, SettingsValue));
+            }
+
             chkLoadLast.Checked = Settings.LoadLastProjectOnStartup;
-            chkAutoSave.Checked = Settings.AutoSave; 
-            var safeSize = Math.Max((int)nudFontSize.Minimum, Math.Min((int)nudFontSize.Maximum, Settings.FontSize));
-            nudFontSize.Value = safeSize;
+            chkAutoSave.Checked = Settings.AutoSave;
+            SetNumericValue(edtAutoSaveSecondsInterval, Settings.AutoSaveSecondsInterval);
+            SetNumericValue(nudFontSize, Settings.FontSize); 
         }
         void ControlsToItem()
         {
             Settings.LoadLastProjectOnStartup = chkLoadLast.Checked;
             Settings.AutoSave = chkAutoSave.Checked;
+            Settings.AutoSaveSecondsInterval = (int)edtAutoSaveSecondsInterval.Value;
             Settings.FontFamily = string.IsNullOrWhiteSpace(cboFontFamily.Text) ? "Arial" : cboFontFamily.Text.Trim();
             Settings.FontSize = (int)nudFontSize.Value;
 

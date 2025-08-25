@@ -5,12 +5,16 @@
         PagerHandler SideBarPagerHandler;
         PagerHandler ContentPagerHandler; 
 
+        const string STitle = "Story Writer";
+
         // ● private
         void FormInitialize()
         {
             Ui.MainForm = this;
 
             LogBox.Initialize(edtLog);
+
+            this.Text = $"{STitle} - [none]";
 
             pagerSideBar.TabPages.Clear();
             pagerContent.TabPages.Clear();
@@ -25,7 +29,10 @@
             ContentPagerHandler.SelectedFontColor = Color.Black;
 
             App.SideBarPagerHandler = SideBarPagerHandler;
-            App.ContentPagerHandler = ContentPagerHandler;            
+            App.ContentPagerHandler = ContentPagerHandler;      
+            
+            App.ProjectClosed += (s, e) => this.Text = $"{STitle} - [none]"; 
+            App.ProjectOpened += (s, e) => this.Text = $"{STitle} - [{App.CurrentProject.Name}]";
 
             App.Initialize(this);
 
@@ -34,9 +41,10 @@
             btnSettings.Click += (s, e) => App.ShowSettingsDialog();
             btnToggleSideBar.Click += (s, e) => ToggleSideBar();
             btnToggleLog.Click += (s, e) => ToggleLog();
-            btnExportToRtf.Click += (s, e) => ExportToRtf();
-            btnExportToDocx.Click += (s, e) => ExportToDocx();
-            btnExportToOdt.Click += (s, e) => ExportToOdt();
+            btnExportToText.Click += (s, e) => ExportToFile(btnExportToText);
+            btnExportToRtf.Click += (s, e) => ExportToFile(btnExportToRtf);
+            btnExportToDocx.Click += (s, e) => ExportToFile(btnExportToDocx);
+            btnExportToOdt.Click += (s, e) => ExportToFile(btnExportToOdt);
             btnExit.Click += (s, e) => Close();
  
         }
@@ -50,56 +58,39 @@
             splitContent.Panel2Collapsed = !splitContent.Panel2Collapsed;            
         }
 
-        void ExportToRtf()
+        public void ExportToFile(ToolStripButton Button)
         {
-            if (App.CurrentProject == null) 
-                return;
+            string Filter = "Text files (*.txt)|*.txt|All Files (*.*)|*.*";
+            Action<string> ExportProc = App.ExportCurrentProjectToTxt;
+
+            if (Button == btnExportToRtf)
+            {
+                Filter = "RTF Files (*.rtf)|*.rtf|All Files (*.*)|*.*";
+                ExportProc = App.ExportCurrentProjectToRtf;
+            }
+            else if (Button == btnExportToDocx)
+            {
+                Filter = "Word Files (*.docx)|*.docx|All Files (*.*)|*.*";
+                ExportProc = App.ExportCurrentProjectToDocx;
+            }
+            else if (Button == btnExportToOdt)
+            {
+                Filter = "ODF Text Document (*.odt)|*.odt|All Files (*.*)|*.*";
+                ExportProc = App.ExportCurrentProjectToOdt;
+            }
 
             using (SaveFileDialog dlg = new SaveFileDialog())
             {
-                dlg.Filter = "RTF Files (*.rtf)|*.rtf|All Files (*.*)|*.*";
+                dlg.Filter = Filter;
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     string FilePath = dlg.FileName;
-                    App.ExportCurrentProjectToRtf(FilePath);
-
-                    LogBox.AppendLine($"{App.CurrentProject.Name} exported to {FilePath}");
-                }
-            } 
-        }
-        void ExportToDocx()
-        {
-            if (App.CurrentProject == null)
-                return;
-
-            using (SaveFileDialog dlg = new SaveFileDialog())
-            {
-                dlg.Filter = "Word Files (*.docx)|*.docx|All Files (*.*)|*.*";
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    string FilePath = dlg.FileName;
-                    App.ExportCurrentProjectToDocx(FilePath);
+                    ExportProc(FilePath);
 
                     LogBox.AppendLine($"{App.CurrentProject.Name} exported to {FilePath}");
                 }
             }
-        }
-        void ExportToOdt()
-        {
-            if (App.CurrentProject == null)
-                return;
 
-            using (SaveFileDialog dlg = new SaveFileDialog())
-            {
-                dlg.Filter = "ODF Text Document (*.odt)|*.odt|All Files (*.*)|*.*";
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    string FilePath = dlg.FileName;
-                    App.ExportCurrentProjectToOdt(FilePath);
-
-                    LogBox.AppendLine($"{App.CurrentProject.Name} exported to {FilePath}");
-                }
-            }
         }
 
         // ● overrides

@@ -20,9 +20,11 @@
 
             Ui.RunOnce((Info) => {
                 ucComponentText.Editor.Modified = false;
-                ucComponentText.Editor.ModifiedChanged += EditorModifiedChanged;                
-                ucComponentText.Focus();
+                ucComponentText.InitializeEditor(true);
+                ucComponentText.Editor.ModifiedChanged += EditorModifiedChanged;             
                 ucComponentText.EditorHandler = this;
+                ucComponentText.Focus();
+
             }, 1500, null);
         }
 
@@ -75,6 +77,9 @@
             Component.Update();
             Editor.Modified = false;
             ucComponentText.Editor.Modified = false;
+
+            string Message = $"Component: {Component.Title}. - saved";
+            LogBox.AppendLine(Message);
         }
 
         // ● properties

@@ -46,7 +46,8 @@
         {
             this.SaveProc = SaveProc;
 
-            fTimer = new System.Windows.Forms.Timer { Interval = 15000 }; // tick κάθε 1s
+            fTimer = new System.Windows.Forms.Timer();
+            AutoSaveSecondsInterval = 15;
             fTimer.Tick += (t, e) => Execute(); 
         }
         public void MarkAsDirty()
@@ -65,7 +66,11 @@
             get => fTimer.Enabled;
             set => fTimer.Enabled = value;
         }
- 
+        public int AutoSaveSecondsInterval
+        {
+            get => fTimer.Interval / 1000;
+            set => fTimer.Interval = value * 1000;
+        }
 
         // ● events
         public event EventHandler<DateTime> Saved;

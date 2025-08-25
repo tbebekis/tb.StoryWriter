@@ -9,6 +9,10 @@
             InitializeComponent();
             _rtb = rtb;
             this.CancelButton = btnClose;    
+
+            string TextToFind = rtb.SelectedText;
+            if (!string.IsNullOrWhiteSpace(TextToFind)) 
+                txtFind.Text = TextToFind;
         }
 
         private void btnFindNext_Click(object sender, EventArgs e)

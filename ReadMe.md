@@ -14,11 +14,19 @@ Long projects need structure **and** speed. tbStoryWriter gives you a left-hand 
 
 **Components** are your world-building building blocks: user-defined entries (e.g., persons, locations, artifacts) organized in the left sidebar as a tree with **up to two levels of grouping**. 
 
-You control the taxonomy—for example, *Person → Character/Historic* or *Location → Planet/Satellite/Continent/Country/City*.
+You control the taxonomy, for example, 
+
+- *Person → Character/Historic* or 
+- *Location → Planet/Satellite/Continent/Country/City*.
 
 You can freely add, rename, move, and re-order both groups and items to match your story’s structure. This keeps the universe tidy and navigable while you write.
 
-A component like **Neris** (under *Person → Character*) or **Darky** (under *Location → Planet*) is always one double-click away, so you can maintain consistent names and details without hunting through files.
+A component like 
+
+- **Navek** (under *Person → Character*) or 
+- **Darky** (under *Location → Planet*) 
+
+is always one double-click away, so you can maintain consistent names and details without hunting through files.
 
 ## Chapter Workspace (Tabbed)
 
@@ -46,11 +54,14 @@ If it finds a match, it opens that item instantly in a new editor tab, so you ca
 
 
 ```csharp
-public class AppSettings {
+public class AppSettings
+{
     public bool LoadLastProjectOnStartup { get; set; } = true;
+    public string LastProject { get; set; } = "Story";
     public bool AutoSave { get; set; } = true;
-    public string FontFamily { get; set; } = "Arial";
-    public int FontSize { get; set; } = 14;
+    public int AutoSaveSecondsInterval { get; set; } = 30;
+    public string FontFamily { get; set; } = "Times New Roman";
+    public int FontSize { get; set; } = 13; 
 }
 ````
 
@@ -83,6 +94,7 @@ dotnet run --project StoryWriter.App/StoryWriter.App.csproj
 
 Currently the application can export a project/book to the following.
 
+- TXT (markdown)
 - RTF
 - DOCX
 - ODT
@@ -98,7 +110,6 @@ Currently the application can export a project/book to the following.
 
 ## Roadmap Ideas
 
-* Exports (Markdown)
 * Graph view of relationships (characters ↔ locations ↔ chapters)
 
 

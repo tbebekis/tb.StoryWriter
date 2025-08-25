@@ -57,20 +57,7 @@
                 AddComponentList(tvComponents.Nodes, App.CurrentProject.TreeComponentList);
             }
         }
-
-        // ● event handlers
-        void ProjectClosed(object sender, EventArgs e)
-        {
-            tvComponents.Nodes.Clear();
-            SelectedNodeChanged();
-        }
-        void ProjectOpened(object sender, EventArgs e)
-        {
-            ReLoadComponents();
-            SelectedNodeChanged();
-        }
-
-        void SelectedNodeChanged()
+        void EnableCommands()
         {
             var SelectedNode = tvComponents.SelectedNode;
             var SelectedComponent = SelectedNode?.Tag as Component;
@@ -88,6 +75,24 @@
             mnuEditComponent.Enabled = btnEditComponent.Enabled;
             mnuDeleteComponent.Enabled = btnDeleteComponent.Enabled;
         }
+
+        // ● event handlers
+        void ProjectClosed(object sender, EventArgs e)
+        {
+            tvComponents.Nodes.Clear();
+            SelectedNodeChanged();
+        }
+        void ProjectOpened(object sender, EventArgs e)
+        {
+            ReLoadComponents();
+            SelectedNodeChanged();
+        }
+        void SelectedNodeChanged()
+        {
+            EnableCommands();
+        }
+        
+
 
         // ● groups
         void AddTopGroup()
@@ -277,7 +282,7 @@
 
             App.ContentPagerHandler.ShowPage(typeof(UC_Component), SelectedComponent.Id, SelectedComponent);
         }
-
+ 
         // ● overrides  
         protected override void OnLoad(EventArgs e)
         {

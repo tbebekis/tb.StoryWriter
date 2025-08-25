@@ -1,4 +1,6 @@
-﻿namespace StoryWriter
+﻿using StoryWriter.Export;
+
+namespace StoryWriter
 {
     static public partial class App
     {
@@ -42,7 +44,7 @@
                 if (!Directory.Exists(ProjectsPath))
                     Directory.CreateDirectory(ProjectsPath);
 
-                LoadAll();
+                LoadLastProject();
 
                 AutoSaveService = new AutoSaveService(AutoSaveProc);
                 AutoSaveService.Enabled = Settings.AutoSave;
@@ -52,24 +54,13 @@
         /// <summary>
         /// Closes all opened UI.
         /// </summary>
-        static public void CloseAll()
+        static public void CloseAllUi()
         {
             SideBarPagerHandler.CloseAll();
             ContentPagerHandler.CloseAll();
         }
 
-        static public void LoadAll()
-        {
-            CloseAll();
-
-            if (Settings.LoadLastProjectOnStartup && !string.IsNullOrWhiteSpace(Settings.LastProject) && ProjectExists(Settings.LastProject))
-            {
-                LoadProject(Settings.LastProject);
-            }
-
-            SideBarPagerHandler.ShowPage(typeof(UC_ComponentTree), nameof(UC_ComponentTree), null);
-            SideBarPagerHandler.ShowPage(typeof(UC_ChapterList), nameof(UC_ChapterList), null);
-        }
+        
         static public void ShowSettingsDialog()
         {
             string Message = @"This will close all opened UI. 
@@ -79,12 +70,21 @@ Do you want to continue?
             if (!App.QuestionBox(Message))
                 return;
 
-            App.CloseAll();
+            App.CloseProject();
+            Application.DoEvents();
 
             if (AppSettingDialog.ShowModal())
             {
+                AutoSaveService.Enabled = false;
+
                 App.Settings.Save();
-                App.LoadAll();
+
+                Message = $"Application Settings saved.";
+                LogBox.AppendLine(Message);
+
+                App.LoadLastProject();
+
+                AutoSaveService.AutoSaveSecondsInterval = Settings.AutoSaveSecondsInterval;
                 AutoSaveService.Enabled = Settings.AutoSave;
             }
         }
@@ -143,19 +143,24 @@ Do you want to continue?
             return GetProjectNameList().Contains(ProjectName);
         }
         /// <summary>
+        /// Loads the last opened project
+        /// </summary>
+        static public void LoadLastProject()
+        {
+            CloseAllUi();
+
+            if (Settings.LoadLastProjectOnStartup && !string.IsNullOrWhiteSpace(Settings.LastProject) && ProjectExists(Settings.LastProject))
+            {
+                LoadProject(Settings.LastProject);
+            } 
+        }
+        /// <summary>
         /// Loads a project by name
         /// </summary>
         static public void LoadProject(string ProjectName)
         {
             string Message;
-            if (CurrentProject != null)
-            {
-                ProjectClosed?.Invoke(null, EventArgs.Empty);
-
-                CurrentProject.Close();
-                CurrentProject = null;
-                SqlStore = null;
-            }
+            CloseProject();
 
             if (!ProjectExists(ProjectName))
             {
@@ -177,9 +182,32 @@ Do you want to continue?
             Settings.LastProject = ProjectName;
             Settings.Save();
 
+            SideBarPagerHandler.ShowPage(typeof(UC_ComponentTree), nameof(UC_ComponentTree), null);
+            SideBarPagerHandler.ShowPage(typeof(UC_ChapterList), nameof(UC_ChapterList), null);
+
             Message = $"Project '{ProjectName}' opened.";
             LogBox.AppendLine(Message);
           
+        }
+        /// <summary>
+        /// Closes the current project. Closes all open UI too.
+        /// </summary>
+        static public void CloseProject()
+        {
+            if (CurrentProject != null)
+            {
+                ProjectClosed?.Invoke(null, EventArgs.Empty);
+
+                string ProjectName = CurrentProject.Name;
+
+                CloseAllUi();
+                CurrentProject.Close();
+                CurrentProject = null;
+                SqlStore = null;
+
+                string Message = $"Project '{ProjectName}' closed.";
+                LogBox.AppendLine(Message);
+            } 
         }
         /// <summary>
         /// Opens an existing project and makes it the current project
@@ -241,7 +269,9 @@ Do you want to continue?
                 Settings.Save();
 
                 Message = $"Project '{ProjectName}' created.";
-                LogBox.AppendLine(Message);            
+                LogBox.AppendLine(Message);
+
+                LoadProject(ProjectName);
             }
         }
  
@@ -320,6 +350,16 @@ Do you want to continue?
 
             LibreOfficeExporter.Export(RtfFilePath, DocFormatType.Odt);
         }
+        /// <summary>
+        /// Exports the current project to TXT format
+        /// </summary>
+        static public void ExportCurrentProjectToTxt(string FilePath)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
+            FilePath = Path.ChangeExtension(FilePath, ".md");
+            TextExporter.Export(CurrentProject, FilePath);
+        }
+
 
         /// <summary>
         /// Adds a dirty editor to the list or dirty editors for auto-save.

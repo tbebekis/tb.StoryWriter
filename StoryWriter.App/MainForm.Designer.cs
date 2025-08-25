@@ -41,6 +41,7 @@
             toolStripSeparator2 = new ToolStripSeparator();
             btnExportToRtf = new ToolStripButton();
             btnExportToDocx = new ToolStripButton();
+            btnExportToOdt = new ToolStripButton();
             toolStripSeparator4 = new ToolStripSeparator();
             btnExit = new ToolStripButton();
             splitMain = new SplitContainer();
@@ -52,7 +53,7 @@
             tabPage1 = new TabPage();
             tabPage2 = new TabPage();
             edtLog = new RichTextBox();
-            btnExportToOdt = new ToolStripButton();
+            btnExportToText = new ToolStripButton();
             ToolBar.SuspendLayout();
             ((ISupportInitialize)splitMain).BeginInit();
             splitMain.Panel1.SuspendLayout();
@@ -85,7 +86,7 @@
             // ToolBar
             // 
             ToolBar.ImageScalingSize = new Size(24, 24);
-            ToolBar.Items.AddRange(new ToolStripItem[] { btnNewProject, btnOpenProject, toolStripSeparator1, btnSettings, toolStripSeparator3, btnToggleSideBar, btnToggleLog, toolStripSeparator2, btnExportToRtf, btnExportToDocx, btnExportToOdt, toolStripSeparator4, btnExit });
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnNewProject, btnOpenProject, toolStripSeparator1, btnSettings, toolStripSeparator3, btnToggleSideBar, btnToggleLog, toolStripSeparator2, btnExportToText, btnExportToRtf, btnExportToDocx, btnExportToOdt, toolStripSeparator4, btnExit });
             ToolBar.Location = new Point(0, 24);
             ToolBar.Name = "ToolBar";
             ToolBar.Size = new Size(930, 31);
@@ -169,6 +170,15 @@
             btnExportToDocx.Name = "btnExportToDocx";
             btnExportToDocx.Size = new Size(28, 28);
             btnExportToDocx.Text = "Export to DOCX";
+            // 
+            // btnExportToOdt
+            // 
+            btnExportToOdt.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnExportToOdt.Image = Properties.Resources.document_export;
+            btnExportToOdt.ImageTransparentColor = Color.Magenta;
+            btnExportToOdt.Name = "btnExportToOdt";
+            btnExportToOdt.Size = new Size(28, 28);
+            btnExportToOdt.Text = "Export To ODT";
             // 
             // toolStripSeparator4
             // 
@@ -294,14 +304,14 @@
             edtLog.TabIndex = 0;
             edtLog.Text = "";
             // 
-            // btnExportToOdt
+            // btnExportToText
             // 
-            btnExportToOdt.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnExportToOdt.Image = Properties.Resources.document_export;
-            btnExportToOdt.ImageTransparentColor = Color.Magenta;
-            btnExportToOdt.Name = "btnExportToOdt";
-            btnExportToOdt.Size = new Size(28, 28);
-            btnExportToOdt.Text = "Export To ODT";
+            btnExportToText.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnExportToText.Image = Properties.Resources.file_extension_txt;
+            btnExportToText.ImageTransparentColor = Color.Magenta;
+            btnExportToText.Name = "btnExportToText";
+            btnExportToText.Size = new Size(28, 28);
+            btnExportToText.Text = "Export to TXT";
             // 
             // MainForm
             // 
@@ -360,5 +370,6 @@
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton btnExportToDocx;
         private ToolStripButton btnExportToOdt;
+        private ToolStripButton btnExportToText;
     }
 }

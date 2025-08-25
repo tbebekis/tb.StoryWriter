@@ -7,6 +7,7 @@
         Chapter Chapter = null; 
         Scene CurrentScene = null;
         bool RenumberingScenes = false;
+        bool ChangingScene = false;
 
         Dictionary<RichTextBox, bool> IsFirstTimeModified = new();
         
@@ -33,40 +34,13 @@
             IsFirstTimeModified.Add(ucOutcomeText.Editor, false);
             IsFirstTimeModified.Add(ucSceneText.Editor, false);     // ucSceneText is a special case
 
- 
+            InitalizeRichTextEditors();
+
             /// we run this because RichTextBoxes are not functioning when they are not visible for the first time.
             /// so we display them one by one, so they get the text and the font settings from AppSettings (see UC_RichText.cs)
             /// and then we hook the ModifiedChanged event
             Ui.RunOnce((Info) => {
-                foreach (TabPage Page in pagerChapter.TabPages)
-                {
-                    pagerChapter.SelectedTab = Page;
-                    Application.DoEvents();
-                }
-
-                pagerChapter.SelectedTab = tabBodyText;
-                ucBodyText.Focus();
-
-                ucBodyText.Editor.Modified = false;
-                ucSynopsisText.Editor.Modified = false;
-                ucConceptText.Editor.Modified = false;
-                ucOutcomeText.Editor.Modified = false;
-
-                ucBodyText.Editor.ModifiedChanged += EditorModifiedChanged;
-                ucSynopsisText.Editor.ModifiedChanged += EditorModifiedChanged;
-                ucConceptText.Editor.ModifiedChanged += EditorModifiedChanged;
-                ucOutcomeText.Editor.ModifiedChanged += EditorModifiedChanged;
-
-                ucBodyText.EditorHandler = this;
-                ucSynopsisText.EditorHandler = this;
-                ucConceptText.EditorHandler = this;
-                ucOutcomeText.EditorHandler = this;
-
-                // scenes - special case
-                ucSceneText.Editor.Modified = false;
-                ucSceneText.EditorHandler = this;
-                ucSceneText.Editor.ModifiedChanged += EditorModifiedChanged;
-
+                //InitalizeRichTextEditors();
             }, 1500, null);
 
             // ● scenes  
@@ -81,6 +55,43 @@
             lboScenes.SelectedIndexChanged += (s, e) => SelectedSceneChanged();
 
             SelectedSceneChanged();
+        }
+        void InitalizeRichTextEditors()
+        {
+            foreach (TabPage Page in pagerChapter.TabPages)
+            {
+                pagerChapter.SelectedTab = Page;
+                Application.DoEvents();
+            }
+
+            pagerChapter.SelectedTab = tabBodyText;
+            ucBodyText.Focus();
+
+            ucBodyText.Editor.Modified = false;
+            ucSynopsisText.Editor.Modified = false;
+            ucConceptText.Editor.Modified = false;
+            ucOutcomeText.Editor.Modified = false;
+            ucSceneText.Editor.Modified = false;
+
+            Application.DoEvents();
+
+            ucBodyText.InitializeEditor(false);
+            ucSynopsisText.InitializeEditor(true);
+            ucConceptText.InitializeEditor(true);
+            ucOutcomeText.InitializeEditor(true);
+            ucSceneText.InitializeEditor(true);
+
+            ucBodyText.Editor.ModifiedChanged += EditorModifiedChanged;
+            ucSynopsisText.Editor.ModifiedChanged += EditorModifiedChanged;
+            ucConceptText.Editor.ModifiedChanged += EditorModifiedChanged;
+            ucOutcomeText.Editor.ModifiedChanged += EditorModifiedChanged;
+            ucSceneText.Editor.ModifiedChanged += EditorModifiedChanged;
+
+            ucBodyText.EditorHandler = this;
+            ucSynopsisText.EditorHandler = this;
+            ucConceptText.EditorHandler = this;
+            ucOutcomeText.EditorHandler = this;
+            ucSceneText.EditorHandler = this;
         }
 
         // ● scenes  
@@ -170,7 +181,7 @@
                 Chapter.SceneList.Remove(Scene);
                 ReLoadScenes();
 
-                string Message = $"Scene: {Scene.ToString()}. Deleted";
+                string Message = $"Scene: {Scene}. Deleted";
                 LogBox.AppendLine(Message);
             }
             else
@@ -232,9 +243,18 @@
 
                 CurrentScene = lboScenes.SelectedItem as Scene;
                 if (CurrentScene != null)
-                {
-                    ucSceneText.RtfText = CurrentScene.BodyText;
-                    ucSceneText.Editor.Modified = false;
+                { 
+                    ChangingScene = true;
+                    try
+                    {
+                        ucSceneText.RtfText = CurrentScene.BodyText;
+                        ucSceneText.Editor.Modified = false;
+                    }
+                    finally
+                    {
+                        ChangingScene = false;
+                    }
+
                 }
             }
         }
@@ -318,33 +338,33 @@
             {
                 Chapter.BodyText = Editor.Rtf;
                 Chapter.UpdateBodyText();
-                Message = $"Chapter: {Chapter.ToString()}. Body saved";
+                Message = $"Chapter: {Chapter}. Body saved";
             }
             else if (Page == tabSynopsis)
             {
                 Chapter.Synopsis = Editor.Rtf;
                 Chapter.UpdateSynopsis();
-                Message = $"Chapter: {Chapter.ToString()}. Synopsis saved";
+                Message = $"Chapter: {Chapter}. Synopsis saved";
             }
             else if (Page == tabConcept)
             {
                 Chapter.Concept = Editor.Rtf;
                 Chapter.UpdateConcept();
-                Message = $"Chapter: {Chapter.ToString()}. Concept saved";
+                Message = $"Chapter: {Chapter}. Concept saved";
             }                
             else if (Page == tabOutcome)
             {
                 Chapter.Outcome = Editor.Rtf;
                 Chapter.UpdateOutcome();
-                Message = $"Chapter: {Chapter.ToString()}. Outcome saved";
+                Message = $"Chapter: {Chapter}. Outcome saved";
             }
             else if (Page == tabScenes)
             {
-                if (CurrentScene != null)
+                if (CurrentScene != null && !ChangingScene)
                 {
                     CurrentScene.BodyText = Editor.Rtf;
                     CurrentScene.UpdateBodyText();
-                    Message = $"Chapter: {Chapter.ToString()}. - Scene: {CurrentScene.ToString()} saved";
+                    Message = $"Chapter: {Chapter}. - Scene: {CurrentScene} saved";
                 }
             }
 

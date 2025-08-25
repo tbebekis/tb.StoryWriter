@@ -35,13 +35,16 @@
             nudFontSize = new NumericUpDown();
             btnOK = new Button();
             btnCancel = new Button();
+            label1 = new Label();
+            edtAutoSaveSecondsInterval = new NumericUpDown();
             ((ISupportInitialize)nudFontSize).BeginInit();
+            ((ISupportInitialize)edtAutoSaveSecondsInterval).BeginInit();
             SuspendLayout();
             // 
             // chkLoadLast
             // 
             chkLoadLast.AutoSize = true;
-            chkLoadLast.Location = new Point(21, 105);
+            chkLoadLast.Location = new Point(11, 12);
             chkLoadLast.Name = "chkLoadLast";
             chkLoadLast.Size = new Size(170, 19);
             chkLoadLast.TabIndex = 0;
@@ -51,7 +54,7 @@
             // chkAutoSave
             // 
             chkAutoSave.AutoSize = true;
-            chkAutoSave.Location = new Point(21, 130);
+            chkAutoSave.Location = new Point(11, 37);
             chkAutoSave.Name = "chkAutoSave";
             chkAutoSave.Size = new Size(206, 19);
             chkAutoSave.TabIndex = 4;
@@ -61,7 +64,7 @@
             // lblFontFamily
             // 
             lblFontFamily.AutoSize = true;
-            lblFontFamily.Location = new Point(63, 32);
+            lblFontFamily.Location = new Point(142, 107);
             lblFontFamily.Name = "lblFontFamily";
             lblFontFamily.Size = new Size(31, 15);
             lblFontFamily.TabIndex = 5;
@@ -69,20 +72,19 @@
             // 
             // cboFontFamily
             // 
-            cboFontFamily.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cboFontFamily.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             cboFontFamily.AutoCompleteSource = AutoCompleteSource.ListItems;
             cboFontFamily.DropDownStyle = ComboBoxStyle.DropDownList;
             cboFontFamily.FormattingEnabled = true;
-            cboFontFamily.Location = new Point(100, 29);
+            cboFontFamily.Location = new Point(179, 104);
             cboFontFamily.Name = "cboFontFamily";
-            cboFontFamily.Size = new Size(312, 23);
+            cboFontFamily.Size = new Size(255, 23);
             cboFontFamily.TabIndex = 6;
             // 
             // lblFontSize
             // 
             lblFontSize.AutoSize = true;
-            lblFontSize.Location = new Point(63, 60);
+            lblFontSize.Location = new Point(451, 106);
             lblFontSize.Name = "lblFontSize";
             lblFontSize.Size = new Size(27, 15);
             lblFontSize.TabIndex = 7;
@@ -90,18 +92,18 @@
             // 
             // nudFontSize
             // 
-            nudFontSize.Location = new Point(100, 58);
+            nudFontSize.Location = new Point(488, 104);
             nudFontSize.Maximum = new decimal(new int[] { 72, 0, 0, 0 });
             nudFontSize.Minimum = new decimal(new int[] { 8, 0, 0, 0 });
             nudFontSize.Name = "nudFontSize";
             nudFontSize.Size = new Size(80, 23);
             nudFontSize.TabIndex = 8;
-            nudFontSize.Value = new decimal(new int[] { 14, 0, 0, 0 });
+            nudFontSize.Value = new decimal(new int[] { 13, 0, 0, 0 });
             // 
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(262, 155);
+            btnOK.Location = new Point(427, 156);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(80, 32);
             btnOK.TabIndex = 9;
@@ -112,12 +114,31 @@
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new Point(344, 155);
+            btnCancel.Location = new Point(509, 156);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(80, 32);
             btnCancel.TabIndex = 10;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(10, 77);
+            label1.Name = "label1";
+            label1.Size = new Size(163, 15);
+            label1.TabIndex = 11;
+            label1.Text = "Auto-Save Interval in seconds";
+            // 
+            // edtAutoSaveSecondsInterval
+            // 
+            edtAutoSaveSecondsInterval.Location = new Point(179, 73);
+            edtAutoSaveSecondsInterval.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
+            edtAutoSaveSecondsInterval.Minimum = new decimal(new int[] { 10, 0, 0, 0 });
+            edtAutoSaveSecondsInterval.Name = "edtAutoSaveSecondsInterval";
+            edtAutoSaveSecondsInterval.Size = new Size(68, 23);
+            edtAutoSaveSecondsInterval.TabIndex = 12;
+            edtAutoSaveSecondsInterval.Value = new decimal(new int[] { 10, 0, 0, 0 });
             // 
             // AppSettingDialog
             // 
@@ -125,7 +146,9 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(430, 193);
+            ClientSize = new Size(595, 194);
+            Controls.Add(edtAutoSaveSecondsInterval);
+            Controls.Add(label1);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
             Controls.Add(nudFontSize);
@@ -142,10 +165,14 @@
             StartPosition = FormStartPosition.CenterParent;
             Text = "Application Settings";
             ((ISupportInitialize)nudFontSize).EndInit();
+            ((ISupportInitialize)edtAutoSaveSecondsInterval).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
+
+        private Label label1;
+        private NumericUpDown edtAutoSaveSecondsInterval;
     }
 }
