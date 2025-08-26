@@ -1,20 +1,11 @@
 ﻿namespace StoryWriter
 {
-
     /// <summary>
-    /// Represents a component or a group of components in a hierarchical structure.
-    /// <para>A component may represent a group, a sub-group or an actual component. These two are the only group levels allowed.</para>
-    /// <para>A group may have 'Person` as its name where its sub-groups could be `Character` or `Historic`.</para>
+    /// Represents a component.
     /// <para>An actual component may represent a character, a location, an item, an event, etc. and it is child to a group or sub-group.</para>
     /// </summary>
-    public class Component
+    public class Component : BaseEntity
     {
-        // ● construction
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public Component() { }
-
         // ● public
         /// <summary>
         /// Returns the name of this instance.
@@ -23,7 +14,6 @@
         {
             return Name;
         }
-
         /// <summary>
         /// Builds a dictionary of properties of this instance for database operations.
         /// </summary>
@@ -31,10 +21,10 @@
         {
             var Dict = new Dictionary<string, object>();
             Dict["Id"] = Id;
-            Dict["ParentId"] = ParentId;
             Dict["Name"] = Name;
-            Dict["IsGroup"] = IsGroup ? 1 : 0;
-            Dict["Notes"] = Notes;
+            Dict["Group"] = Group;
+            Dict["SubGroup"] = SubGroup;
+            Dict["BodyText"] = BodyText;
             return Dict;
         }
         /// <summary>
@@ -42,11 +32,11 @@
         /// </summary>
         public void LoadFrom(DataRow Row)
         {
-            this.Id = Row.AsString("Id");
-            this.ParentId = Row.AsString("ParentId");
+            this.Id = Row.AsString("Id");            
             this.Name = Row.AsString("Name");
-            this.IsGroup = Row.AsBoolean("IsGroup");       
-            this.Notes = Row.AsString("Notes");            
+            this.Group = Row.AsString("Group");
+            this.SubGroup = Row.AsString("SubGroup");
+            this.BodyText = Row.AsString("BodyText");
         }
 
         /// <summary>
@@ -54,18 +44,17 @@
         /// </summary>
         public bool Insert()
         {
-            if (App.CurrentProject.FlatComponentList.Any(item => item.Name.IsSameText(this.Name)))
+            if (App.CurrentProject.ComponentList.Any(item => item.Name.IsSameText(this.Name)))
             {
                 App.ErrorBox($"A component with the name '{this.Name}' already exists.");
                 return false;
             }
 
-            string SqlText = $"insert into {Project.SComponent} (Id, ParentId, Name, IsGroup, Notes) values (:Id, :ParentId, :Name, :IsGroup, :Notes)";
-            var Params = this.ToDictionary();
-            App.SqlStore.ExecSql(SqlText, Params);
+            string sqlText = $"INSERT INTO {Project.SComponent} (Id, Name, Group, SubGroup, BodyText) VALUES (:Id, :Name, :Group, :SubGroup, :BodyText)";            
+            var parameters = this.ToDictionary(); // see helper below
+            App.SqlStore.ExecSql(sqlText, parameters);
 
-            App.CurrentProject.AddComponentToLists(this);
-
+            App.CurrentProject.ComponentList.Add(this);
             return true;
         }
         /// <summary>
@@ -73,15 +62,15 @@
         /// </summary>
         public bool Update()
         {
-            if (App.CurrentProject.FlatComponentList.Any(item => item.Name.IsSameText(this.Name) && item.Id != this.Id))
+            if (App.CurrentProject.ComponentList.Any(item => item.Name.IsSameText(this.Name) && item.Id != this.Id))
             {
                 App.ErrorBox($"A component with the name '{this.Name}' already exists.");
                 return false;
             }
 
-            string SqlText = $"update {Project.SComponent} set ParentId = :ParentId,  Name = :Name, IsGroup = :IsGroup, Notes = :Notes where Id = :Id";
-            var Params = this.ToDictionary();
-            App.SqlStore.ExecSql(SqlText, Params);
+            string sqlText = $"UPDATE {Project.SComponent} SET Name = :Name, Group = :Group, SubGroup = :SubGroup, BodyText = :BodyText WHERE Id = :Id";            
+            var parameters = this.ToDictionary(); // see helper below
+            App.SqlStore.ExecSql(sqlText, parameters);
 
             return true;
         }
@@ -97,101 +86,43 @@
             var Params = this.ToDictionary();
             App.SqlStore.ExecSql(SqlText, Params);
 
-            App.CurrentProject.RemoveComponentFromLists(this);            
+            App.CurrentProject.ComponentList.Remove(this);
 
             return true;
         }
 
-        /// <summary>
-        /// Returns true if this Node has no parent (is a root node).
-        /// </summary>
-        public bool HasNoParent() => string.IsNullOrWhiteSpace(ParentId);
-        /// <summary>
-        /// Returns true if this Node has any child nodes that are groups, or if any of its child nodes have groups.
-        /// </summary>
-        public bool HasGroups()
-        {
-            foreach (var Child in Children)
-            {
-                if (Child.IsGroup || Child.HasGroups())
-                    return true;
-            }
-            return false;
-        }
-        /// <summary>
-        /// Returns true if this Node can have a new group added as child.
-        /// </summary>
-        public bool CanAddGroup()
-        {
-            return IsGroup && Level == 0;
-        }
-        /// <summary>
-        /// Returns true if this Node can have a new component added as child.
-        /// </summary>
-        public bool CanAddComponent()
-        {
-            return IsGroup && !HasGroups();
-        }
- 
         // ● properties
         /// <summary>
-        /// The unique identifier of this instance.
+        /// The name of the group this instance belongs to, e.g. Planet
         /// </summary>
-        public string Id { get; set; }
+        public string Group { get; set; }
         /// <summary>
-        /// The unique identifier of the parent instance, or empty if this instance has no parent.
+        /// The name of the subgroup this instance belongs to, e.g. Planet
         /// </summary>
-        public string ParentId { get; set; }
+        public string SubGroup { get; set; }
         /// <summary>
-        /// The name of this instance. Must be unique across all instances.
+        /// The text of this instance.  
         /// </summary>
-        public string Name { get; set; }
-        /// <summary>
-        /// True if this instance is a group (can have child groups or components).
-        /// </summary>
-        public bool IsGroup { get; set; }
-        /// <summary>
-        /// The notes of this instance. Used with actual components, not groups.
-        /// </summary>
-        public string Notes { get; set; }
+        public string BodyText { get; set; }
 
-        /// <summary>
-        /// Returns true if this Node has child nodes.
-        /// </summary>
-        public bool HasChildNodes => Children.Count > 0;
-        /// <summary>
-        /// Returns the level of this Node. A root node has level 0, its children have level 1 and so on.
-        /// </summary>
-        public int Level => Parent == null ? 0 : Parent.Level + 1;
-        /// <summary>
-        /// Returns the index of this Node in the list of its parent, if any, else -1
-        /// </summary>
-        public int Index => Parent == null ? -1 : Parent.Children.IndexOf(this);
-        /// <summary>
-        /// Returns the total number of Nodes of this node and its child nodes.
-        /// </summary>
-        public int TotalCount
-        {
-            get
-            {
-                int Result = Children.Count;
-                foreach (var Child in Children)
-                    Result += Child.TotalCount;
-                return Result;
-            }
-        }
-
-        /// <summary>
-        /// The parent of this instance, or null if this instance has no parent.
-        /// </summary>
-        public Component Parent { get; set; }
-        /// <summary>
-        /// The list of child instances of this instance.
-        /// </summary>
-        public List<Component> Children { get; set; } = new List<Component>();
         /// <summary>
         /// Returns the title of this instance.
         /// </summary>
-        public string Title => Parent != null ? $"{Parent.Name} > {Name}" : Name;
+        public string Title
+        {
+            get
+            {
+                string Result = Name;
+
+                if (!string.IsNullOrWhiteSpace(Group) && !string.IsNullOrWhiteSpace(SubGroup))
+                    Result = $"{Group}.{SubGroup} > {Name}";
+                else if (!string.IsNullOrWhiteSpace(Group) && string.IsNullOrWhiteSpace(SubGroup))
+                    Result = $"{Group} > {Name}";
+                else if (string.IsNullOrWhiteSpace(Group) && !string.IsNullOrWhiteSpace(SubGroup))
+                    Result = $"{SubGroup} > {Name}";
+
+                return Result;
+            }
+        }
     }
 }

@@ -16,7 +16,7 @@
             TitleText = this.Component.Title;
             ParentTabPage.Text = TitleText;
 
-            ucComponentText.RtfText = this.Component.Notes;       
+            ucComponentText.RtfText = this.Component.BodyText;       
             App.ZoomFactorChanged += (e, a) => ucComponentText.Editor.ZoomFactor = (float)App.ZoomFactor;
 
             Ui.RunOnce((Info) => {
@@ -74,7 +74,7 @@
         }
         public void SaveEditorText(RichTextBox Editor)
         {
-            Component.Notes = Editor.Rtf;
+            Component.BodyText = Editor.Rtf;
             Component.Update();
             Editor.Modified = false;
             ucComponentText.Editor.Modified = false;

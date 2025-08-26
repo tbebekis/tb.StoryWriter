@@ -23,6 +23,11 @@
             this.ItemType = Type;
         }
 
+        public override string ToString()
+        {
+            return $"{ItemType} - {Name}";
+        }
+
 
         /// <summary>
         /// Indicates the type of a link, i.e. group, subgroup, component, chapter, scene, tag

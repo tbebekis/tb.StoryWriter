@@ -6,7 +6,7 @@
         /// <summary>
         /// It is used by the InstanceManager to control application instancing
         /// </summary>                                                              
-        const string AppUniqueId = "59C64121-4F0C-49B6-BA3A-52C8E87D329C";
+        const string AppUniqueId = "{F58979E6-6DFD-4F95-9250-638D289E8BFA}";
 
         /// <summary>
         /// this is of a little use because it actually is a notification about an exception, NOT a catcher. 

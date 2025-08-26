@@ -15,6 +15,7 @@ namespace StoryWriter.Export
             Project Project;
             RichTextBox Editor;
             StringBuilder SB;
+            static readonly string[] NewLines = new[] { "\r\n", "\r", "\n" };
 
             void AppendLine(string Text) => SB.AppendLine(Text);
             void AppendHeader(string Text) => AppendLine($"# {Text}");
@@ -26,19 +27,19 @@ namespace StoryWriter.Export
                 Editor.Rtf = RtfText;
                 return Editor.Text;
             }
-            string[] ToLines(string Text) => Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            string[] ToLines(string Text) => Text.Split(NewLines, StringSplitOptions.None);
             public string ReplaceStartingBullet(string Text)
             {
                 string S = Text.TrimStart();
-                if (S.StartsWith("●"))
+                if (S.StartsWith('●'))
                 {
-                    int i = Text.IndexOf("●");
+                    int i = Text.IndexOf('●');
                     Text = Text.Remove(i, "●".Length);
                     Text = Text.Insert(i, "-");
                 }
-                else if (S.StartsWith("•"))
+                else if (S.StartsWith('•'))
                 {
-                    int i = Text.IndexOf("•");
+                    int i = Text.IndexOf('•');
                     Text = Text.Remove(i, "•".Length);
                     Text = Text.Insert(i, "-");
                 }
@@ -91,15 +92,15 @@ namespace StoryWriter.Export
 
                 foreach (var Chapter in Project.ChapterList)
                 {
-                    AppendHeader2($"{Chapter.ToString()} - Synopsis");
+                    AppendHeader2($"{Chapter} - Synopsis");
                     EmptyLine();
                     ProcessRtf(Chapter.Synopsis);
 
-                    AppendHeader2($"{Chapter.ToString()} - Concept");
+                    AppendHeader2($"{Chapter} - Concept");
                     EmptyLine();
                     ProcessRtf(Chapter.Concept);
 
-                    AppendHeader2($"{Chapter.ToString()} - Outcome");
+                    AppendHeader2($"{Chapter} - Outcome");
                     EmptyLine();
                     ProcessRtf(Chapter.Outcome); 
                 }
@@ -115,12 +116,12 @@ namespace StoryWriter.Export
 
                 foreach (var Chapter in Project.ChapterList)
                 {
-                    AppendHeader2($"{Chapter.ToString()} - SCENES");
+                    AppendHeader2($"{Chapter} - SCENES");
                     EmptyLine();
 
                     foreach (var Scene in Chapter.SceneList)
                     {
-                        AppendHeader3($"{Scene.ToString()}");
+                        AppendHeader3($"{Scene}");
                         EmptyLine();
                         ProcessRtf(Scene.BodyText);
                     }
@@ -135,14 +136,11 @@ namespace StoryWriter.Export
                 EmptyLine();
                 EmptyLine();
 
-                foreach (Component Component in Project.FlatComponentList)
+                foreach (Component Component in Project.ComponentList)
                 {
-                    if (!Component.IsGroup)
-                    {
-                        AppendHeader2(Component.Title);
-                        EmptyLine();
-                        ProcessRtf(Component.Notes);
-                    }
+                    AppendHeader2(Component.Title);
+                    EmptyLine();
+                    ProcessRtf(Component.BodyText);
                 }
 
                 EmptyLine();
@@ -155,7 +153,7 @@ namespace StoryWriter.Export
 
                 this.Project = Project;
 
-                using (RichTextBox RTB = new RichTextBox())
+                using (RichTextBox RTB = new ())
                 {
                     Editor = RTB;
 
@@ -177,7 +175,7 @@ namespace StoryWriter.Export
 
         static public void Export(Project Project, string FilePath)
         {
-            using (RichTextBox Editor = new RichTextBox())
+            using (RichTextBox Editor = new ())
             {
                 ExportContext Context = new ();
                 StringBuilder SB = Context.Execute(Project);

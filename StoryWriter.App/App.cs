@@ -191,7 +191,7 @@ Do you want to continue?
             Settings.LastProject = ProjectName;
             Settings.Save();
 
-            SideBarPagerHandler.ShowPage(typeof(UC_ComponentTree), nameof(UC_ComponentTree), null);
+            SideBarPagerHandler.ShowPage(typeof(UC_ComponentList), nameof(UC_ComponentList), null);
             SideBarPagerHandler.ShowPage(typeof(UC_ChapterList), nameof(UC_ChapterList), null);
 
             Message = $"Project '{ProjectName}' opened.";

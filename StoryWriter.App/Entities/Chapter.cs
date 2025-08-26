@@ -3,7 +3,7 @@
     /// <summary>
     /// Book chapter data model
     /// </summary>
-    public class Chapter
+    public class Chapter: BaseEntity
     {
         // ● construction
         /// <summary>
@@ -118,7 +118,7 @@
         /// </summary>
         public bool Delete()
         {
-            if (!App.QuestionBox($"Are you sure you want to delete the chapter '{this.ToString()}'?"))
+            if (!App.QuestionBox($"Are you sure you want to delete the chapter '{this}'?"))
                 return false;
 
             string sqlText = $"DELETE FROM {Project.SChapter} WHERE Id = :Id";
@@ -230,11 +230,7 @@
         /// </summary>
         public Project Project => App.CurrentProject;
 
-        public string Id { get; set; }
-        /// <summary>
-        /// Chapter title (unique)
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
+ 
         /// <summary>
         /// Short summary / plot abstraction
         /// </summary>

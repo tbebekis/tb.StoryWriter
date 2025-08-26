@@ -1,21 +1,53 @@
 ﻿namespace StoryWriter
 {
-    public class Project
+    public class Project : BaseEntity
     {
         // ● constants
         static public readonly string SComponent = "Component";
+        static public readonly string SGroup = "Group";
+        static public readonly string SSubGroup = "SubGroup";
         static public readonly string SChapter = "Chapter";
         static public readonly string SScene = "Scene";
+
+        void LoadGroups()
+        {
+            GroupList.Clear();
+
+            string SqlText = $"SELECT * FROM {SGroup}";
+
+            DataTable Table = App.SqlStore.Select(SqlText);
+
+            foreach (DataRow Row in Table.Rows)
+            {
+                Group item = new();
+                item.LoadFrom(Row);
+                GroupList.Add(item);
+            }
+        }
+        void LoadSubGroups()
+        {
+            SubGroupList.Clear();
+
+            string SqlText = $"SELECT * FROM {SSubGroup}";
+
+            DataTable Table = App.SqlStore.Select(SqlText);
+
+            foreach (DataRow Row in Table.Rows)
+            {
+                SubGroup item = new();
+                item.LoadFrom(Row);
+                SubGroupList.Add(item);
+            }
+        }
 
         /// <summary>
         /// Loads all components from the database into FlatComponentList and TreeComponentList.
         /// </summary>
         void LoadComponents()
         {
-            FlatComponentList.Clear();
-            TreeComponentList.Clear();
+            ComponentList.Clear();
 
-            string SqlText = "SELECT * FROM Component";
+            string SqlText = $"SELECT * FROM {SComponent}";
 
             DataTable Table = App.SqlStore.Select(SqlText);             
 
@@ -23,20 +55,8 @@
             {
                 Component item = new ();
                 item.LoadFrom(Row);
-                FlatComponentList.Add(item);
-            }
-
-            var childsHash = FlatComponentList.ToLookup(item => item.ParentId);
-
-            foreach (var item in FlatComponentList)
-            {
-                item.Children = childsHash[item.Id].ToList();
-                foreach (var Child in item.Children)
-                    Child.Parent = item;
-            }
-
-            TreeComponentList = FlatComponentList.Where(item => item.HasNoParent())
-                    .ToList();
+                ComponentList.Add(item);
+            } 
         }
         /// <summary>
         /// Loads all chapters and their associated scenes from the database into ChapterList.
@@ -151,81 +171,71 @@
         }
 
         // ● schema
+        static public void AddGroupTable(SchemaVersion sv)
+        {
+            string TableName = SGroup;
+            string SqlText = $@"
+create table {TableName} (
+    Id						{SysConfig.PrimaryKeyStr()} 
+    ,Name                   @NVARCHAR(128)       @NOT_NULL  
+    ,constraint UK_{TableName}_00 unique (Name)
+)
+";
+            sv.AddTable(SqlText);
+
+            string[] Groups = {"Character", "Location", "People", "Trait", "Event", "Artifact" };
+ 
+            foreach (var Item in Groups)
+            {
+                SqlText = $"insert into {TableName} (Id, Name) VALUES ('{Sys.GenId(UseBrackets:false)}', ('{Item}'))";
+                sv.AddStatementAfter(SqlText);
+            }
+        }
+        static public void AddSubGroupTable(SchemaVersion sv)
+        {
+            string TableName = SSubGroup;
+            string SqlText = $@"
+create table {TableName} (
+    Id						{SysConfig.PrimaryKeyStr()} 
+    ,Name                   @NVARCHAR(128)       @NOT_NULL  
+    ,constraint UK_{TableName}_00 unique (Name)
+)
+";
+            sv.AddTable(SqlText);
+
+            string[] SubGroups = {"Historic", "Planet", "Country", "City", "Mountain", "See" };
+
+            foreach (var Item in SubGroups)
+            {
+                SqlText = $"insert into {TableName} (Id, Name) VALUES  ('{Sys.GenId(UseBrackets: false)}', ('{Item}'))";
+                sv.AddStatementAfter(SqlText);
+            }
+        }
+
         /// <summary>
         /// Adds the Component table to the schema version and populates it with initial data.
         /// </summary>
-        static public void AddTableComponent(SchemaVersion sv)
+        static public void AddComponentTable(SchemaVersion sv)
         {
             string TableName = SComponent;
             string SqlText = $@"
 create table {TableName} (
     Id						{SysConfig.PrimaryKeyStr()} 
-    ,ParentId               {SysConfig.ForeignKeyStr()}
     ,Name                   @NVARCHAR(128)       @NOT_NULL  
-    ,IsGroup                @BOOL default 0      @NOT_NULL  
-    ,Notes                  @BLOB_TEXT           @NULL    
+    ,Group                  @NVARCHAR(128)       @NOT_NULL  
+    ,SubGroup               @NVARCHAR(128)       @NOT_NULL  
+    ,BodyText               @BLOB_TEXT           @NULL    
 
     ,constraint UK_{TableName}_00 unique (Name)
 )
 ";
             sv.AddTable(SqlText);
 
-            // main component groups
-            string PersonId = "4739BDAF-07F2-46AE-A694-8AE2B552FF5D";
-            string LocationId = "5E16404A-21AC-49F1-A26F-EF727BAD68B7";
-            string PeoplesId = "516D25EC-A64C-4367-9877-9951F07177A7";
-            string CultureId = "C8B1F946-587E-40A3-99ED-BD924614C4F9";
-            string HistoricEventId = "5685EA42-158A-42F0-B9D5-CC5FDF2BE1A5";
-            string ArtifactId = "3EBFC3DD-B9B3-4DCB-9449-D016213D5BE8";
-
-            // sub groups of Person
-            string CharacterId = "F5805305-E984-4466-BD7A-7B34AF9CF5C3";
-            string HistoricId = "BB54E43B-5984-4924-AFE2-0BEC72490F61";
-
-            // sub groups of Location
-            string PlanetId = "16F21892-9873-4341-81A1-FDC2E17EA9D1";
-            string SatelliteId = "54886725-B858-4510-ACCA-86AEF20B59EF";
-            string ContinentId = "77DF037A-4D5A-4F16-BDFD-9B8D5CFE9046";
-            string CountryId = "0C4F812B-8A04-43AB-B1DF-EFB1EE6B8A11";
-            string CityId = "F9E83741-223C-4F49-B4C3-83E4B897306B";
-            string VillageId = "EEFAF85A-B176-4248-B755-F042F5D7AEEF";
-            string MountainId = "E4613FBB-2F8D-4DA2-B9CC-6B961672D1CC";
-            string SeeId = "BA787B2B-8FFD-4695-89DE-A73FC6C691FB";
-            string RiverId = "B6F78ADA-FF9A-43F0-9DBE-A62ECA925A3A";
-            string LakeId = "05567AB2-C30A-4362-91EC-D7BCED5E6BAE";
-            string VolcanoId = "B68756F6-5CF1-48C7-9370-33DEB3E075F4";
-
-            string CreaateInsertSql(string Id, string ParentId, string Name, string Notes = "")
-            {
-                return $"insert into {TableName} (Id, ParentId, Name, IsGroup, Notes) values ('{Id}', '{ParentId}', '{Name}', 1, '{Notes}')";
-            }
- 
-            sv.AddStatementAfter(CreaateInsertSql(PersonId, "", "Person"));
-            sv.AddStatementAfter(CreaateInsertSql(CharacterId, PersonId, "Character"));
-            sv.AddStatementAfter(CreaateInsertSql(HistoricId, PersonId, "Historic"));
-
-            sv.AddStatementAfter(CreaateInsertSql(LocationId, "", "Location")); 
-            sv.AddStatementAfter(CreaateInsertSql(PlanetId, LocationId, "Planet"));
-            sv.AddStatementAfter(CreaateInsertSql(SatelliteId, LocationId, "Satellite"));
-            sv.AddStatementAfter(CreaateInsertSql(ContinentId, LocationId, "Continent"));
-            sv.AddStatementAfter(CreaateInsertSql(CountryId, LocationId, "Country"));
-            sv.AddStatementAfter(CreaateInsertSql(CityId, LocationId, "City"));
-            sv.AddStatementAfter(CreaateInsertSql(VillageId, LocationId, "Village"));
-            sv.AddStatementAfter(CreaateInsertSql(MountainId, LocationId, "Mountain"));
-            sv.AddStatementAfter(CreaateInsertSql(SeeId, LocationId, "See"));
-            sv.AddStatementAfter(CreaateInsertSql(RiverId, LocationId, "River"));
-            sv.AddStatementAfter(CreaateInsertSql(LakeId, LocationId, "Lake"));
-            sv.AddStatementAfter(CreaateInsertSql(VolcanoId, LocationId, "Volcano"));
-
-            sv.AddStatementAfter(CreaateInsertSql(PeoplesId, "", "Peoples"));
-            sv.AddStatementAfter(CreaateInsertSql(CultureId, "", "Culture"));
-            sv.AddStatementAfter(CreaateInsertSql(HistoricEventId, "", "Historic Event"));
-            sv.AddStatementAfter(CreaateInsertSql(ArtifactId, "", "Artifact"));
         }
         /// <summary>
         /// Adds the Chapter table to the schema version.
         /// </summary>
-        static public void AddTableChapter(SchemaVersion sv)
+        static public void AddChapterTable(SchemaVersion sv)
         {
             string TableName = SChapter;
 
@@ -249,7 +259,7 @@ create table {TableName} (
         /// <summary>
         /// Adds the Scene table to the schema version.
         /// </summary>
-        static public void AddTableScene(SchemaVersion sv)
+        static public void AddSceneTable(SchemaVersion sv)
         {
             string TableName = SScene;
 
@@ -287,9 +297,9 @@ create table {TableName} (
             Schema ProjectSchema = Schemas.FindOrAdd(Sys.APPLICATION, Sys.DEFAULT); //Name
             SchemaVersion Version  = ProjectSchema.FindOrAdd(Version: 1);
  
-            AddTableComponent(Version);
-            AddTableChapter(Version);
-            AddTableScene(Version);
+            AddComponentTable(Version);
+            AddChapterTable(Version);
+            AddSceneTable(Version);
 
             Schemas.Execute();
 
@@ -313,41 +323,37 @@ create table {TableName} (
             LoadChapters();
         }
 
-        // ● components
+        // ● exists
         /// <summary>
-        /// True if a group/component exists by name
+        /// True if a group exists by name
+        /// </summary>
+        public bool GroupExists(string Name, string Id = "")
+        {
+            if (string.IsNullOrWhiteSpace(Id))
+                return GroupList.FirstOrDefault(item => item.Name.IsSameText(Name)) != null;
+
+            return GroupList.FirstOrDefault(item => item.Name.IsSameText(Name) && item.Id == Id) != null;
+        }
+        /// <summary>
+        /// True if a sub-group exists by name
+        /// </summary>
+        public bool SubGroupExists(string Name, string Id = "")
+        {
+            if (string.IsNullOrWhiteSpace(Id))
+                return SubGroupList.FirstOrDefault(item => item.Name.IsSameText(Name)) != null;
+
+            return SubGroupList.FirstOrDefault(item => item.Name.IsSameText(Name) && item.Id == Id) != null;
+        }
+        /// <summary>
+        /// True if a component exists by name
         /// </summary>
         public bool ComponentExists(string Name, string Id = "")
         {
             if (string.IsNullOrWhiteSpace(Id))
-                return FlatComponentList.FirstOrDefault(item => item.Name.IsSameText(Name)) != null;
+                return ComponentList.FirstOrDefault(item => item.Name.IsSameText(Name)) != null;
 
-            return FlatComponentList.FirstOrDefault(item => item.Name.IsSameText(Name) && item.Id == Id) != null;
+            return ComponentList.FirstOrDefault(item => item.Name.IsSameText(Name) && item.Id == Id) != null;
         }
-        /// <summary>
-        /// Adds a group/component either to its parent children, if it has a parent, or to the main tree component list.
-        /// </summary>
-        public void AddComponentToLists(Component Comp)
-        {
-            FlatComponentList.Add(Comp);
-            if (Comp.Parent != null)
-                Comp.Parent.Children.Add(Comp);
-            else
-                TreeComponentList.Add(Comp);
-        }
-        /// <summary>
-        /// Removes a group/component either from its parent children, if it has a parent, or from the main tree component list.
-        /// </summary>
-        public void RemoveComponentFromLists(Component Comp)
-        {
-            FlatComponentList.Remove(Comp);
-            if (Comp.Parent != null)
-                Comp.Parent.Children.Remove(Comp);
-            else
-                TreeComponentList.Remove(Comp);
-        }
-
-        // ● chapters
         /// <summary>
         /// True if a chapter exists by name
         /// </summary>
@@ -358,6 +364,8 @@ create table {TableName} (
 
             return ChapterList.FirstOrDefault(item => item.Name.IsSameText(Name) && item.Id == Id) != null;
         }
+
+        // ● miscs
         public void RenumberChapters()
         {
             int OrderIndex = 0;
@@ -372,6 +380,38 @@ create table {TableName} (
         }
  
         // ● links
+        public List<LinkItem> SearchItems(string Term)
+        {
+            List<LinkItem> TempLinkList = new ();
+
+            if (!string.IsNullOrWhiteSpace(Term))
+            {
+                void AddLinks(IEnumerable<BaseEntity> EntityList, ItemType ItemType)
+                {
+                    var Entities = EntityList.Where(item => item.Name.ContainsText(Term));
+                    if (Entities.Any())
+                    {
+                        foreach (var Item in Entities)
+                        {
+                            var Link = new LinkItem(ItemType, Item.Name, Item);
+                            TempLinkList.Add(Link);
+                        }
+                    }
+                }
+
+                AddLinks(GroupList.Cast<BaseEntity>(), ItemType.Group);
+                AddLinks(SubGroupList.Cast<BaseEntity>(), ItemType.SubGroup);
+                AddLinks(ComponentList.Cast<BaseEntity>(), ItemType.Component);
+                AddLinks(ChapterList.Cast<BaseEntity>(), ItemType.Chapter);
+                AddLinks(GroupList.Cast<BaseEntity>(), ItemType.Group);
+                foreach (var Chapter in ChapterList)
+                    AddLinks(Chapter.SceneList.Cast<BaseEntity>(), ItemType.Scene);
+            }
+
+            
+            return TempLinkList;
+
+        }
         public void OpenLinkItem(LinkItem LinkItem)
         {
             switch (LinkItem.ItemType)
@@ -390,28 +430,7 @@ create table {TableName} (
             if (string.IsNullOrWhiteSpace(Term))
                 return;
 
-            List<LinkItem> TempLinkList = new List<LinkItem>();
-
-            var Components = FlatComponentList.Where(item => !item.IsGroup && item.Name.ContainsText(Term));
-            if (Components.Count() > 0)
-            {
-                foreach (var Component in Components)
-                { 
-                    var Link = new LinkItem(ItemType.Component, Component.Name, Component);                     
-                    TempLinkList.Add(Link);
-                }
-            }
-
-            var Chapters = ChapterList.Where(item => item.IsLinkOf(Term));
-            if (Chapters.Count() > 0)
-            {
-                foreach (var Chapter in Chapters)
-                {
-                    var Link = new LinkItem(ItemType.Chapter, Chapter.Name, Chapter);
-                    TempLinkList.Add(Link);
-                }
-            }
-
+            List<LinkItem> TempLinkList = SearchItems(Term);   
 
             if (TempLinkList.Count == 0)
             {
@@ -424,23 +443,21 @@ create table {TableName} (
                 OpenLinkItem(LinkItem);
             }
 
-
         }
 
-        // ● properties
+        // ● properties 
         /// <summary>
-        /// The name of the project/book
+        /// The list of groups of this project
         /// </summary>
-        public string Name { get; private set; }
-
+        public List<Group> GroupList { get; private set; } = new List<Group>();
         /// <summary>
-        /// A list of components in a flat structure.
+        /// The list of sub-groups of this project
         /// </summary>
-        public List<Component> FlatComponentList { get; private set; } = new List<Component>();
+        public List<SubGroup> SubGroupList { get; private set; } = new List<SubGroup>();
         /// <summary>
-        /// A hierarchical tree of components.
+        /// The list of components of this project
         /// </summary>
-        public List<Component> TreeComponentList { get; private set; } = new List<Component>();
+        public List<Component> ComponentList { get; private set; } = new List<Component>();
         /// <summary>
         /// A list of chapters in the project.
         /// </summary>

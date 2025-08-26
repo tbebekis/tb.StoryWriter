@@ -3,7 +3,7 @@
     /// <summary>
     /// Scene of the book.
     /// </summary>
-    public class Scene
+    public class Scene : BaseEntity
     {
 
         // ● construction
@@ -127,7 +127,7 @@
         /// </summary>
         public bool Delete()
         {
-            if (!App.QuestionBox($"Are you sure you want to delete the scene '{this.ToString()}'?"))
+            if (!App.QuestionBox($"Are you sure you want to delete the scene '{this}'?"))
                 return false;
 
             string sqlText = $"DELETE FROM {Project.SScene} WHERE Id = :Id";
@@ -165,15 +165,11 @@
         /// </summary>
         public Chapter Chapter => App.CurrentProject?.ChapterList.FirstOrDefault(ch => ch.Id == this.ChapterId);
 
-        public string Id { get; set; }
+
         /// <summary>
         /// Foreign key reference to the parent Chapter
         /// </summary>
         public string ChapterId { get; set; }
-        /// <summary>
-        /// Optional scene title (unique)
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
         /// <summary>
         /// Full text body of the scene
         /// </summary>
