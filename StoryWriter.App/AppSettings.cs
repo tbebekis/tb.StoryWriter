@@ -13,5 +13,6 @@
         public int AutoSaveSecondsInterval { get; set; } = 30;
         public string FontFamily { get; set; } = "Times New Roman";
         public int FontSize { get; set; } = 13; 
+        public decimal ZoomFactor { get; set; } = 1.0m;
     }
 }

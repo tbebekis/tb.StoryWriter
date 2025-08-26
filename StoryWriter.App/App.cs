@@ -7,6 +7,7 @@ namespace StoryWriter
         // ● private
         const string SProjectsFolder = "Projects";
         static SqlProvider SqlProvider;
+        static decimal fZoomFactor = 1.0M;
 
         static AutoSaveService AutoSaveService;
         static System.Threading.Lock syncLock = new();
@@ -49,6 +50,8 @@ namespace StoryWriter
 
                 if (!Directory.Exists(ProjectsPath))
                     Directory.CreateDirectory(ProjectsPath);
+
+                ZoomFactor = Settings.ZoomFactor;
 
                 LoadLastProject();
 
@@ -426,6 +429,18 @@ Do you want to continue?
         /// The main form of the application
         /// </summary>
         static public MainForm MainForm { get; private set; }
+        /// <summary>
+        /// The zoom factor to be used by all rich edit boxes in this application
+        /// </summary>
+        static public decimal ZoomFactor
+        {
+            get { return fZoomFactor; }
+            set 
+            {
+                fZoomFactor = value;
+                ZoomFactorChanged?.Invoke(null, EventArgs.Empty);                
+            }
+        }
 
         static public PagerHandler SideBarPagerHandler { get; set; }
         static public PagerHandler ContentPagerHandler { get; set; }
@@ -434,6 +449,7 @@ Do you want to continue?
         // ● events
         static public event EventHandler ProjectClosed;
         static public event EventHandler ProjectOpened;
+        static public event EventHandler ZoomFactorChanged;
 
 
     }

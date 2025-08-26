@@ -16,7 +16,8 @@
             TitleText = this.Component.Title;
             ParentTabPage.Text = TitleText;
 
-            ucComponentText.RtfText = this.Component.Notes;            
+            ucComponentText.RtfText = this.Component.Notes;       
+            App.ZoomFactorChanged += (e, a) => ucComponentText.Editor.ZoomFactor = (float)App.ZoomFactor;
 
             Ui.RunOnce((Info) => {
                 ucComponentText.Editor.Modified = false;

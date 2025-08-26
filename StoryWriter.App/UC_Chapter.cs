@@ -49,7 +49,16 @@
             btnDelete.Click += (s, e) => DeleteScene();             
 
             btnUp.Click += (s, e) => MoveScene(true);
-            btnDown.Click += (s, e) => MoveScene(false); 
+            btnDown.Click += (s, e) => MoveScene(false);
+
+            App.ZoomFactorChanged += (e, a) =>
+            {
+                ucBodyText.Editor.ZoomFactor = (float)App.ZoomFactor;
+                ucSynopsisText.Editor.ZoomFactor = (float)App.ZoomFactor;
+                ucConceptText.Editor.ZoomFactor = (float)App.ZoomFactor;
+                ucOutcomeText.Editor.ZoomFactor = (float)App.ZoomFactor;
+                ucSceneText.Editor.ZoomFactor = (float)App.ZoomFactor;
+            };
 
             ReLoadScenes(); 
             lboScenes.SelectedIndexChanged += (s, e) => SelectedSceneChanged();

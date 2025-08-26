@@ -1,6 +1,4 @@
-﻿using System.Windows.Forms;
-
-namespace StoryWriter
+﻿namespace StoryWriter
 {
     public partial class UC_RichText : UserControl
     {
@@ -11,8 +9,8 @@ namespace StoryWriter
         NumericUpDown nudFontSize;
         ToolStripControlHost hostFontSize;
 
-        NumericUpDown nudZoom;
-        ToolStripControlHost hostZoom;
+        //NumericUpDown nudZoom;
+        //ToolStripControlHost hostZoom;
 
         RichTextBoxListHandler ListHandler;
 
@@ -116,6 +114,7 @@ namespace StoryWriter
             Index++;
             ToolBar.Items.Insert(Index, hostFontSize);
 
+            /*
             // ● Zoom Factor
             nudZoom = new NumericUpDown
             {
@@ -146,15 +145,7 @@ namespace StoryWriter
 
             Index++;
             ToolBar.Items.Insert(Index, hostZoom);
-
- 
-
-            // συγχρονισμός όταν αλλάζει το zoom με άλλο τρόπο
-            //richTextBoxNotes.ZoomFactorChanged += RichTextBoxNotes_ZoomFactorChanged;
-
-
-
-            //ToolBar.Items.Add(new ToolStripLabel("Size"));
+            */
 
         }
         void ResetSelectionToDefault()
@@ -493,7 +484,7 @@ namespace StoryWriter
                 Editor.Rtf = value;
                 Editor.Modified = false;
                 Editor.ZoomFactor = 1;
-                Editor.ZoomFactor = (float)nudZoom.Value;
+                Editor.ZoomFactor = (float)App.ZoomFactor;
 
                 Editor.SelectAll();
                 Editor.SetSelectionParagraphSpacingBefore();

@@ -3,7 +3,8 @@
     public partial class MainForm : Form
     {
         PagerHandler SideBarPagerHandler;
-        PagerHandler ContentPagerHandler; 
+        PagerHandler ContentPagerHandler;
+        
 
         const string STitle = "Story Writer";
 
@@ -34,7 +35,7 @@
             App.ProjectClosed += (s, e) => this.Text = $"{STitle} - [none]"; 
             App.ProjectOpened += (s, e) => this.Text = $"{STitle} - [{App.CurrentProject.Name}]";
 
-            App.Initialize(this);
+            AddToolBarControls();            
 
             btnNewProject.Click += (s, e) => App.CreateNewProject();
             btnOpenProject.Click += (s, e) => App.OpenProject();
@@ -46,7 +47,48 @@
             btnExportToDocx.Click += (s, e) => ExportToFile(btnExportToDocx);
             btnExportToOdt.Click += (s, e) => ExportToFile(btnExportToOdt);
             btnExit.Click += (s, e) => Close();
- 
+
+            App.ZoomFactor = App.Settings.ZoomFactor;
+            App.Initialize(this);
+
+        }
+        void AddToolBarControls()
+        {
+            // ● Zoom Factor
+            NumericUpDown nudZoom = new() 
+            {
+                Minimum = 0.5M,
+                Maximum = 5.0M,
+                DecimalPlaces = 2,
+                Increment = 0.05M,
+                Value = (decimal)App.Settings.ZoomFactor,
+                BorderStyle = BorderStyle.FixedSingle,
+
+            };
+            nudZoom.ValueChanged += (s, e) => 
+            { 
+                App.ZoomFactor = nudZoom.Value;
+                App.Settings.ZoomFactor = nudZoom.Value;
+                App.Settings.Save();
+            };
+
+            ToolStripControlHost hostZoom = new (nudZoom)
+            {
+                AutoSize = false,
+                Width = 50
+            };
+
+            int Index = ToolBar.Items.IndexOf(btnExit);
+
+            Index--;
+            ToolStripSeparator sepZoom = new();
+            ToolBar.Items.Insert(Index, sepZoom);
+
+            Index++;
+            ToolBar.Items.Insert(Index, new ToolStripLabel("Zoom"));
+
+            Index++;
+            ToolBar.Items.Insert(Index, hostZoom);
         }
 
         void ToggleSideBar()
@@ -79,7 +121,7 @@
                 ExportProc = App.ExportCurrentProjectToOdt;
             }
 
-            using (SaveFileDialog dlg = new SaveFileDialog())
+            using (SaveFileDialog dlg = new ())
             {
                 dlg.Filter = Filter;
                 if (dlg.ShowDialog() == DialogResult.OK)
