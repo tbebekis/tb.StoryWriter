@@ -1,4 +1,6 @@
-﻿namespace StoryWriter
+﻿using System.Windows.Forms;
+
+namespace StoryWriter
 {
     public partial class UC_RichText : UserControl
     {
@@ -16,8 +18,12 @@
 
         bool _syncingFromCode;
 
-      
- 
+        CancellationTokenSource _metricsCts;
+        int _lastLength = -1;
+        const int WordsPerPage = 400;
+
+        System.Windows.Forms.Timer timerWordCounter;
+
 
         // ● private
         void ControlInitialize()
@@ -46,6 +52,10 @@
 
             ListHandler = new(Editor, btnBullets, btnNumbers);  // bullet/number list handler
 
+            timerWordCounter = new ();
+            timerWordCounter.Interval = 3 * 1000;
+            timerWordCounter.Tick += async (s, e) => await UpdateWordCounter();
+            timerWordCounter.Start();
 
         }
         void SetEditorFont()
@@ -342,6 +352,41 @@
             }
         }
 
+        async Task UpdateWordCounter()
+        {
+            // Πάρε το κείμενο ΜΙΑ ΦΟΡΑ στο UI thread
+            string txt = Editor.Text;
+
+            // Μικρό optimization: αν δεν άλλαξε μήκος, μην κάνεις τίποτα
+            if (txt.Length == _lastLength) return;
+            _lastLength = txt.Length;
+
+            // Ακύρωσε προηγούμενη μέτρηση (αν τρέχει)
+            _metricsCts?.Cancel();
+            _metricsCts?.Dispose();
+            _metricsCts = new CancellationTokenSource();
+            var token = _metricsCts.Token;
+
+            try
+            {
+                var stats = await TextMetrics.ComputeAsync(txt, WordsPerPage, token);
+                if (token.IsCancellationRequested) return; // προληπτικό
+
+                lblWords.Text = $"{stats.WordCount}";
+                lblPages.Text = $"~{stats.EstimatedPages:0.0}";
+            }
+            catch (OperationCanceledException)
+            {
+                // αθόρυβα — ξεκίνησε νέα μέτρηση εν τω μεταξύ
+            }
+            catch (Exception ex)
+            {
+                // προαιρετικά log
+                /// toolStripStatusLabel1.Text = "—";
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+        }
+
         // ● formatting, find/replace and links
         void ToggleBold()
         {
@@ -419,12 +464,7 @@
             AddToolBarControls();
         }
 
-        // ● public
-        public void SaveText()
-        {
-            if (EditorHandler != null)
-                EditorHandler.SaveEditorText(this.Editor);
-        }
+        // ● public        
         public void InitializeEditor(bool NotesFormattingEnabled)
         {
             Editor.KeyDown += Editor_KeyDown;
@@ -435,14 +475,33 @@
             btnFontColor.Enabled = NotesFormattingEnabled;
             btnBackColor.Enabled = NotesFormattingEnabled;
         }
+        public void SaveText()
+        {
+            if (EditorHandler != null)
+                EditorHandler.SaveEditorText(this.Editor);
+        }
+ 
 
         // ● properties
-        public RichTextBox Editor => edtRichText;
+        public RichTextBoxEx Editor => edtRichText;
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string RtfText
         {
-            get => Editor.Rtf;
-            set => Editor.Rtf = value;
+            get { return Editor.Rtf; }
+            set
+            {               
+                Editor.Rtf = value;
+                Editor.Modified = false;
+                Editor.ZoomFactor = 1;
+                Editor.ZoomFactor = (float)nudZoom.Value;
+
+                Editor.SelectAll();
+                Editor.SetSelectionParagraphSpacingBefore();
+                Editor.SetSelectionParagraphSpacingAfter();
+                Editor.DeselectAll();
+
+                Editor.Refresh();
+            }
         }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public IEditorHandler EditorHandler { get; set; }

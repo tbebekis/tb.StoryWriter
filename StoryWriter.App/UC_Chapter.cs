@@ -246,9 +246,8 @@
                 { 
                     ChangingScene = true;
                     try
-                    {
+                    {                         
                         ucSceneText.RtfText = CurrentScene.BodyText;
-                        ucSceneText.Editor.Modified = false;
                     }
                     finally
                     {

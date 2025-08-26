@@ -14,7 +14,6 @@ namespace StoryWriter
 
         static void AutoSaveProc()
         {
-            //LogBox.AppendLine("AutoSaveProc");
             lock (syncLock)
             {
                 if (DirtyEditors.Count > 0)
@@ -23,7 +22,14 @@ namespace StoryWriter
                     {
                         UC_RichText ucRichText = DirtyEditors[0];
                         DirtyEditors.RemoveAt(0);
-                        ucRichText.SaveText();
+                        try
+                        {
+                            if (ucRichText.Editor.Modified)
+                                ucRichText.SaveText();
+                        }
+                        catch  
+                        {
+                        }                        
                     }
                 }
             }
