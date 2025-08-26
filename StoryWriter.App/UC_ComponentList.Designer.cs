@@ -32,20 +32,25 @@
             btnAddComponent = new ToolStripButton();
             btnEditComponent = new ToolStripButton();
             btnDeleteComponent = new ToolStripButton();
-            panel1 = new Panel();
-            comboBox1 = new ComboBox();
-            label1 = new Label();
             panel2 = new Panel();
-            comboBox2 = new ComboBox();
+            edtFilter = new TextBox();
             label2 = new Label();
-            Grid = new DataGridView();
-            coGroup = new DataGridViewTextBoxColumn();
-            coSubGroup = new DataGridViewTextBoxColumn();
-            coName = new DataGridViewTextBoxColumn();
+            gridComponents = new DataGridView();
+            coComponent = new DataGridViewTextBoxColumn();
+            splitContainer1 = new SplitContainer();
+            gridTags = new DataGridView();
+            coTag = new DataGridViewTextBoxColumn();
+            toolStrip1 = new ToolStrip();
+            btnAdjustComponentTags = new ToolStripButton();
             ToolBar.SuspendLayout();
-            panel1.SuspendLayout();
             panel2.SuspendLayout();
-            ((ISupportInitialize)Grid).BeginInit();
+            ((ISupportInitialize)gridComponents).BeginInit();
+            ((ISupportInitialize)splitContainer1).BeginInit();
+            splitContainer1.Panel1.SuspendLayout();
+            splitContainer1.Panel2.SuspendLayout();
+            splitContainer1.SuspendLayout();
+            ((ISupportInitialize)gridTags).BeginInit();
+            toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // ToolBar
@@ -65,7 +70,7 @@
             btnAddComponent.ImageTransparentColor = Color.Magenta;
             btnAddComponent.Name = "btnAddComponent";
             btnAddComponent.Size = new Size(28, 28);
-            btnAddComponent.Text = "Add Component";
+            btnAddComponent.Text = "Add";
             // 
             // btnEditComponent
             // 
@@ -74,7 +79,7 @@
             btnEditComponent.ImageTransparentColor = Color.Magenta;
             btnEditComponent.Name = "btnEditComponent";
             btnEditComponent.Size = new Size(28, 28);
-            btnEditComponent.Text = "Edit Component";
+            btnEditComponent.Text = "Edit";
             // 
             // btnDeleteComponent
             // 
@@ -83,111 +88,128 @@
             btnDeleteComponent.ImageTransparentColor = Color.Magenta;
             btnDeleteComponent.Name = "btnDeleteComponent";
             btnDeleteComponent.Size = new Size(28, 28);
-            btnDeleteComponent.Text = "Delete Component";
-            // 
-            // panel1
-            // 
-            panel1.Controls.Add(comboBox1);
-            panel1.Controls.Add(label1);
-            panel1.Dock = DockStyle.Top;
-            panel1.Location = new Point(0, 31);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(351, 32);
-            panel1.TabIndex = 5;
-            // 
-            // comboBox1
-            // 
-            comboBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(83, 5);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(260, 23);
-            comboBox1.TabIndex = 1;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(37, 9);
-            label1.Name = "label1";
-            label1.Size = new Size(40, 15);
-            label1.TabIndex = 0;
-            label1.Text = "Group";
+            btnDeleteComponent.Text = "Remove";
             // 
             // panel2
             // 
-            panel2.Controls.Add(comboBox2);
+            panel2.Controls.Add(edtFilter);
             panel2.Controls.Add(label2);
             panel2.Dock = DockStyle.Top;
-            panel2.Location = new Point(0, 63);
+            panel2.Location = new Point(0, 31);
             panel2.Name = "panel2";
             panel2.Size = new Size(351, 33);
             panel2.TabIndex = 6;
             // 
-            // comboBox2
+            // edtFilter
             // 
-            comboBox2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            comboBox2.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBox2.FormattingEnabled = true;
-            comboBox2.Location = new Point(83, 5);
-            comboBox2.Name = "comboBox2";
-            comboBox2.Size = new Size(259, 23);
-            comboBox2.TabIndex = 1;
+            edtFilter.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            edtFilter.Location = new Point(56, 5);
+            edtFilter.Name = "edtFilter";
+            edtFilter.Size = new Size(290, 23);
+            edtFilter.TabIndex = 1;
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.Location = new Point(12, 9);
             label2.Name = "label2";
-            label2.Size = new Size(65, 15);
+            label2.Size = new Size(33, 15);
             label2.TabIndex = 0;
-            label2.Text = "Sub-Group";
+            label2.Text = "Filter";
             // 
-            // Grid
+            // gridComponents
             // 
-            Grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            Grid.Columns.AddRange(new DataGridViewColumn[] { coGroup, coSubGroup, coName });
-            Grid.Dock = DockStyle.Fill;
-            Grid.Location = new Point(0, 96);
-            Grid.Name = "Grid";
-            Grid.Size = new Size(351, 531);
-            Grid.TabIndex = 7;
+            gridComponents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            gridComponents.Columns.AddRange(new DataGridViewColumn[] { coComponent });
+            gridComponents.Dock = DockStyle.Fill;
+            gridComponents.Location = new Point(0, 0);
+            gridComponents.Name = "gridComponents";
+            gridComponents.Size = new Size(351, 281);
+            gridComponents.TabIndex = 7;
             // 
-            // coGroup
+            // coComponent
             // 
-            coGroup.DataPropertyName = "Group";
-            coGroup.HeaderText = "Group";
-            coGroup.Name = "coGroup";
+            coComponent.DataPropertyName = "Name";
+            coComponent.HeaderText = "Component";
+            coComponent.Name = "coComponent";
             // 
-            // coSubGroup
+            // splitContainer1
             // 
-            coSubGroup.DataPropertyName = "SubGroup";
-            coSubGroup.HeaderText = "SubGroup";
-            coSubGroup.Name = "coSubGroup";
+            splitContainer1.Dock = DockStyle.Fill;
+            splitContainer1.Location = new Point(0, 64);
+            splitContainer1.Name = "splitContainer1";
+            splitContainer1.Orientation = Orientation.Horizontal;
             // 
-            // coName
+            // splitContainer1.Panel1
             // 
-            coName.DataPropertyName = "Name";
-            coName.HeaderText = "Name";
-            coName.Name = "coName";
+            splitContainer1.Panel1.Controls.Add(gridComponents);
+            // 
+            // splitContainer1.Panel2
+            // 
+            splitContainer1.Panel2.Controls.Add(gridTags);
+            splitContainer1.Panel2.Controls.Add(toolStrip1);
+            splitContainer1.Size = new Size(351, 563);
+            splitContainer1.SplitterDistance = 281;
+            splitContainer1.SplitterWidth = 6;
+            splitContainer1.TabIndex = 8;
+            // 
+            // gridTags
+            // 
+            gridTags.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            gridTags.Columns.AddRange(new DataGridViewColumn[] { coTag });
+            gridTags.Dock = DockStyle.Fill;
+            gridTags.Location = new Point(0, 31);
+            gridTags.Name = "gridTags";
+            gridTags.Size = new Size(351, 245);
+            gridTags.TabIndex = 7;
+            // 
+            // coTag
+            // 
+            coTag.DataPropertyName = "Name";
+            coTag.HeaderText = "Tag";
+            coTag.Name = "coTag";
+            // 
+            // toolStrip1
+            // 
+            toolStrip1.ImageScalingSize = new Size(24, 24);
+            toolStrip1.Items.AddRange(new ToolStripItem[] { btnAdjustComponentTags });
+            toolStrip1.Location = new Point(0, 0);
+            toolStrip1.Name = "toolStrip1";
+            toolStrip1.Size = new Size(351, 31);
+            toolStrip1.TabIndex = 6;
+            toolStrip1.Text = "toolStrip1";
+            // 
+            // btnAdjustComponentTags
+            // 
+            btnAdjustComponentTags.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnAdjustComponentTags.Image = Properties.Resources.to_do_list_cheked;
+            btnAdjustComponentTags.ImageTransparentColor = Color.Magenta;
+            btnAdjustComponentTags.Name = "btnAdjustComponentTags";
+            btnAdjustComponentTags.Size = new Size(28, 28);
+            btnAdjustComponentTags.Text = "Adjust Component Tags";
             // 
             // UC_ComponentList
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(Grid);
+            Controls.Add(splitContainer1);
             Controls.Add(panel2);
-            Controls.Add(panel1);
             Controls.Add(ToolBar);
             Name = "UC_ComponentList";
             Size = new Size(351, 627);
             ToolBar.ResumeLayout(false);
             ToolBar.PerformLayout();
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
-            ((ISupportInitialize)Grid).EndInit();
+            ((ISupportInitialize)gridComponents).EndInit();
+            splitContainer1.Panel1.ResumeLayout(false);
+            splitContainer1.Panel2.ResumeLayout(false);
+            splitContainer1.Panel2.PerformLayout();
+            ((ISupportInitialize)splitContainer1).EndInit();
+            splitContainer1.ResumeLayout(false);
+            ((ISupportInitialize)gridTags).EndInit();
+            toolStrip1.ResumeLayout(false);
+            toolStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -198,15 +220,15 @@
         private ToolStripButton btnAddComponent;
         private ToolStripButton btnEditComponent;
         private ToolStripButton btnDeleteComponent;
-        private Panel panel1;
-        private ComboBox comboBox1;
-        private Label label1;
         private Panel panel2;
-        private ComboBox comboBox2;
         private Label label2;
-        private DataGridView Grid;
-        private DataGridViewTextBoxColumn coGroup;
-        private DataGridViewTextBoxColumn coSubGroup;
-        private DataGridViewTextBoxColumn coName;
+        private DataGridView gridComponents;
+        private TextBox edtFilter;
+        private SplitContainer splitContainer1;
+        private DataGridView gridTags;
+        private DataGridViewTextBoxColumn coTag;
+        private ToolStrip toolStrip1;
+        private ToolStripButton btnAdjustComponentTags;
+        private DataGridViewTextBoxColumn coComponent;
     }
 }

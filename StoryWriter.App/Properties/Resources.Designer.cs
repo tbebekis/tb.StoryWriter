@@ -143,6 +143,16 @@ namespace StoryWriter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap check_box_list {
+            get {
+                object obj = ResourceManager.GetObject("check_box_list", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap color_picker_default {
             get {
                 object obj = ResourceManager.GetObject("color_picker_default", resourceCulture);
@@ -483,6 +493,16 @@ namespace StoryWriter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap text_linespacing {
+            get {
+                object obj = ResourceManager.GetObject("text_linespacing", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap text_list_bullets {
             get {
                 object obj = ResourceManager.GetObject("text_list_bullets", resourceCulture);
@@ -516,6 +536,16 @@ namespace StoryWriter.Properties {
         internal static System.Drawing.Bitmap text_underline {
             get {
                 object obj = ResourceManager.GetObject("text_underline", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap to_do_list_cheked {
+            get {
+                object obj = ResourceManager.GetObject("to_do_list_cheked", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

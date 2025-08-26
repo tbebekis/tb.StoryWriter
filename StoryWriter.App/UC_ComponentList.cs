@@ -4,7 +4,13 @@
     {
         // ● private
         TabPage ParentTabPage { get { return this.Parent as TabPage; } }
-        BindingSource bs = new ();
+
+        DataTable tblComponents;
+        DataTable tblTagToComponents;
+
+        BindingSource bsComponents = new ();
+        BindingSource bsTagToComponents = new();
+
 
         void ControlInitialize()
         {
@@ -14,35 +20,196 @@
             btnEditComponent.Click += (s, e) => EditComponent();
             btnDeleteComponent.Click += (s, e) => DeleteComponent();
 
+            edtFilter.TextChanged += (s, e) => FilterChanged();
+
+            btnAdjustComponentTags.Click += (s, e) => AdjustComponentTags(); 
+
             ReLoadComponents();
 
             App.ProjectClosed += ProjectClosed;
             App.ProjectOpened += ProjectOpened;
-
-            SelectedComponentChanged();
+            App.TagToComponetsChanged += (s, e) => ReLoadComponents();
         }
         void ReLoadComponents()
         {
+            if (tblComponents == null)
+            {
+                tblComponents = new DataTable ("Components");
 
+                tblComponents.Columns.Add("Id", typeof(string));
+                tblComponents.Columns.Add("Name", typeof(string));
+                tblComponents.Columns.Add("OBJECT", typeof(object));
+
+                bsComponents.DataSource = tblComponents;
+
+                gridComponents.AutoGenerateColumns = false;
+                gridComponents.DataSource = bsComponents;
+                gridComponents.InitializeReadOnly();
+                
+
+                bsComponents.PositionChanged += (s, e) => SelectedComponentChanged();
+            }
+
+            if (tblTagToComponents == null)
+            {
+                tblTagToComponents = new DataTable("TagToComponents");
+                tblTagToComponents.Columns.Add("TagId", typeof(string));
+                tblTagToComponents.Columns.Add("ComponentId", typeof(string));
+                tblTagToComponents.Columns.Add("Name", typeof(string));
+                tblTagToComponents.Columns.Add("OBJECT", typeof(object));
+
+                bsTagToComponents.DataSource = tblTagToComponents;
+
+                gridTags.AutoGenerateColumns = false;
+                gridTags.DataSource = bsTagToComponents;
+                gridTags.InitializeReadOnly();
+            }
+
+            if (App.CurrentProject != null)
+            { 
+                bsComponents.SuspendBinding();
+                bsTagToComponents.SuspendBinding();
+
+                tblComponents.Rows.Clear();
+                tblTagToComponents.Rows.Clear();
+
+                foreach (Component item in App.CurrentProject.ComponentList)
+                {
+                    tblComponents.Rows.Add(item.Id, item.Name, item);
+                }
+
+                foreach (TagToComponent item in App.CurrentProject.TagToComponentList)
+                {
+                    tblTagToComponents.Rows.Add(item.Tag.Id, item.Component.Id, item.Tag.Name, item);
+                }
+
+                tblComponents.AcceptChanges();
+                tblTagToComponents.AcceptChanges();
+
+                gridComponents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                gridTags.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+
+                bsTagToComponents.ResumeBinding();
+                bsComponents.ResumeBinding(); 
+
+                SelectedComponentChanged();
+            }
         }
         void SelectedComponentChanged()
         {
+            DataRow Row = gridComponents.CurrentDataRow();
 
+            if (Row != null)
+            {
+                bsTagToComponents.Filter = $"ComponentId = '{Row["Id"]}'";
+            }
+            else
+            {
+                bsTagToComponents.Filter = string.Empty;
+            }
+        }
+        void FilterChanged()
+        {
+            string S = edtFilter.Text.Trim();
+
+            if (!string.IsNullOrWhiteSpace(S) && S.Length > 2)
+            {
+                bsComponents.Filter = $"Name LIKE '%{S}%'";
+            }
+            else
+            {
+                bsComponents.Filter = string.Empty;
+            }
         }
 
-        // ● components
+        // ● add/edit/delete
         void AddComponent()
         {
+            string ResultName = "";
 
+            if (EditItemDialog.ShowModal("Add Component", App.CurrentProject.Name, ref ResultName))
+            {
+                Component Component = new();
+                Component.Name = ResultName;
+
+                if (App.CurrentProject.ItemExists(Component))
+                {
+                    string Message = $"Component '{ResultName}' already exists.";
+                    App.ErrorBox(Message);
+                    LogBox.AppendLine(Message);
+                    return;
+                }
+
+                Component.Id = Sys.GenId(UseBrackets: false);
+
+                if (Component.Insert())
+                {
+                    tblComponents.Rows.Add(Component.Id, Component.Name, Tag);
+                    tblComponents.AcceptChanges();
+
+                }
+                else
+                {
+                    string Message = "Add Component. Operation failed.";
+                    App.ErrorBox(Message);
+                    LogBox.AppendLine(Message);
+                }
+            }
         }
         void EditComponent()
         {
+            DataRow Row = gridComponents.CurrentDataRow();
+            if (Row == null)
+                return;
 
+            Component Component = Row["OBJECT"] as Component;
+            if (Component == null)
+                return;
+
+            string ResultName = Component.Name;
+
+            if (EditItemDialog.ShowModal("Component Chapter", App.CurrentProject.Name, ref ResultName))
+            {
+                if (App.CurrentProject.ItemExists(Component))
+                {
+                    string Message = $"Component '{ResultName}' already exists.";
+                    App.ErrorBox(Message);
+                    LogBox.AppendLine(Message);
+                    return;
+                }
+
+                Component.Name = ResultName;
+
+                if (Component.Update())
+                {
+                    Row["Name"] = Component.Name;
+                }
+                else
+                {
+                    string Message = "Component Chapter. Operation failed.";
+                    App.ErrorBox(Message);
+                    LogBox.AppendLine(Message);
+                }
+            }
         }
         void DeleteComponent()
         {
-
+            // TODO: EditComponent
         }
+        
+        void AdjustComponentTags()
+        {
+            DataRow Row = gridComponents.CurrentDataRow();
+            if (Row == null)
+                return;
+
+            Component Component = Row["OBJECT"] as Component;
+            if (Component == null)
+                return;
+
+            App.EditComponentTags(Component);
+        }
+
         // ● event handlers
         void ProjectClosed(object sender, EventArgs e)
         {
@@ -54,9 +221,7 @@
             ReLoadComponents();
             SelectedComponentChanged();
         }
-
-
-
+ 
         // ● overrides  
         protected override void OnLoad(EventArgs e)
         {

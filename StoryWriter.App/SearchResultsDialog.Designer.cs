@@ -1,6 +1,6 @@
 ﻿namespace StoryWriter
 {
-    partial class EditItemDialog
+    partial class SearchResultsDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -30,19 +30,21 @@
         {
             btnOK = new Button();
             btnCancel = new Button();
-            label1 = new Label();
-            label2 = new Label();
-            edtParentName = new TextBox();
-            edtName = new TextBox();
+            Grid = new DataGridView();
+            panel1 = new Panel();
+            coType = new DataGridViewTextBoxColumn();
+            coName = new DataGridViewTextBoxColumn();
+            ((ISupportInitialize)Grid).BeginInit();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(252, 111);
+            btnOK.Location = new Point(473, 4);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(75, 32);
-            btnOK.TabIndex = 3;
+            btnOK.TabIndex = 7;
             btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
             // 
@@ -50,76 +52,70 @@
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new Point(330, 111);
+            btnCancel.Location = new Point(551, 4);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(75, 32);
-            btnCancel.TabIndex = 2;
+            btnCancel.TabIndex = 6;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             // 
-            // label1
+            // Grid
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(18, 32);
-            label1.Name = "label1";
-            label1.Size = new Size(41, 15);
-            label1.TabIndex = 4;
-            label1.Text = "Parent";
+            Grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            Grid.Columns.AddRange(new DataGridViewColumn[] { coType, coName });
+            Grid.Dock = DockStyle.Fill;
+            Grid.Location = new Point(0, 0);
+            Grid.Name = "Grid";
+            Grid.Size = new Size(630, 372);
+            Grid.TabIndex = 8;
             // 
-            // label2
+            // panel1
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(18, 62);
-            label2.Name = "label2";
-            label2.Size = new Size(39, 15);
-            label2.TabIndex = 5;
-            label2.Text = "Name";
+            panel1.Controls.Add(btnCancel);
+            panel1.Controls.Add(btnOK);
+            panel1.Dock = DockStyle.Bottom;
+            panel1.Location = new Point(0, 372);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(630, 39);
+            panel1.TabIndex = 9;
             // 
-            // edtParentName
+            // coType
             // 
-            edtParentName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            edtParentName.Location = new Point(65, 29);
-            edtParentName.Name = "edtParentName";
-            edtParentName.ReadOnly = true;
-            edtParentName.Size = new Size(333, 23);
-            edtParentName.TabIndex = 6;
+            coType.DataPropertyName = "Type";
+            coType.HeaderText = "Type";
+            coType.Name = "coType";
             // 
-            // edtName
+            // coName
             // 
-            edtName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            edtName.Location = new Point(65, 58);
-            edtName.Name = "edtName";
-            edtName.Size = new Size(333, 23);
-            edtName.TabIndex = 7;
+            coName.DataPropertyName = "Name";
+            coName.HeaderText = "Name";
+            coName.Name = "coName";
             // 
-            // EditItemDialog
+            // SearchResultsDialog
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(410, 148);
-            Controls.Add(edtName);
-            Controls.Add(edtParentName);
-            Controls.Add(label2);
-            Controls.Add(label1);
-            Controls.Add(btnOK);
-            Controls.Add(btnCancel);
+            ClientSize = new Size(630, 411);
+            Controls.Add(Grid);
+            Controls.Add(panel1);
             MaximizeBox = false;
             MinimizeBox = false;
-            Name = "EditItemDialog";
+            Name = "SearchResultsDialog";
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Add Item";
+            Text = "Search Results";
+            ((ISupportInitialize)Grid).EndInit();
+            panel1.ResumeLayout(false);
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
         private Button btnOK;
         private Button btnCancel;
-        private Label label1;
-        private Label label2;
-        private TextBox edtParentName;
-        private TextBox edtName;
+        private DataGridView Grid;
+        private Panel panel1;
+        private DataGridViewTextBoxColumn coType;
+        private DataGridViewTextBoxColumn coName;
     }
 }

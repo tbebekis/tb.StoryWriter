@@ -129,6 +129,23 @@ Do you want to continue?
             return MessageBox.Show(Message, "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
         }
 
+        // ● tag to components related
+        static public void EditComponentTags(Component Component)
+        {
+            List<string> ComponentTagList = CurrentProject.TagToComponentList
+                .Where(x => x.Component.Id == Component.Id)
+                .Select(x => x.Tag.Id)
+                .ToList();
+
+            List<Tag> TagList = new(CurrentProject.TagList);
+
+            if (SelectTagListDialog.ShowModal(TagList, Component, ComponentTagList))
+            {
+                CurrentProject.AdjustComponentTags(Component, TagList);
+                TagToComponetsChanged?.Invoke(null, EventArgs.Empty);
+            } 
+        }
+
         // ● project related
         /// <summary>
         /// Returns a list of all project names found in the Projects folder
@@ -191,6 +208,7 @@ Do you want to continue?
             Settings.LastProject = ProjectName;
             Settings.Save();
 
+            SideBarPagerHandler.ShowPage(typeof(UC_TagList), nameof(UC_TagList), null);
             SideBarPagerHandler.ShowPage(typeof(UC_ComponentList), nameof(UC_ComponentList), null);
             SideBarPagerHandler.ShowPage(typeof(UC_ChapterList), nameof(UC_ChapterList), null);
 
@@ -449,6 +467,7 @@ Do you want to continue?
         // ● events
         static public event EventHandler ProjectClosed;
         static public event EventHandler ProjectOpened;
+        static public event EventHandler TagToComponetsChanged;
         static public event EventHandler ZoomFactorChanged;
 
 

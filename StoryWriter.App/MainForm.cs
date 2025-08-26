@@ -45,8 +45,21 @@
             btnExportToText.Click += (s, e) => ExportToFile(btnExportToText);
             btnExportToRtf.Click += (s, e) => ExportToFile(btnExportToRtf);
             btnExportToDocx.Click += (s, e) => ExportToFile(btnExportToDocx);
-            btnExportToOdt.Click += (s, e) => ExportToFile(btnExportToOdt);
+            btnExportToOdt.Click += (s, e) => ExportToFile(btnExportToOdt);            
             btnExit.Click += (s, e) => Close();
+
+            edtSearh.TextChanged += (s, e) => 
+            {
+                if (App.CurrentProject != null)
+                {
+                    string Term = edtSearh.Text.Trim();
+                    if (Term.Length > 2)
+                    {
+                        App.CurrentProject.ShowPageByTerm(Term);
+                    }
+                }    
+               
+            };
 
             App.ZoomFactor = App.Settings.ZoomFactor;
             App.Initialize(this);
@@ -98,6 +111,11 @@
         void ToggleLog()
         {
             splitContent.Panel2Collapsed = !splitContent.Panel2Collapsed;            
+        }
+
+        void GlobalSearch()
+        {
+
         }
 
         public void ExportToFile(ToolStripButton Button)

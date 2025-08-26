@@ -7,11 +7,9 @@
     public enum ItemType
     {
         None = 0,
-        Group = 1,
-        SubGroup = 2,
+        Tag = 1,
         Component = 4,
         Chapter = 8,
-        Scene = 0x10,
-        Tag = 0x20,
+        Scene = 0x10
     }
 }

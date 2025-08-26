@@ -51,24 +51,25 @@
 
             if (EditItemDialog.ShowModal("Add Chapter", App.CurrentProject.Name, ref ResultName))
             {
-                if (App.CurrentProject.ChapterExists(ResultName))
+                Chapter Chapter = new();
+                Chapter.Name = ResultName;
+
+                if (App.CurrentProject.ItemExists(Chapter))
                 {
                     string Message = $"Chapter '{ResultName}' already exists.";
                     App.ErrorBox(Message);
                     LogBox.AppendLine(Message);
                     return;
                 }
-
-                Chapter Chapter = new();
-                Chapter.Id = Sys.GenId(UseBrackets: false);
-                Chapter.Name = ResultName;                
-                Chapter.OrderIndex = App.CurrentProject.ChapterList.Count + 1;
+ 
+                Chapter.Id = Sys.GenId(UseBrackets: false);                             
+                
 
                 if (Chapter.Insert())
                 {
                     lboChapters.Items.Add(Chapter);
                     lboChapters.SelectedItem = Chapter;
-                    App.CurrentProject.ChapterList.Add(Chapter);
+                    
                 }
                 else
                 {
@@ -88,7 +89,7 @@
 
             if (EditItemDialog.ShowModal("Edit Chapter", App.CurrentProject.Name, ref ResultName))
             {
-                if (App.CurrentProject.ChapterExists(ResultName, Chapter.Id))
+                if (App.CurrentProject.ItemExists(Chapter))
                 {
                     string Message = $"Chapter '{ResultName}' already exists.";
                     App.ErrorBox(Message);
@@ -121,7 +122,7 @@
                 App.CurrentProject.ChapterList.Remove(Chapter);
                 ReLoadChapters();
 
-                string Message = $"Chapter: {Chapter.ToString()}. Deleted";
+                string Message = $"Chapter: {Chapter}. Deleted";
                 LogBox.AppendLine(Message);
             }
             else

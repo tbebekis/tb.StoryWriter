@@ -36,7 +36,7 @@
         public ItemType ItemType { get; set; } 
         public string Name { get; set; }
         /// <summary>
-        /// The Id of the item
+        /// The item
         /// </summary>
         public object Item { get; set; }
     }

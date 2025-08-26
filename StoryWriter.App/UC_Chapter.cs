@@ -119,18 +119,19 @@
 
             if (EditItemDialog.ShowModal("Add Scene", Chapter.Name, ref ResultName))
             {
-                if (Chapter.SceneExists(ResultName))
+                Scene Scene = new();
+                Scene.ChapterId = Chapter.Id;
+                Scene.Name = ResultName;
+
+                if (Chapter.SceneExists(Scene))
                 {
                     string Message = $"Scene '{ResultName}' already exists.";
                     App.ErrorBox(Message);
                     LogBox.AppendLine(Message);
                     return;
                 }
-
-                Scene Scene = new();
-                Scene.Id = Sys.GenId(UseBrackets: false);
-                Scene.ChapterId = Chapter.Id;
-                Scene.Name = ResultName;                
+                
+                Scene.Id = Sys.GenId(UseBrackets: false);                              
                 Scene.OrderIndex = Chapter.SceneList.Count + 1;
 
                 if (Scene.Insert())
@@ -157,7 +158,7 @@
 
             if (EditItemDialog.ShowModal("Edit Scene", Chapter.Name, ref ResultName))
             {
-                if (Chapter.SceneExists(ResultName, Scene.Id))
+                if (Chapter.SceneExists(Scene))
                 {
                     string Message = $"Scene '{ResultName}' already exists.";
                     App.ErrorBox(Message);

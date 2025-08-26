@@ -39,7 +39,8 @@
            // btnNumbers.Click += btnNumbers_Click;
             btnFontColor.Click += btnFontColor_Click;
             btnBackColor.Click += btnBackColor_Click;
-            
+ 
+
             //Editor.KeyDown += Editor_KeyDown; 
             //Editor.MouseDown += Editor_MouseDown;
             //Editor.TextChanged += (s, e) => Editor.Modified = true;
@@ -408,8 +409,9 @@
             if (string.IsNullOrWhiteSpace(Term))
                 return;
            
-            App.CurrentProject.OpenPageByTerm(Term);     //LogBox.AppendLine($"GoToLink(\"{Term}\")");
+            App.CurrentProject.ShowPageByTerm(Term);     //LogBox.AppendLine($"GoToLink(\"{Term}\")");
         }
+ 
         void ShowFindReplaceDialog()
         {
             if (_findReplaceForm == null || _findReplaceForm.IsDisposed)
@@ -432,6 +434,8 @@
                 _findReplaceForm.Activate();
             }
         }
+
+
 
         // ● helpers for links  
  

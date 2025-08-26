@@ -39,10 +39,14 @@
             btnToggleSideBar = new ToolStripButton();
             btnToggleLog = new ToolStripButton();
             toolStripSeparator2 = new ToolStripSeparator();
+            btnExportToText = new ToolStripButton();
             btnExportToRtf = new ToolStripButton();
             btnExportToDocx = new ToolStripButton();
             btnExportToOdt = new ToolStripButton();
+            toolStripSeparator5 = new ToolStripSeparator();
             toolStripSeparator4 = new ToolStripSeparator();
+            toolStripLabel1 = new ToolStripLabel();
+            edtSearh = new ToolStripTextBox();
             btnExit = new ToolStripButton();
             splitMain = new SplitContainer();
             pagerSideBar = new TabControl();
@@ -53,7 +57,6 @@
             tabPage1 = new TabPage();
             tabPage2 = new TabPage();
             edtLog = new RichTextBox();
-            btnExportToText = new ToolStripButton();
             ToolBar.SuspendLayout();
             ((ISupportInitialize)splitMain).BeginInit();
             splitMain.Panel1.SuspendLayout();
@@ -86,7 +89,7 @@
             // ToolBar
             // 
             ToolBar.ImageScalingSize = new Size(24, 24);
-            ToolBar.Items.AddRange(new ToolStripItem[] { btnNewProject, btnOpenProject, toolStripSeparator1, btnSettings, toolStripSeparator3, btnToggleSideBar, btnToggleLog, toolStripSeparator2, btnExportToText, btnExportToRtf, btnExportToDocx, btnExportToOdt, toolStripSeparator4, btnExit });
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnNewProject, btnOpenProject, toolStripSeparator1, btnSettings, toolStripSeparator3, btnToggleSideBar, btnToggleLog, toolStripSeparator2, btnExportToText, btnExportToRtf, btnExportToDocx, btnExportToOdt, toolStripSeparator5, toolStripLabel1, edtSearh, toolStripSeparator4, btnExit });
             ToolBar.Location = new Point(0, 24);
             ToolBar.Name = "ToolBar";
             ToolBar.Size = new Size(930, 31);
@@ -153,6 +156,15 @@
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new Size(6, 31);
             // 
+            // btnExportToText
+            // 
+            btnExportToText.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnExportToText.Image = Properties.Resources.file_extension_txt;
+            btnExportToText.ImageTransparentColor = Color.Magenta;
+            btnExportToText.Name = "btnExportToText";
+            btnExportToText.Size = new Size(28, 28);
+            btnExportToText.Text = "Export to TXT";
+            // 
             // btnExportToRtf
             // 
             btnExportToRtf.DisplayStyle = ToolStripItemDisplayStyle.Image;
@@ -180,10 +192,26 @@
             btnExportToOdt.Size = new Size(28, 28);
             btnExportToOdt.Text = "Export To ODT";
             // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new Size(6, 31);
+            // 
             // toolStripSeparator4
             // 
             toolStripSeparator4.Name = "toolStripSeparator4";
             toolStripSeparator4.Size = new Size(6, 31);
+            // 
+            // toolStripLabel1
+            // 
+            toolStripLabel1.Name = "toolStripLabel1";
+            toolStripLabel1.Size = new Size(42, 28);
+            toolStripLabel1.Text = "Search";
+            // 
+            // edtSearh
+            // 
+            edtSearh.Name = "edtSearh";
+            edtSearh.Size = new Size(100, 31);
             // 
             // btnExit
             // 
@@ -208,7 +236,7 @@
             // 
             splitMain.Panel2.Controls.Add(splitContent);
             splitMain.Size = new Size(930, 556);
-            splitMain.SplitterDistance = 107;
+            splitMain.SplitterDistance = 142;
             splitMain.SplitterWidth = 6;
             splitMain.TabIndex = 3;
             // 
@@ -220,7 +248,7 @@
             pagerSideBar.Location = new Point(0, 0);
             pagerSideBar.Name = "pagerSideBar";
             pagerSideBar.SelectedIndex = 0;
-            pagerSideBar.Size = new Size(107, 556);
+            pagerSideBar.Size = new Size(142, 556);
             pagerSideBar.TabIndex = 0;
             // 
             // tabPage3
@@ -228,7 +256,7 @@
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(99, 528);
+            tabPage3.Size = new Size(134, 528);
             tabPage3.TabIndex = 0;
             tabPage3.Text = "tabPage3";
             tabPage3.UseVisualStyleBackColor = true;
@@ -238,7 +266,7 @@
             tabPage4.Location = new Point(4, 24);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(99, 528);
+            tabPage4.Size = new Size(134, 528);
             tabPage4.TabIndex = 1;
             tabPage4.Text = "tabPage4";
             tabPage4.UseVisualStyleBackColor = true;
@@ -257,7 +285,7 @@
             // splitContent.Panel2
             // 
             splitContent.Panel2.Controls.Add(edtLog);
-            splitContent.Size = new Size(817, 556);
+            splitContent.Size = new Size(782, 556);
             splitContent.SplitterDistance = 503;
             splitContent.SplitterWidth = 6;
             splitContent.TabIndex = 0;
@@ -270,7 +298,7 @@
             pagerContent.Location = new Point(0, 0);
             pagerContent.Name = "pagerContent";
             pagerContent.SelectedIndex = 0;
-            pagerContent.Size = new Size(817, 503);
+            pagerContent.Size = new Size(782, 503);
             pagerContent.TabIndex = 0;
             // 
             // tabPage1
@@ -278,7 +306,7 @@
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(809, 475);
+            tabPage1.Size = new Size(774, 475);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "tabPage1";
             tabPage1.UseVisualStyleBackColor = true;
@@ -288,7 +316,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(809, 475);
+            tabPage2.Size = new Size(774, 475);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
@@ -300,18 +328,9 @@
             edtLog.Font = new Font("Courier New", 9F);
             edtLog.Location = new Point(0, 0);
             edtLog.Name = "edtLog";
-            edtLog.Size = new Size(817, 47);
+            edtLog.Size = new Size(782, 47);
             edtLog.TabIndex = 0;
             edtLog.Text = "";
-            // 
-            // btnExportToText
-            // 
-            btnExportToText.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnExportToText.Image = Properties.Resources.file_extension_txt;
-            btnExportToText.ImageTransparentColor = Color.Magenta;
-            btnExportToText.Name = "btnExportToText";
-            btnExportToText.Size = new Size(28, 28);
-            btnExportToText.Text = "Export to TXT";
             // 
             // MainForm
             // 
@@ -371,5 +390,8 @@
         private ToolStripButton btnExportToDocx;
         private ToolStripButton btnExportToOdt;
         private ToolStripButton btnExportToText;
+        private ToolStripSeparator toolStripSeparator5;
+        private ToolStripLabel toolStripLabel1;
+        private ToolStripTextBox edtSearh;
     }
 }

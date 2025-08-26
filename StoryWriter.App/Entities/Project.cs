@@ -3,43 +3,30 @@
     public class Project : BaseEntity
     {
         // ● constants
+        static public readonly string STag = "Tag";
         static public readonly string SComponent = "Component";
-        static public readonly string SGroup = "Group";
-        static public readonly string SSubGroup = "SubGroup";
+        static public readonly string STagToComponent = "TagToComponent";
         static public readonly string SChapter = "Chapter";
         static public readonly string SScene = "Scene";
 
-        void LoadGroups()
+        /// <summary>
+        /// Loads all tags from the database into TagList
+        /// </summary>
+        void LoadTags()
         {
-            GroupList.Clear();
+            TagList.Clear();
 
-            string SqlText = $"SELECT * FROM {SGroup}";
+            string SqlText = $"SELECT * FROM {STag}";
 
             DataTable Table = App.SqlStore.Select(SqlText);
 
             foreach (DataRow Row in Table.Rows)
             {
-                Group item = new();
+                Tag item = new();
                 item.LoadFrom(Row);
-                GroupList.Add(item);
+               AddToList(item);
             }
         }
-        void LoadSubGroups()
-        {
-            SubGroupList.Clear();
-
-            string SqlText = $"SELECT * FROM {SSubGroup}";
-
-            DataTable Table = App.SqlStore.Select(SqlText);
-
-            foreach (DataRow Row in Table.Rows)
-            {
-                SubGroup item = new();
-                item.LoadFrom(Row);
-                SubGroupList.Add(item);
-            }
-        }
-
         /// <summary>
         /// Loads all components from the database into FlatComponentList and TreeComponentList.
         /// </summary>
@@ -55,8 +42,27 @@
             {
                 Component item = new ();
                 item.LoadFrom(Row);
-                ComponentList.Add(item);
+                AddToList(item);
             } 
+        }
+        /// <summary>
+        /// Loads all TagToComponent items from the database into TagToComponentList
+        /// </summary>
+        void LoadTagToComponents()
+        {
+            TagToComponentList.Clear();
+
+            string SqlText = $"SELECT * FROM {STagToComponent}";
+
+            DataTable Table = App.SqlStore.Select(SqlText);
+
+            foreach (DataRow Row in Table.Rows)
+            {
+                TagToComponent item = new();
+                item.LoadFrom(Row);
+                if (item.IsOk())
+                    AddToList(item);
+            }
         }
         /// <summary>
         /// Loads all chapters and their associated scenes from the database into ChapterList.
@@ -76,7 +82,7 @@
             {
                 var ch = new Chapter();
                 ch.LoadFrom(row);
-                ChapterList.Add(ch);
+                AddToList(ch);
             }
 
             foreach (var ch in ChapterList)
@@ -171,49 +177,31 @@
         }
 
         // ● schema
-        static public void AddGroupTable(SchemaVersion sv)
-        {
-            string TableName = SGroup;
-            string SqlText = $@"
-create table {TableName} (
-    Id						{SysConfig.PrimaryKeyStr()} 
-    ,Name                   @NVARCHAR(128)       @NOT_NULL  
-    ,constraint UK_{TableName}_00 unique (Name)
-)
-";
-            sv.AddTable(SqlText);
-
-            string[] Groups = {"Character", "Location", "People", "Trait", "Event", "Artifact" };
- 
-            foreach (var Item in Groups)
-            {
-                SqlText = $"insert into {TableName} (Id, Name) VALUES ('{Sys.GenId(UseBrackets:false)}', ('{Item}'))";
-                sv.AddStatementAfter(SqlText);
-            }
-        }
-        static public void AddSubGroupTable(SchemaVersion sv)
-        {
-            string TableName = SSubGroup;
-            string SqlText = $@"
-create table {TableName} (
-    Id						{SysConfig.PrimaryKeyStr()} 
-    ,Name                   @NVARCHAR(128)       @NOT_NULL  
-    ,constraint UK_{TableName}_00 unique (Name)
-)
-";
-            sv.AddTable(SqlText);
-
-            string[] SubGroups = {"Historic", "Planet", "Country", "City", "Mountain", "See" };
-
-            foreach (var Item in SubGroups)
-            {
-                SqlText = $"insert into {TableName} (Id, Name) VALUES  ('{Sys.GenId(UseBrackets: false)}', ('{Item}'))";
-                sv.AddStatementAfter(SqlText);
-            }
-        }
-
         /// <summary>
-        /// Adds the Component table to the schema version and populates it with initial data.
+        /// Adds a table to a schema version
+        /// </summary>
+        static public void AddTagTable(SchemaVersion sv)
+        {
+            string TableName = STag;
+            string SqlText = $@"
+create table {TableName} (
+    Id						{SysConfig.PrimaryKeyStr()} 
+    ,Name                   @NVARCHAR(128)       @NOT_NULL  
+    ,constraint UK_{TableName}_00 unique (Name)
+)
+";
+            sv.AddTable(SqlText);
+
+            string[] Items = {"Character", "Location", "People", "Trait", "Event", "Artifact", "Planet" };
+ 
+            foreach (var Item in Items)
+            {
+                SqlText = $"insert into {TableName} (Id, Name) VALUES ('{Sys.GenId(UseBrackets:false)}', '{Item}')";
+                sv.AddStatementAfter(SqlText);
+            }
+        }
+        /// <summary>
+        /// Adds a table to a schema version
         /// </summary>
         static public void AddComponentTable(SchemaVersion sv)
         {
@@ -222,8 +210,6 @@ create table {TableName} (
 create table {TableName} (
     Id						{SysConfig.PrimaryKeyStr()} 
     ,Name                   @NVARCHAR(128)       @NOT_NULL  
-    ,Group                  @NVARCHAR(128)       @NOT_NULL  
-    ,SubGroup               @NVARCHAR(128)       @NOT_NULL  
     ,BodyText               @BLOB_TEXT           @NULL    
 
     ,constraint UK_{TableName}_00 unique (Name)
@@ -233,7 +219,24 @@ create table {TableName} (
 
         }
         /// <summary>
-        /// Adds the Chapter table to the schema version.
+        /// Adds a table to a schema version
+        /// </summary>
+        static public void AddTagToComponentTable(SchemaVersion sv)
+        {
+            string TableName = STagToComponent;
+            string SqlText = $@"
+create table {TableName} (
+     TagId              {SysConfig.ForeignKeyStr()}   
+    ,ComponentId        {SysConfig.ForeignKeyStr()}
+
+    ,constraint UK_{TableName}_00 unique (TagId, ComponentId)
+)
+"; 
+            sv.AddTable(SqlText);
+        }
+
+        /// <summary>
+        /// Adds a table to a schema version
         /// </summary>
         static public void AddChapterTable(SchemaVersion sv)
         {
@@ -257,7 +260,7 @@ create table {TableName} (
             sv.AddTable(SqlText);
         }
         /// <summary>
-        /// Adds the Scene table to the schema version.
+        /// Adds a table to a schema version
         /// </summary>
         static public void AddSceneTable(SchemaVersion sv)
         {
@@ -296,8 +299,10 @@ create table {TableName} (
         {
             Schema ProjectSchema = Schemas.FindOrAdd(Sys.APPLICATION, Sys.DEFAULT); //Name
             SchemaVersion Version  = ProjectSchema.FindOrAdd(Version: 1);
- 
+
+            AddTagTable(Version);
             AddComponentTable(Version);
+            AddTagToComponentTable(Version);
             AddChapterTable(Version);
             AddSceneTable(Version);
 
@@ -319,53 +324,87 @@ create table {TableName} (
         /// </summary>
         public void Open()
         {
+            LoadTags();
             LoadComponents();
-            LoadChapters();
+            LoadTagToComponents();
+            LoadChapters();            
         }
 
         // ● exists
         /// <summary>
-        /// True if a group exists by name
+        /// True if a specified instance exists in the corresponding list
         /// </summary>
-        public bool GroupExists(string Name, string Id = "")
+        static public bool ItemExists(IEnumerable<BaseEntity> List, BaseEntity Instance)
         {
-            if (string.IsNullOrWhiteSpace(Id))
-                return GroupList.FirstOrDefault(item => item.Name.IsSameText(Name)) != null;
+            if (string.IsNullOrWhiteSpace(Instance.Id))
+                return List.FirstOrDefault(item => item.Name.IsSameText(Instance.Name)) != null;
 
-            return GroupList.FirstOrDefault(item => item.Name.IsSameText(Name) && item.Id == Id) != null;
+            return List.FirstOrDefault(item => item.Name.IsSameText(Instance.Name) && item.Id == Instance.Id) != null;
         }
         /// <summary>
-        /// True if a sub-group exists by name
+        /// True if a specified instance exists in the corresponding list
         /// </summary>
-        public bool SubGroupExists(string Name, string Id = "")
+        public bool ItemExists(Tag Instance) => ItemExists(TagList.Cast<BaseEntity>(), Instance);
+        /// <summary>
+        /// True if a specified instance exists in the corresponding list
+        /// </summary>
+        public bool ItemExists(Component Instance) => ItemExists(ComponentList.Cast<BaseEntity>(), Instance);
+        /// <summary>
+        /// True if a specified instance exists in the corresponding list
+        /// </summary>
+        public bool ItemExists(TagToComponent Instance) => TagToComponentList.FirstOrDefault(item => item.Tag.Id == Instance.Tag.Id && item.Component.Id == Instance.Component.Id) != null;
+        /// <summary>
+        /// True if a specified instance exists in the corresponding list
+        /// </summary>
+        public bool ItemExists(Chapter Instance) => ItemExists(ChapterList.Cast<BaseEntity>(), Instance);
+ 
+        /// <summary>
+        /// Adds a specified instance to the corresponding list if it does not already exist
+        /// </summary>
+        static public void AddToList(IList List, object Instance)
         {
-            if (string.IsNullOrWhiteSpace(Id))
-                return SubGroupList.FirstOrDefault(item => item.Name.IsSameText(Name)) != null;
-
-            return SubGroupList.FirstOrDefault(item => item.Name.IsSameText(Name) && item.Id == Id) != null;
+            if (!List.Contains(Instance)) 
+                List.Add(Instance);
         }
         /// <summary>
-        /// True if a component exists by name
+        /// Adds a specified instance to the corresponding list if it does not already exist
         /// </summary>
-        public bool ComponentExists(string Name, string Id = "")
-        {
-            if (string.IsNullOrWhiteSpace(Id))
-                return ComponentList.FirstOrDefault(item => item.Name.IsSameText(Name)) != null;
-
-            return ComponentList.FirstOrDefault(item => item.Name.IsSameText(Name) && item.Id == Id) != null;
-        }
+        public void AddToList(Tag Instance) => AddToList(TagList, Instance);
         /// <summary>
-        /// True if a chapter exists by name
+        /// Adds a specified instance to the corresponding list if it does not already exist
         /// </summary>
-        public bool ChapterExists(string Name, string Id = "")
-        {
-            if (string.IsNullOrWhiteSpace(Id))
-                return ChapterList.FirstOrDefault(item => item.Name.IsSameText(Name)) != null;
+        public void AddToList(Component Instance) => AddToList(ComponentList, Instance);
+        /// <summary>
+        /// Adds a specified instance to the corresponding list if it does not already exist
+        /// </summary>
+        public void AddToList(TagToComponent Instance) => AddToList(TagToComponentList, Instance);
+        /// <summary>
+        /// Adds a specified instance to the corresponding list if it does not already exist
+        /// </summary>
+        public void AddToList(Chapter Instance) => AddToList(ChapterList, Instance);
 
-            return ChapterList.FirstOrDefault(item => item.Name.IsSameText(Name) && item.Id == Id) != null;
+        /// <summary>
+        /// Adjusts the tags for a specified component
+        /// </summary>
+        public void AdjustComponentTags(Component Component, List<Tag> TagList)
+        {
+            string SqlText = $"delete from {Project.STagToComponent} where ComponentId = '{Component.Id}'";
+            App.SqlStore.ExecSql(SqlText);
+
+            LoadTagToComponents(); // empty the list and reload
+
+            foreach (var Tag in TagList)
+            {
+                var TagToComponent = new TagToComponent(Tag, Component);
+                TagToComponent.Insert();
+            }
         }
+         
 
         // ● miscs
+        /// <summary>
+        /// Renumbers the chapters
+        /// </summary>
         public void RenumberChapters()
         {
             int OrderIndex = 0;
@@ -380,7 +419,10 @@ create table {TableName} (
         }
  
         // ● links
-        public List<LinkItem> SearchItems(string Term)
+        /// <summary>
+        /// Returns a list of items that match a specified search term
+        /// </summary>
+        List<LinkItem> SearchItems(string Term)
         {
             List<LinkItem> TempLinkList = new ();
 
@@ -399,33 +441,42 @@ create table {TableName} (
                     }
                 }
 
-                AddLinks(GroupList.Cast<BaseEntity>(), ItemType.Group);
-                AddLinks(SubGroupList.Cast<BaseEntity>(), ItemType.SubGroup);
+                
                 AddLinks(ComponentList.Cast<BaseEntity>(), ItemType.Component);
                 AddLinks(ChapterList.Cast<BaseEntity>(), ItemType.Chapter);
-                AddLinks(GroupList.Cast<BaseEntity>(), ItemType.Group);
                 foreach (var Chapter in ChapterList)
                     AddLinks(Chapter.SceneList.Cast<BaseEntity>(), ItemType.Scene);
             }
-
             
             return TempLinkList;
 
         }
-        public void OpenLinkItem(LinkItem LinkItem)
+        /// <summary>
+        /// Shows the page for a specified link item, i.e. shows a component page or a chapter page.
+        /// </summary>
+        public void ShowPageByLinkItem(LinkItem LinkItem)
         {
             switch (LinkItem.ItemType)
             {
                 case ItemType.Component:
-                    Component Comp = LinkItem.Item as Component;
-                    App.ContentPagerHandler.ShowPage(typeof(UC_Component), Comp.Id, Comp);
+                    Component Component = LinkItem.Item as Component;
+                    App.ContentPagerHandler.ShowPage(typeof(UC_Component), Component.Id, Component);
                     break;
                 case ItemType.Chapter:
-                    //OpenChapter(LinkItem.ItemId);
+                    Chapter Chapter = LinkItem.Item as Chapter;
+                    App.ContentPagerHandler.ShowPage(typeof(UC_Chapter), Chapter.Id, Chapter);
                     break;
+                case ItemType.Scene:
+                    Scene Scene = LinkItem.Item as Scene;
+                    App.ContentPagerHandler.ShowPage(typeof(UC_Chapter), Scene.Chapter.Id, Scene.Chapter);
+                    break;
+
             }
         }
-        public void OpenPageByTerm(string Term)
+        /// <summary>
+        /// Shows the page for a specified search term, i.e. shows a component page or a chapter page
+        /// </summary>
+        public void ShowPageByTerm(string Term)
         {
             if (string.IsNullOrWhiteSpace(Term))
                 return;
@@ -440,29 +491,37 @@ create table {TableName} (
             else if (TempLinkList.Count == 1)
             {
                 LinkItem LinkItem = TempLinkList[0];
-                OpenLinkItem(LinkItem);
+                ShowPageByLinkItem(LinkItem);
+            }
+            else if (TempLinkList.Count > 1)
+            {
+                SearchResultsDialog.ShowModal(TempLinkList);
             }
 
         }
 
         // ● properties 
         /// <summary>
-        /// The list of groups of this project
+        /// The list of groups of this project.
+        /// <para><strong>CAUTION: </strong> Do <strong>NOT</strong> add an item using directly the list. Use the corresponding <c>AddToList()</c> method.</para>
         /// </summary>
-        public List<Group> GroupList { get; private set; } = new List<Group>();
-        /// <summary>
-        /// The list of sub-groups of this project
-        /// </summary>
-        public List<SubGroup> SubGroupList { get; private set; } = new List<SubGroup>();
+        public List<Tag> TagList { get; private set; } = new List<Tag>();
         /// <summary>
         /// The list of components of this project
+        /// <para><strong>CAUTION: </strong> Do <strong>NOT</strong> add an item using directly the list. Use the corresponding <c>AddToList()</c> method.</para>
         /// </summary>
         public List<Component> ComponentList { get; private set; } = new List<Component>();
         /// <summary>
+        /// A list of TagToComponent items
+        /// <para><strong>CAUTION: </strong> Do <strong>NOT</strong> add an item using directly the list. Use the corresponding <c>AddToList()</c> method.</para>
+        /// </summary>
+        public List<TagToComponent> TagToComponentList { get; private set; } = new List<TagToComponent>();
+        /// <summary>
         /// A list of chapters in the project.
+        /// <para><strong>CAUTION: </strong> Do <strong>NOT</strong> add an item using directly the list. Use the corresponding <c>AddToList()</c> method.</para>
         /// </summary>
         public List<Chapter> ChapterList { get; private set; } = new List<Chapter>();
 
-      
+         
     }
 }

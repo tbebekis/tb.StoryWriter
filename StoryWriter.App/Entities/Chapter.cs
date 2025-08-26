@@ -29,61 +29,59 @@
         {
             return new Dictionary<string, object>
             {
-                ["Id"] = this.Id,
-                ["Name"] = this.Name,
-                ["Synopsis"] = this.Synopsis,
-                ["Concept"] = this.Concept,
-                ["Outcome"] = this.Outcome,
-                ["BodyText"] = this.BodyText,
-                ["CreatedAt"] = this.CreatedAt,   // stored as TEXT/ISO8601 or per your CDATE_TIME
-                ["UpdatedAt"] = this.UpdatedAt,
-                ["OrderIndex"] = this.OrderIndex
+                ["Id"] = Id,
+                ["Name"] = Name,
+                ["Synopsis"] = Synopsis,
+                ["Concept"] = Concept,
+                ["Outcome"] = Outcome,
+                ["BodyText"] = BodyText,
+                ["CreatedAt"] = CreatedAt,   // stored as TEXT/ISO8601 or per your CDATE_TIME
+                ["UpdatedAt"] = UpdatedAt,
+                ["OrderIndex"] = OrderIndex
             };
         }
         /// <summary>
         /// Loads the properties of this object from a DataRow.
         /// </summary>
-        public void LoadFrom(DataRow row)
+        public void LoadFrom(DataRow Row)
         {
-            this.Id = row.AsString("Id");
-            this.Name = row.AsString("Name");
-            this.Synopsis = row.AsString("Synopsis");
-            this.Concept = row.AsString("Concept");
-            this.Outcome = row.AsString("Outcome");
-            this.BodyText = row.AsString("BodyText");
-            this.CreatedAt = row.AsDateTime("CreatedAt");
-            this.UpdatedAt = row.AsDateTime("UpdatedAt");
-            this.OrderIndex = row.AsInteger("OrderIndex");
+            Id = Row.AsString("Id");
+            Name = Row.AsString("Name");
+            Synopsis = Row.AsString("Synopsis");
+            Concept = Row.AsString("Concept");
+            Outcome = Row.AsString("Outcome");
+            BodyText = Row.AsString("BodyText");
+            CreatedAt = Row.AsDateTime("CreatedAt");
+            UpdatedAt = Row.AsDateTime("UpdatedAt");
+            OrderIndex = Row.AsInteger("OrderIndex");
         }
 
         /// <summary>
         /// Inserts this instance into the database.
         /// </summary>
         public bool Insert()
-        {
-            // Optional in-memory uniqueness check (αν έχεις λίστα στο Project)
-            if (App.CurrentProject?.ChapterList != null &&
-                App.CurrentProject.ChapterList.Any(ch => ch.Name.IsSameText(this.Name)))
+        {            
+            if (App.CurrentProject.ItemExists(this))
             {
-                App.ErrorBox($"A chapter with the name '{this.Name}' already exists.");
+                App.ErrorBox($"A chapter with the name '{Name}' already exists.");
                 return false;
             }
 
             // Set timestamps if not already set
-            if (CreatedAt == default) CreatedAt = DateTime.UtcNow;
+            if (CreatedAt == default) 
+                CreatedAt = DateTime.UtcNow;
             UpdatedAt = DateTime.UtcNow;
 
-            const string sql = @"
-        INSERT INTO {TableName} (Id, Name, Synopsis, Concept, Outcome, BodyText, CreatedAt, UpdatedAt, OrderIndex)
+            OrderIndex = App.CurrentProject.ChapterList.Count + 1;
+
+            string SqlText = @$"
+        INSERT INTO {Project.SChapter} (Id, Name, Synopsis, Concept, Outcome, BodyText, CreatedAt, UpdatedAt, OrderIndex)
         VALUES (:Id, :Name, :Synopsis, :Concept, :Outcome, :BodyText, :CreatedAt, :UpdatedAt, :OrderIndex)
-    ";
+    "; 
 
-            // replace table placeholder (same pattern you used for components)
-            string sqlText = sql.Replace("{TableName}", Project.SChapter);
-
-            var parameters = this.ToDictionary(); // see helper below
-            App.SqlStore.ExecSql(sqlText, parameters);
-
+            var Params = ToDictionary(); 
+            App.SqlStore.ExecSql(SqlText, Params);
+            App.CurrentProject.AddToList(this);            
             return true;
         }
         /// <summary>
@@ -91,26 +89,23 @@
         /// </summary>
         public bool Update()
         {
-            // In-memory uniqueness check (exclude current Id)
-            if (App.CurrentProject?.ChapterList != null &&
-                App.CurrentProject.ChapterList.Any(ch => ch.Name.IsSameText(this.Name) && ch.Id != this.Id))
+            if (App.CurrentProject.ItemExists(this))
             {
-                App.ErrorBox($"A chapter with the name '{this.Name}' already exists.");
+                App.ErrorBox($"A chapter with the name '{Name}' already exists.");
                 return false;
             }
 
             // Touch update timestamp
-            this.UpdatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
 
-            string sqlText =
+            string SqlText =
                 $"UPDATE {Project.SChapter} " +
                 "SET Name = :Name, Synopsis = :Synopsis, Concept = :Concept, Outcome = :Outcome, " +
                 "BodyText = :BodyText, UpdatedAt = :UpdatedAt, OrderIndex = :OrderIndex " +
                 "WHERE Id = :Id";
 
-            var parameters = this.ToDictionary(); // same mapping as in Insert()
-            App.SqlStore.ExecSql(sqlText, parameters);
-
+            var Params = ToDictionary(); 
+            App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
         /// <summary>
@@ -121,10 +116,10 @@
             if (!App.QuestionBox($"Are you sure you want to delete the chapter '{this}'?"))
                 return false;
 
-            string sqlText = $"DELETE FROM {Project.SChapter} WHERE Id = :Id";
-            var parameters = this.ToDictionary(); // ToDictionary must at least include :Id
-            App.SqlStore.ExecSql(sqlText, parameters);
+            string SqlText = $"DELETE FROM {Project.SChapter} WHERE Id = :Id";
 
+            var Params = ToDictionary(); 
+            App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
 
@@ -134,56 +129,56 @@
         public bool UpdateOrderIndex()
         {
             string SqlText = $"UPDATE {Project.SChapter} SET OrderIndex = :OrderIndex WHERE Id = :Id";
-            var parameters = new Dictionary<string, object>
+            var Params = new Dictionary<string, object>
             {
-                ["OrderIndex"] = this.OrderIndex,
-                ["Id"] = this.Id
+                ["OrderIndex"] = OrderIndex,
+                ["Id"] = Id
             };
-            App.SqlStore.ExecSql(SqlText, parameters);
+            App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
         public bool UpdateBodyText()
         {
-            string sqlText = $"UPDATE {Project.SChapter} SET BodyText = :BodyText WHERE Id = :Id";
-            var parameters = new Dictionary<string, object>
+            string SqlText = $"UPDATE {Project.SChapter} SET BodyText = :BodyText WHERE Id = :Id";
+            var Params = new Dictionary<string, object>
             {
-                ["BodyText"] = this.BodyText,
-                ["Id"] = this.Id
+                ["BodyText"] = BodyText,
+                ["Id"] = Id
             };
-            App.SqlStore.ExecSql(sqlText, parameters);
+            App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
         public bool UpdateSynopsis()
         {
-            string sqlText = $"UPDATE {Project.SChapter} SET Synopsis = :Synopsis WHERE Id = :Id";
-            var parameters = new Dictionary<string, object>
+            string SqlText = $"UPDATE {Project.SChapter} SET Synopsis = :Synopsis WHERE Id = :Id";
+            var Params = new Dictionary<string, object>
             {
-                ["Synopsis"] = this.Synopsis,
-                ["Id"] = this.Id
+                ["Synopsis"] = Synopsis,
+                ["Id"] = Id
             };
-            App.SqlStore.ExecSql(sqlText, parameters);
+            App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
         public bool UpdateConcept()
         {
-            string sqlText = $"UPDATE {Project.SChapter} SET Concept = :Concept WHERE Id = :Id";
-            var parameters = new Dictionary<string, object>
+            string SqlText = $"UPDATE {Project.SChapter} SET Concept = :Concept WHERE Id = :Id";
+            var Params = new Dictionary<string, object>
             {
-                ["Concept"] = this.Concept,
-                ["Id"] = this.Id
+                ["Concept"] = Concept,
+                ["Id"] = Id
             };
-            App.SqlStore.ExecSql(sqlText, parameters);
+            App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
         public bool UpdateOutcome()
         {
-            string sqlText = $"UPDATE {Project.SChapter} SET Outcome = :Outcome WHERE Id = :Id";
-            var parameters = new Dictionary<string, object>
+            string SqlText = $"UPDATE {Project.SChapter} SET Outcome = :Outcome WHERE Id = :Id";
+            var Params = new Dictionary<string, object>
             {
-                ["Outcome"] = this.Outcome,
-                ["Id"] = this.Id
+                ["Outcome"] = Outcome,
+                ["Id"] = Id
             };
-            App.SqlStore.ExecSql(sqlText, parameters);
+            App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
 
@@ -192,25 +187,22 @@
         /// </summary>
         public bool IsLinkOf(string Term)
         {
-            bool Result = this.Name.ContainsText(Term);
+            bool Result = Name.ContainsText(Term);
 
             if (!Result)
-                Result = this.SceneList.Any(item => item.Name.ContainsText(Term));
+                Result = SceneList.Any(item => item.Name.ContainsText(Term));
 
             return Result;
         }
 
-        // ● chapters
+        // ● scenes
         /// <summary>
         /// True if a chapter exists by name
         /// </summary>
-        public bool SceneExists(string Name, string Id = "")
-        {
-            if (string.IsNullOrWhiteSpace(Id))
-                return SceneList.FirstOrDefault(item => item.Name.IsSameText(Name)) != null;
-
-            return SceneList.FirstOrDefault(item => item.Name.IsSameText(Name) && item.Id == Id) != null;
-        }
+        public bool SceneExists(Scene Instance) => Project.ItemExists(SceneList.Cast<BaseEntity>(), Instance);
+        /// <summary>
+        /// Renumbers the scenes in this chapter
+        /// </summary>
         public void RenumberScenes()
         {
             int OrderIndex = 0;

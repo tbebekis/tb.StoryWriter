@@ -4,10 +4,9 @@
     /// <summary>
     /// Represents a group.
     /// </summary>
-    public class Group: BaseEntity
+    public class Tag: BaseEntity
     {
-        // ● public
- 
+        // ● public 
         /// <summary>
         /// Builds a dictionary of properties of this instance for database operations.
         /// </summary>
@@ -23,8 +22,8 @@
         /// </summary>
         public void LoadFrom(DataRow Row)
         {
-            this.Id = Row.AsString("Id");
-            this.Name = Row.AsString("Name");
+            Id = Row.AsString("Id");
+            Name = Row.AsString("Name");
         }
 
         /// <summary>
@@ -32,17 +31,17 @@
         /// </summary>
         public bool Insert()
         {
-            if (App.CurrentProject.GroupExists(this.Name))
+            if (App.CurrentProject.ItemExists(this))
             {
-                App.ErrorBox($"A group with the name '{this.Name}' already exists.");
+                App.ErrorBox($"A group with the name '{Name}' already exists.");
                 return false;
             }
 
-            string sqlText = $"INSERT INTO {Project.SGroup} (Id, Name) VALUES (:Id, :Name)";
-            var parameters = this.ToDictionary(); // see helper below
-            App.SqlStore.ExecSql(sqlText, parameters);
+            string SqlText = $"INSERT INTO {Project.STag} (Id, Name) VALUES (:Id, :Name)";
 
-            App.CurrentProject.GroupList.Add(this);
+            var Params = ToDictionary(); // see helper below
+            App.SqlStore.ExecSql(SqlText, Params);
+            App.CurrentProject.AddToList(this);
             return true;
         }
         /// <summary>
@@ -50,16 +49,16 @@
         /// </summary>
         public bool Update()
         {
-            if (App.CurrentProject.GroupExists(this.Name, this.Id))
+            if (App.CurrentProject.ItemExists(this))
             {
-                App.ErrorBox($"A group with the name '{this.Name}' already exists.");
+                App.ErrorBox($"A group with the name '{Name}' already exists.");
                 return false;
             }
 
-            string sqlText = $"UPDATE {Project.SGroup} SET Name = :Name WHERE Id = :Id";
-            var parameters = this.ToDictionary(); // see helper below
-            App.SqlStore.ExecSql(sqlText, parameters);
+            string SqlText = $"UPDATE {Project.STag} SET Name = :Name WHERE Id = :Id";
 
+            var Params = ToDictionary(); // see helper below
+            App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
         /// <summary>
@@ -67,19 +66,17 @@
         /// </summary>
         public bool Delete()
         {
-            if (!App.QuestionBox($"Are you sure you want to delete the group '{this.Name}'?"))
+            if (!App.QuestionBox($"Are you sure you want to delete the group '{Name}'?"))
                 return false;
 
-            string SqlText = $"delete from {Project.SGroup} where Id = :Id";
-            var Params = this.ToDictionary();
+            string SqlText = $"delete from {Project.STag} where Id = :Id";
+
+            var Params = ToDictionary();
             App.SqlStore.ExecSql(SqlText, Params);
-
-            App.CurrentProject.GroupList.Remove(this);
-
+            App.CurrentProject.TagList.Remove(this);
             return true;
         }
-
-
-
+    
+         
     }
 }

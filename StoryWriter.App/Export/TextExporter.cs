@@ -138,7 +138,7 @@ namespace StoryWriter.Export
 
                 foreach (Component Component in Project.ComponentList)
                 {
-                    AppendHeader2(Component.Title);
+                    AppendHeader2(Component.Name);
                     EmptyLine();
                     ProcessRtf(Component.BodyText);
                 }

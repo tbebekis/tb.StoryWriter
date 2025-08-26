@@ -13,7 +13,7 @@
         void ControlInitialize()
         {
             this.Component = Info as Component;
-            TitleText = this.Component.Title;
+            TitleText = this.Component.Name;
             ParentTabPage.Text = TitleText;
 
             ucComponentText.RtfText = this.Component.BodyText;       
@@ -79,7 +79,7 @@
             Editor.Modified = false;
             ucComponentText.Editor.Modified = false;
 
-            string Message = $"Component: {Component.Title}. - saved";
+            string Message = $"Component: {Component.Name}. - saved";
             LogBox.AppendLine(Message);
         }
 
