@@ -336,29 +336,41 @@ create table {TableName} (
         /// <summary>
         /// True if a specified instance exists in the corresponding list
         /// </summary>
-        static public bool ItemExists(IEnumerable<BaseEntity> List, BaseEntity Instance)
+        static public bool ItemExists(IEnumerable<BaseEntity> List, string Name, string Id = "")
         {
-            if (string.IsNullOrWhiteSpace(Instance.Id))
-                return List.FirstOrDefault(item => item.Name.IsSameText(Instance.Name)) != null;
+            if (string.IsNullOrWhiteSpace(Id))
+                return List.FirstOrDefault(item => item.Name.IsSameText(Name)) != null;
 
-            return List.FirstOrDefault(item => item.Name.IsSameText(Instance.Name) && item.Id == Instance.Id) != null;
+            return List.FirstOrDefault(item => item.Name.IsSameText(Name) && item.Id == Id) != null;
         }
         /// <summary>
         /// True if a specified instance exists in the corresponding list
         /// </summary>
-        public bool ItemExists(Tag Instance) => ItemExists(TagList.Cast<BaseEntity>(), Instance);
+        public bool TagExists(string Name, string Id = "")
+        {
+            return ItemExists(TagList.Cast<BaseEntity>(), Name, Id);
+        }
         /// <summary>
         /// True if a specified instance exists in the corresponding list
         /// </summary>
-        public bool ItemExists(Component Instance) => ItemExists(ComponentList.Cast<BaseEntity>(), Instance);
+        public bool ComponentExists(string Name, string Id = "")
+        {
+            return ItemExists(ComponentList.Cast<BaseEntity>(), Name, Id);
+        }
         /// <summary>
         /// True if a specified instance exists in the corresponding list
         /// </summary>
-        public bool ItemExists(TagToComponent Instance) => TagToComponentList.FirstOrDefault(item => item.Tag.Id == Instance.Tag.Id && item.Component.Id == Instance.Component.Id) != null;
+        public bool TagToComponentExists(TagToComponent Instance)
+        {
+            return TagToComponentList.FirstOrDefault(item => item.Tag.Id == Instance.Tag.Id && item.Component.Id == Instance.Component.Id) != null;
+        }
         /// <summary>
         /// True if a specified instance exists in the corresponding list
         /// </summary>
-        public bool ItemExists(Chapter Instance) => ItemExists(ChapterList.Cast<BaseEntity>(), Instance);
+        public bool ChapterExists(string Name, string Id = "")
+        {
+            return ItemExists(ChapterList.Cast<BaseEntity>(), Name, Id);
+        }
  
         /// <summary>
         /// Adds a specified instance to the corresponding list if it does not already exist

@@ -44,7 +44,7 @@
         /// </summary>
         public bool Insert()
         {
-            if (App.CurrentProject.ItemExists(this))
+            if (App.CurrentProject.TagToComponentExists(this))
             {
                 App.ErrorBox($"A correlation between '{Tag.Name}' and '{Component.Name}' already exists.");
                 return false;

@@ -61,12 +61,6 @@
         /// </summary>
         public bool Insert()
         {            
-            if (App.CurrentProject.ItemExists(this))
-            {
-                App.ErrorBox($"A chapter with the name '{Name}' already exists.");
-                return false;
-            }
-
             // Set timestamps if not already set
             if (CreatedAt == default) 
                 CreatedAt = DateTime.UtcNow;
@@ -89,12 +83,6 @@
         /// </summary>
         public bool Update()
         {
-            if (!App.CurrentProject.ItemExists(this))
-            {
-                App.ErrorBox($"A chapter with the name '{Name}' not found.");
-                return false;
-            }
-
             // Touch update timestamp
             UpdatedAt = DateTime.UtcNow;
 
@@ -113,9 +101,6 @@
         /// </summary>
         public bool Delete()
         {
-            if (!App.QuestionBox($"Are you sure you want to delete the chapter '{this}'?"))
-                return false;
-
             string SqlText = $"DELETE FROM {Project.SChapter} WHERE Id = :Id";
 
             var Params = ToDictionary(); 
@@ -199,7 +184,10 @@
         /// <summary>
         /// True if a chapter exists by name
         /// </summary>
-        public bool SceneExists(Scene Instance) => Project.ItemExists(SceneList.Cast<BaseEntity>(), Instance);
+        public bool SceneExists(string Name, string Id = "")
+        {
+            return Project.ItemExists(SceneList.Cast<BaseEntity>(), Name, Id);
+        }
         /// <summary>
         /// Renumbers the scenes in this chapter
         /// </summary>

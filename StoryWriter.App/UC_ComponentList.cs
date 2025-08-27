@@ -132,10 +132,8 @@ namespace StoryWriter
 
             if (EditItemDialog.ShowModal("Add Component", App.CurrentProject.Name, ref ResultName))
             {
-                Component Component = new();
-                Component.Name = ResultName;
 
-                if (App.CurrentProject.ItemExists(Component))
+                if (App.CurrentProject.ComponentExists(ResultName))
                 {
                     string Message = $"Component '{ResultName}' already exists.";
                     App.ErrorBox(Message);
@@ -143,6 +141,8 @@ namespace StoryWriter
                     return;
                 }
 
+                Component Component = new();
+                Component.Name = ResultName;
                 Component.Id = Sys.GenId(UseBrackets: false);
 
                 if (Component.Insert())
@@ -150,7 +150,6 @@ namespace StoryWriter
                     DataRow Row = tblComponents.Rows.Add(Component.Id, Component.Name, Component);                    
                     tblComponents.AcceptChanges();
                     gridComponents.PositionToRow(Row);
-
                 }
                 else
                 {
@@ -174,7 +173,7 @@ namespace StoryWriter
 
             if (EditItemDialog.ShowModal("Component Chapter", App.CurrentProject.Name, ref ResultName))
             {
-                if (App.CurrentProject.ItemExists(Component))
+                if (App.CurrentProject.ComponentExists(ResultName, Component.Id))
                 {
                     string Message = $"Component '{ResultName}' already exists.";
                     App.ErrorBox(Message);
@@ -198,6 +197,17 @@ namespace StoryWriter
         }
         void DeleteComponent()
         {
+            DataRow Row = bsComponents.CurrentDataRow();
+            if (Row == null)
+                return;
+
+            Component Component = Row["OBJECT"] as Component;
+            if (Component == null)
+                return;
+
+            if (!App.QuestionBox($"Are you sure you want to delete the component '{Component.Name}'?"))
+                return;
+
             App.InfoBox("Delete Component. NOT YET IMPLEMENTED.");
         }
         void EditComponentText()

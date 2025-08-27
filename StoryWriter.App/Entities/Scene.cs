@@ -59,12 +59,6 @@
         /// </summary>
         public bool Insert()
         { 
-            if (Chapter.SceneExists(this))
-            {
-                App.ErrorBox($"A scene with the name '{Name}' already exists.");
-                return false;
-            }
-
             // Set timestamps
             if (CreatedAt == default) 
                 CreatedAt = DateTime.UtcNow;
@@ -84,12 +78,6 @@
         /// </summary>
         public bool Update()
         {
-            if (!Chapter.SceneExists(this))
-            {
-                App.ErrorBox($"A scene with the name '{Name}' not found.");
-                return false;
-            }
-
             UpdatedAt = DateTime.UtcNow;
 
             string SqlText =
@@ -108,9 +96,6 @@
         /// </summary>
         public bool Delete()
         {
-            if (!App.QuestionBox($"Are you sure you want to delete the scene '{this}'?"))
-                return false;
-
             string SqlText = $"DELETE FROM {Project.SScene} WHERE Id = :Id";
             var Params = ToDictionary(); // ToDictionary must at least include :Id
             App.SqlStore.ExecSql(SqlText, Params);

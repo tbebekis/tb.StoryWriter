@@ -129,10 +129,7 @@
 
             if (EditItemDialog.ShowModal("Add Tag", App.CurrentProject.Name, ref ResultName))
             {
-                Tag Tag = new();
-                Tag.Name = ResultName;
-
-                if (App.CurrentProject.ItemExists(Tag))
+                if (App.CurrentProject.TagExists(ResultName))
                 {
                     string Message = $"Tag '{ResultName}' already exists.";
                     App.ErrorBox(Message);
@@ -140,8 +137,9 @@
                     return;
                 }
 
+                Tag Tag = new();
                 Tag.Id = Sys.GenId(UseBrackets: false);
-
+                Tag.Name = ResultName;             
 
                 if (Tag.Insert())
                 {
@@ -157,9 +155,19 @@
                 }
             }
         }
- 
         void DeleteTag()
         {
+            DataRow Row = bsTags.CurrentDataRow();
+            if (Row == null)
+                return;
+
+            Tag Tag = Row["OBJECT"] as Tag;
+            if (Tag == null)
+                return;
+
+            if (!App.QuestionBox($"Are you sure you want to delete the tag '{Tag.Name}'?"))
+                return;
+
             App.InfoBox("Delete Tag. NOT YET IMPLEMENTED.");
         }
         void AddDefaultTags()
@@ -174,18 +182,16 @@
 
             foreach (string TagName in App.Settings.DefaultTags)
             {
-                Tag Tag = new();
-                
-                Tag.Name = TagName;
-
-                if (App.CurrentProject.ItemExists(Tag))
+                if (App.CurrentProject.TagExists(TagName))
                 {
                     string Message = $"Tag '{TagName}' already exists.";
                     LogBox.AppendLine(Message);
                     continue;
                 }
 
+                Tag Tag = new();
                 Tag.Id = Sys.GenId(UseBrackets: false);
+                Tag.Name = TagName;                
 
                 if (Tag.Insert())
                 {

@@ -51,6 +51,7 @@
             toolStripStatusLabel2 = new ToolStripStatusLabel();
             lblPages = new ToolStripStatusLabel();
             edtRichText = new RichTextBoxEx();
+            lblTitle = new ToolStripLabel();
             ToolBar.SuspendLayout();
             StatuBar.SuspendLayout();
             SuspendLayout();
@@ -58,10 +59,10 @@
             // ToolBar
             // 
             ToolBar.ImageScalingSize = new Size(24, 24);
-            ToolBar.Items.AddRange(new ToolStripItem[] { btnBold, btnItalic, btnUnderline, toolStripSeparator1, btnFontColor, btnBackColor, toolStripSeparator2, btnBullets, btnNumbers, toolStripSeparator3, btnFind, toolStripSeparator5, btnResetSelectionToDefault, btnLink, toolStripSeparator4, btnSave });
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnBold, btnItalic, btnUnderline, toolStripSeparator1, btnFontColor, btnBackColor, toolStripSeparator2, btnBullets, btnNumbers, toolStripSeparator3, btnFind, toolStripSeparator5, btnResetSelectionToDefault, btnLink, toolStripSeparator4, btnSave, lblTitle });
             ToolBar.Location = new Point(0, 0);
             ToolBar.Name = "ToolBar";
-            ToolBar.Size = new Size(535, 31);
+            ToolBar.Size = new Size(749, 31);
             ToolBar.TabIndex = 0;
             ToolBar.Text = "toolStrip1";
             // 
@@ -192,9 +193,9 @@
             // StatuBar
             // 
             StatuBar.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1, lblWords, toolStripStatusLabel2, lblPages });
-            StatuBar.Location = new Point(0, 179);
+            StatuBar.Location = new Point(0, 306);
             StatuBar.Name = "StatuBar";
-            StatuBar.Size = new Size(535, 22);
+            StatuBar.Size = new Size(749, 22);
             StatuBar.TabIndex = 2;
             StatuBar.Text = "statusStrip1";
             // 
@@ -231,9 +232,16 @@
             edtRichText.Dock = DockStyle.Fill;
             edtRichText.Location = new Point(0, 31);
             edtRichText.Name = "edtRichText";
-            edtRichText.Size = new Size(535, 148);
+            edtRichText.Size = new Size(749, 275);
             edtRichText.TabIndex = 3;
             edtRichText.Text = "";
+            // 
+            // lblTitle
+            // 
+            lblTitle.Font = new Font("Arial", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 161);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Size = new Size(277, 28);
+            lblTitle.Text = "Here goes the title of the item";
             // 
             // UC_RichText
             // 
@@ -243,7 +251,7 @@
             Controls.Add(StatuBar);
             Controls.Add(ToolBar);
             Name = "UC_RichText";
-            Size = new Size(535, 201);
+            Size = new Size(749, 328);
             ToolBar.ResumeLayout(false);
             ToolBar.PerformLayout();
             StatuBar.ResumeLayout(false);
@@ -277,5 +285,6 @@
         private ToolStripStatusLabel toolStripStatusLabel2;
         private ToolStripStatusLabel lblPages;
         private RichTextBoxEx edtRichText;
+        private ToolStripLabel lblTitle;
     }
 }

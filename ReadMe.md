@@ -36,14 +36,14 @@ is always one double-click away, so you can maintain consistent names and detail
 Opening a chapter opens the following tabs:
 
 - **Body** — The main chapter text
-- **Scenes** — Short decriptions to help in writing a chapter. aAdd, edit, remove, and re-order scene cards within the chapter
+- **Scenes** — Short decriptions to help in writing a chapter. Add, edit, remove, and re-order scene cards within the chapter
 - **Synopsis** — A compact summary for quick orientation
 - **Concept** — The “idea core” of the chapter
 - **Outcome** — What changes (plot/character/world) after this chapter
 
 ## Links and Quick Navigation
 
-Think of tbStoryWriter as a lightweight wiki: press **Ctrl + Left-Click** on a selected word (or hit **Ctrl + L**) and the app searches **across all Components** as well as **chapter and scene titles**. 
+Think of tbStoryWriter as a lightweight wiki: press **Ctrl + Left-Click** on a selected word (or hit **Ctrl + L**) and the app searches **across all components** as well as **chapter and scene titles**. 
 
 If it finds a match, it opens that item instantly in a new editor tab, so you can jump from a mention in the text to the canonical entry (or chapter/scene) without losing your flow.
 

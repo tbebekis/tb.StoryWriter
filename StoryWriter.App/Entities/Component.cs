@@ -40,12 +40,6 @@
         /// </summary>
         public bool Insert()
         {
-            if (App.CurrentProject.ItemExists(this))
-            {
-                App.ErrorBox($"A component with the name '{Name}' already exists.");
-                return false;
-            }
-
             string SqlText = $"INSERT INTO {Project.SComponent} (Id, Name, BodyText) VALUES (:Id, :Name, :BodyText)";    
             
             var Params = ToDictionary();
@@ -58,12 +52,6 @@
         /// </summary>
         public bool Update()
         {
-            if (!App.CurrentProject.ItemExists(this))
-            {
-                App.ErrorBox($"A component with the name '{Name}' not found.");
-                return false;
-            }
-
             string SqlText = $"UPDATE {Project.SComponent} SET Name = :Name, BodyText = :BodyText WHERE Id = :Id";    
             
             var Params = ToDictionary(); 
@@ -75,9 +63,6 @@
         /// </summary>
         public bool Delete()
         {
-            if (!App.QuestionBox($"Are you sure you want to delete the component '{Name}'?"))
-                return false;
-
             string SqlText = $"delete from {Project.SComponent} where Id = :Id";
 
             var Params = ToDictionary();

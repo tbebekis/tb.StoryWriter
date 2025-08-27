@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-
-namespace StoryWriter
+﻿namespace StoryWriter
 {
     static public partial class App
     {
@@ -416,93 +414,7 @@ Do you want to continue?
 
             LoadProject(CurrentProject.Name);
         }
-
-        /// <summary>
-        /// Exports the current project to RTF format
-        /// </summary>
-        static public void ExportCurrentProjectToRtf(string FilePath)
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
-
-            using var rtb = new RichTextBox { DetectUrls = false };
-            rtb.Clear();
-
-            for (int i = 0; i < CurrentProject.ChapterList.Count; i++)
-            {
-                var ch = CurrentProject.ChapterList[i];
-                var title = string.IsNullOrWhiteSpace(ch?.Name) ? $"Chapter {i + 1}" : ch!.Name;
-
-                // Τίτλος κεφαλαίου (bold, λίγο μεγαλύτερο)
-                rtb.Select(rtb.TextLength, 0);
-                rtb.SelectionFont = new Font("Arial", 14, FontStyle.Bold);
-                rtb.AppendText(title + Environment.NewLine + Environment.NewLine);
-
-                // Κείμενο κεφαλαίου ως RTF (κρατά format)
-                if (!string.IsNullOrWhiteSpace(ch?.BodyText))
-                {
-                    rtb.Select(rtb.TextLength, 0);
-                    rtb.SelectedRtf = ch!.BodyText;   // merge με τους πίνακες format του RTB
-                }
-
-                // Page break μεταξύ κεφαλαίων
-                if (i < CurrentProject.ChapterList.Count - 1)
-                {
-                    rtb.Select(rtb.TextLength, 0);
-                    // μικρό RTF fragment για page break
-                    rtb.SelectedRtf = @"{\rtf1\ansi\pard\page\par}";
-                    rtb.AppendText(Environment.NewLine);
-                }
-            }
-
-            rtb.SaveFile(FilePath, RichTextBoxStreamType.RichText);
-        }
-        /// <summary>
-        /// Exports the current project to DOCX format
-        /// </summary>
-        static public void ExportCurrentProjectToDocx(string FilePath)
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
-
-            var opts = new DocxExportOptions
-            {
-                IncludeToc = true,
-                PageBreakBetweenChapters = true,
-                Mode = ChapterExportMode.AltChunkRtf // ή PlainText για συμβατότητα με Libre/μη-Word viewers
-            };
-
-            //OpenXmlExporter.ExportProjectToDocx(CurrentProject, FilePath, opts);
-        }
-        /// <summary>
-        /// Exports the current project to ODT format
-        /// </summary>
-        static public void ExportCurrentProjectToOdt(string FilePath)
-        {
-            if (!LibreOfficeExporter.LibreOfficeExists())
-            {
-                string Message = "LibreOffice is not installed. Please install it and try again.";
-                ErrorBox(Message);
-                LogBox.AppendLine(Message);
-                return;
-            }
-
-            Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
-
-            string RtfFilePath = Path.ChangeExtension(FilePath, ".rtf");
-            ExportCurrentProjectToRtf(RtfFilePath);
-
-            LibreOfficeExporter.Export(RtfFilePath, DocFormatType.Odt);
-        }
-        /// <summary>
-        /// Exports the current project to TXT format
-        /// </summary>
-        static public void ExportCurrentProjectToTxt(string FilePath)
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
-            FilePath = Path.ChangeExtension(FilePath, ".md");
-            //MarkdownExporter.Export(CurrentProject, FilePath);
-        }
-
-
+ 
         /// <summary>
         /// Adds a dirty editor to the list or dirty editors for auto-save.
         /// </summary>

@@ -455,8 +455,12 @@
         {
             InitializeComponent();
 
-            SetEditorFont();
-            AddToolBarControls();
+            if (!DesignMode)
+            {
+                lblTitle.Text = string.Empty;
+                SetEditorFont();
+                AddToolBarControls();
+            }
         }
 
         // ● public        
@@ -500,7 +504,14 @@
         }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public IEditorHandler EditorHandler { get; set; }
- 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public string Title
+        {
+            get => lblTitle.Text;
+            set => lblTitle.Text = value;
+        }
+
+
     }
 
 

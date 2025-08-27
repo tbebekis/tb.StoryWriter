@@ -63,6 +63,8 @@
             ReLoadScenes(); 
             lboScenes.SelectedIndexChanged += (s, e) => SelectedSceneChanged();
 
+            ucBodyText.Title = Chapter.ToString();
+
             SelectedSceneChanged();
         }
         void InitalizeRichTextEditors()
@@ -119,19 +121,18 @@
 
             if (EditItemDialog.ShowModal("Add Scene", Chapter.Name, ref ResultName))
             {
-                Scene Scene = new();
-                Scene.ChapterId = Chapter.Id;
-                Scene.Name = ResultName;
-
-                if (Chapter.SceneExists(Scene))
+                if (Chapter.SceneExists(ResultName))
                 {
                     string Message = $"Scene '{ResultName}' already exists.";
                     App.ErrorBox(Message);
                     LogBox.AppendLine(Message);
                     return;
                 }
-                
-                Scene.Id = Sys.GenId(UseBrackets: false);                              
+
+                Scene Scene = new();
+                Scene.Id = Sys.GenId(UseBrackets: false);
+                Scene.ChapterId = Chapter.Id;
+                Scene.Name = ResultName;                                         
                 Scene.OrderIndex = Chapter.SceneList.Count + 1;
 
                 if (Scene.Insert())
@@ -158,7 +159,7 @@
 
             if (EditItemDialog.ShowModal("Edit Scene", Chapter.Name, ref ResultName))
             {
-                if (Chapter.SceneExists(Scene))
+                if (Chapter.SceneExists(ResultName, Scene.Id))
                 {
                     string Message = $"Scene '{ResultName}' already exists.";
                     App.ErrorBox(Message);
@@ -186,14 +187,17 @@
             if (Scene == null)
                 return;
 
+            if (!App.QuestionBox($"Are you sure you want to delete the scene '{Scene}'?"))
+                return;
+
             if (Scene.Delete())
             {
                 Chapter.SceneList.Remove(Scene);
+                CurrentScene = null;
                 ReLoadScenes();
 
                 string Message = $"Scene: {Scene}. Deleted";
-                LogBox.AppendLine(Message);
-            }
+                LogBox.AppendLine(Message);            }
             else
             {
                 string Message = "Delete Scene. Operation failed.";
@@ -246,7 +250,7 @@
                 btnEdit.Enabled = App.CurrentProject != null && (lboScenes.SelectedItem != null);
                 btnDelete.Enabled = App.CurrentProject != null && (lboScenes.SelectedItem != null);
 
-                if (CurrentScene != null)
+                if (CurrentScene != null && Chapter.SceneExists(CurrentScene.Name, CurrentScene.Id))
                 {
                     CurrentScene.Update();
                 }
@@ -258,6 +262,7 @@
                     try
                     {                         
                         ucSceneText.RtfText = CurrentScene.BodyText;
+                        ucSceneText.Title = CurrentScene.ToString(); ;
                     }
                     finally
                     {
@@ -371,9 +376,13 @@
             {
                 if (CurrentScene != null && !ChangingScene)
                 {
-                    CurrentScene.BodyText = Editor.Rtf;
-                    CurrentScene.UpdateBodyText();
-                    Message = $"Chapter: {Chapter}. - Scene: {CurrentScene} saved";
+                    if (Chapter.SceneExists(CurrentScene.Name, CurrentScene.Id)) // when deleting and reloading scenes causes a problem
+                    {
+                        CurrentScene.BodyText = Editor.Rtf;
+                        CurrentScene.UpdateBodyText();
+                        Message = $"Chapter: {Chapter}. - Scene: {CurrentScene} saved";
+                    }
+
                 }
             }
 

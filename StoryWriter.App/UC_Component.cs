@@ -26,6 +26,8 @@
                 ucComponentText.EditorHandler = this;
                 ucComponentText.Focus();
 
+                ucComponentText.Title = Component.Name;
+
             }, 1500, null);
         }
 

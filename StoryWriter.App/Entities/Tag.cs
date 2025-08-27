@@ -31,12 +31,6 @@
         /// </summary>
         public bool Insert()
         {
-            if (App.CurrentProject.ItemExists(this))
-            {
-                App.ErrorBox($"A group with the name '{Name}' already exists.");
-                return false;
-            }
-
             string SqlText = $"INSERT INTO {Project.STag} (Id, Name) VALUES (:Id, :Name)";
 
             var Params = ToDictionary(); // see helper below
@@ -49,12 +43,6 @@
         /// </summary>
         public bool Update()
         {
-            if (!App.CurrentProject.ItemExists(this))
-            {
-                App.ErrorBox($"A group with the name '{Name}' not found.");
-                return false;
-            }
-
             string SqlText = $"UPDATE {Project.STag} SET Name = :Name WHERE Id = :Id";
 
             var Params = ToDictionary(); // see helper below
@@ -66,9 +54,6 @@
         /// </summary>
         public bool Delete()
         {
-            if (!App.QuestionBox($"Are you sure you want to delete the group '{Name}'?"))
-                return false;
-
             string SqlText = $"delete from {Project.STag} where Id = :Id";
 
             var Params = ToDictionary();
