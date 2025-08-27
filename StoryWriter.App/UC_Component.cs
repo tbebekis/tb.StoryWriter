@@ -90,5 +90,7 @@
         public string Id { get; set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public object Info { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public UC_RichText ucRichText { get { return ucComponentText; } }
     }
 }

@@ -186,6 +186,10 @@ namespace StoryWriter
                 if (Component.Update())
                 {
                     Row["Name"] = Component.Name;
+                    TabPage Page = App.ContentPagerHandler.FindTabPage(Component.Id);
+                    UC_Component ucComponent = Page.Tag as UC_Component;
+                    if (ucComponent != null)
+                        ucComponent.ucRichText.Title = Component.Name;
                 }
                 else
                 {

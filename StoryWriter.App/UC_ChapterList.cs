@@ -100,6 +100,11 @@
                 if (Chapter.Update())
                 {
                     lboChapters.Refresh();
+
+                    TabPage Page = App.ContentPagerHandler.FindTabPage(Chapter.Id);
+                    UC_Chapter ucChapter = Page.Tag as UC_Chapter;
+                    if (ucChapter != null)
+                        ucChapter.ucRichText.Title = Chapter.Name;
                 }
                 else
                 {
