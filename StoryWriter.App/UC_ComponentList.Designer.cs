@@ -32,6 +32,8 @@
             btnAddComponent = new ToolStripButton();
             btnEditComponent = new ToolStripButton();
             btnDeleteComponent = new ToolStripButton();
+            toolStripSeparator1 = new ToolStripSeparator();
+            btnEditRtfText = new ToolStripButton();
             panel2 = new Panel();
             edtFilter = new TextBox();
             label2 = new Label();
@@ -40,7 +42,7 @@
             splitContainer1 = new SplitContainer();
             gridTags = new DataGridView();
             coTag = new DataGridViewTextBoxColumn();
-            toolStrip1 = new ToolStrip();
+            toolStripSeparator2 = new ToolStripSeparator();
             btnAdjustComponentTags = new ToolStripButton();
             ToolBar.SuspendLayout();
             panel2.SuspendLayout();
@@ -50,13 +52,12 @@
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
             ((ISupportInitialize)gridTags).BeginInit();
-            toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // ToolBar
             // 
             ToolBar.ImageScalingSize = new Size(24, 24);
-            ToolBar.Items.AddRange(new ToolStripItem[] { btnAddComponent, btnEditComponent, btnDeleteComponent });
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnAddComponent, btnEditComponent, btnDeleteComponent, toolStripSeparator1, btnEditRtfText, toolStripSeparator2, btnAdjustComponentTags });
             ToolBar.Location = new Point(0, 0);
             ToolBar.Name = "ToolBar";
             ToolBar.Size = new Size(351, 31);
@@ -89,6 +90,20 @@
             btnDeleteComponent.Name = "btnDeleteComponent";
             btnDeleteComponent.Size = new Size(28, 28);
             btnDeleteComponent.Text = "Remove";
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 31);
+            // 
+            // btnEditRtfText
+            // 
+            btnEditRtfText.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnEditRtfText.Image = Properties.Resources.page_edit;
+            btnEditRtfText.ImageTransparentColor = Color.Magenta;
+            btnEditRtfText.Name = "btnEditRtfText";
+            btnEditRtfText.Size = new Size(28, 28);
+            btnEditRtfText.Text = "Edit Text";
             // 
             // panel2
             // 
@@ -147,7 +162,6 @@
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(gridTags);
-            splitContainer1.Panel2.Controls.Add(toolStrip1);
             splitContainer1.Size = new Size(351, 563);
             splitContainer1.SplitterDistance = 281;
             splitContainer1.SplitterWidth = 6;
@@ -158,9 +172,9 @@
             gridTags.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             gridTags.Columns.AddRange(new DataGridViewColumn[] { coTag });
             gridTags.Dock = DockStyle.Fill;
-            gridTags.Location = new Point(0, 31);
+            gridTags.Location = new Point(0, 0);
             gridTags.Name = "gridTags";
-            gridTags.Size = new Size(351, 245);
+            gridTags.Size = new Size(351, 276);
             gridTags.TabIndex = 7;
             // 
             // coTag
@@ -169,15 +183,10 @@
             coTag.HeaderText = "Tag";
             coTag.Name = "coTag";
             // 
-            // toolStrip1
+            // toolStripSeparator2
             // 
-            toolStrip1.ImageScalingSize = new Size(24, 24);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { btnAdjustComponentTags });
-            toolStrip1.Location = new Point(0, 0);
-            toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(351, 31);
-            toolStrip1.TabIndex = 6;
-            toolStrip1.Text = "toolStrip1";
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 31);
             // 
             // btnAdjustComponentTags
             // 
@@ -204,12 +213,9 @@
             ((ISupportInitialize)gridComponents).EndInit();
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
-            splitContainer1.Panel2.PerformLayout();
             ((ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
             ((ISupportInitialize)gridTags).EndInit();
-            toolStrip1.ResumeLayout(false);
-            toolStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -227,8 +233,10 @@
         private SplitContainer splitContainer1;
         private DataGridView gridTags;
         private DataGridViewTextBoxColumn coTag;
-        private ToolStrip toolStrip1;
-        private ToolStripButton btnAdjustComponentTags;
         private DataGridViewTextBoxColumn coComponent;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripButton btnEditRtfText;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripButton btnAdjustComponentTags;
     }
 }

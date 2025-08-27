@@ -84,8 +84,4 @@
         static public bool LibreOfficeExists() => FindSoffice() != null;
 
     }
-
-
-
-
 }

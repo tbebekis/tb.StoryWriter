@@ -192,6 +192,7 @@ create table {TableName} (
 ";
             sv.AddTable(SqlText);
 
+            /*
             string[] Items = {"Character", "Location", "People", "Trait", "Event", "Artifact", "Planet" };
  
             foreach (var Item in Items)
@@ -199,6 +200,7 @@ create table {TableName} (
                 SqlText = $"insert into {TableName} (Id, Name) VALUES ('{Sys.GenId(UseBrackets:false)}', '{Item}')";
                 sv.AddStatementAfter(SqlText);
             }
+            */
         }
         /// <summary>
         /// Adds a table to a schema version
@@ -399,6 +401,23 @@ create table {TableName} (
                 TagToComponent.Insert();
             }
         }
+        /// <summary>
+        /// Adjusts the components for a specified tag
+        /// </summary>
+        public void AdjustTagComponents(Tag Tag, List<Component> ComponentList)
+        {
+            string SqlText = $"delete from {Project.STagToComponent} where TagId = '{Tag.Id}'";
+            App.SqlStore.ExecSql(SqlText);
+
+            LoadTagToComponents(); // empty the list and reload
+
+            foreach (var Component in ComponentList)
+            {
+                var TagToComponent = new TagToComponent(Tag, Component);
+                TagToComponent.Insert();
+            }
+        }
+
          
 
         // ● miscs

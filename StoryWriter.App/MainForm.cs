@@ -37,32 +37,22 @@
 
             AddToolBarControls();            
 
-            btnNewProject.Click += (s, e) => App.CreateNewProject();
+            btnNewProject.Click += (s, e) => App.CreateNewProject(LoadToo: true);
             btnOpenProject.Click += (s, e) => App.OpenProject();
             btnSettings.Click += (s, e) => App.ShowSettingsDialog();
             btnToggleSideBar.Click += (s, e) => ToggleSideBar();
             btnToggleLog.Click += (s, e) => ToggleLog();
-            btnExportToText.Click += (s, e) => ExportToFile(btnExportToText);
-            btnExportToRtf.Click += (s, e) => ExportToFile(btnExportToRtf);
-            btnExportToDocx.Click += (s, e) => ExportToFile(btnExportToDocx);
-            btnExportToOdt.Click += (s, e) => ExportToFile(btnExportToOdt);            
+            btnExport.Click += (s, e) => App.ExportProject();
+            btnImport.Click += (s, e) => App.ImportProject();
+            
             btnExit.Click += (s, e) => Close();
 
-            edtSearh.TextChanged += (s, e) => 
-            {
-                if (App.CurrentProject != null)
-                {
-                    string Term = edtSearh.Text.Trim();
-                    if (Term.Length > 2)
-                    {
-                        App.CurrentProject.ShowPageByTerm(Term);
-                    }
-                }    
-               
-            };
+            edtSearh.TextChanged += (s, e) => GlobalSearch();
 
             App.ZoomFactor = App.Settings.ZoomFactor;
             App.Initialize(this);
+
+            edtSearh.Focus();
 
         }
         void AddToolBarControls()
@@ -112,46 +102,21 @@
         {
             splitContent.Panel2Collapsed = !splitContent.Panel2Collapsed;            
         }
-
+ 
+ 
         void GlobalSearch()
         {
-
-        }
-
-        public void ExportToFile(ToolStripButton Button)
-        {
-            string Filter = "Text files (*.txt)|*.txt|All Files (*.*)|*.*";
-            Action<string> ExportProc = App.ExportCurrentProjectToTxt;
-
-            if (Button == btnExportToRtf)
+            if (App.CurrentProject != null)
             {
-                Filter = "RTF Files (*.rtf)|*.rtf|All Files (*.*)|*.*";
-                ExportProc = App.ExportCurrentProjectToRtf;
-            }
-            else if (Button == btnExportToDocx)
-            {
-                Filter = "Word Files (*.docx)|*.docx|All Files (*.*)|*.*";
-                ExportProc = App.ExportCurrentProjectToDocx;
-            }
-            else if (Button == btnExportToOdt)
-            {
-                Filter = "ODF Text Document (*.odt)|*.odt|All Files (*.*)|*.*";
-                ExportProc = App.ExportCurrentProjectToOdt;
-            }
-
-            using (SaveFileDialog dlg = new ())
-            {
-                dlg.Filter = Filter;
-                if (dlg.ShowDialog() == DialogResult.OK)
+                string Term = edtSearh.Text.Trim();
+                if (Term.Length > 2)
                 {
-                    string FilePath = dlg.FileName;
-                    ExportProc(FilePath);
-
-                    LogBox.AppendLine($"{App.CurrentProject.Name} exported to {FilePath}");
+                    App.CurrentProject.ShowPageByTerm(Term);
                 }
             }
-
         }
+
+ 
 
         // ● overrides
         protected override void OnShown(EventArgs e)

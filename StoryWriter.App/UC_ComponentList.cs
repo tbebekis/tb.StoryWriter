@@ -1,4 +1,6 @@
-﻿namespace StoryWriter
+﻿using System;
+
+namespace StoryWriter
 {
     public partial class UC_ComponentList : UserControl, IPanel
     {
@@ -19,8 +21,10 @@
             btnAddComponent.Click += (s, e) => AddComponent();
             btnEditComponent.Click += (s, e) => EditComponent();
             btnDeleteComponent.Click += (s, e) => DeleteComponent();
+            btnEditRtfText.Click += (s, e) => EditComponentText();
 
             edtFilter.TextChanged += (s, e) => FilterChanged();
+            gridComponents.MouseDoubleClick += (s, e) => EditComponentText();
 
             btnAdjustComponentTags.Click += (s, e) => AdjustComponentTags(); 
 
@@ -44,8 +48,7 @@
 
                 gridComponents.AutoGenerateColumns = false;
                 gridComponents.DataSource = bsComponents;
-                gridComponents.InitializeReadOnly();
-                
+                gridComponents.InitializeReadOnly();                
 
                 bsComponents.PositionChanged += (s, e) => SelectedComponentChanged();
             }
@@ -97,7 +100,7 @@
         }
         void SelectedComponentChanged()
         {
-            DataRow Row = gridComponents.CurrentDataRow();
+            DataRow Row = bsComponents.CurrentDataRow();
 
             if (Row != null)
             {
@@ -144,8 +147,9 @@
 
                 if (Component.Insert())
                 {
-                    tblComponents.Rows.Add(Component.Id, Component.Name, Tag);
+                    DataRow Row = tblComponents.Rows.Add(Component.Id, Component.Name, Component);                    
                     tblComponents.AcceptChanges();
+                    gridComponents.PositionToRow(Row);
 
                 }
                 else
@@ -158,7 +162,7 @@
         }
         void EditComponent()
         {
-            DataRow Row = gridComponents.CurrentDataRow();
+            DataRow Row = bsComponents.CurrentDataRow();
             if (Row == null)
                 return;
 
@@ -194,12 +198,11 @@
         }
         void DeleteComponent()
         {
-            // TODO: EditComponent
+            App.InfoBox("Delete Component. NOT YET IMPLEMENTED.");
         }
-        
-        void AdjustComponentTags()
+        void EditComponentText()
         {
-            DataRow Row = gridComponents.CurrentDataRow();
+            DataRow Row = bsComponents.CurrentDataRow();
             if (Row == null)
                 return;
 
@@ -207,7 +210,24 @@
             if (Component == null)
                 return;
 
-            App.EditComponentTags(Component);
+            App.ContentPagerHandler.ShowPage(typeof(UC_Component), Component.Id, Component);
+        }
+
+        void AdjustComponentTags()
+        {
+            DataRow Row = bsComponents.CurrentDataRow();
+            if (Row == null)
+                return;
+
+            Component Component = Row["OBJECT"] as Component;
+            if (Component == null)
+                return;
+
+            App.AddTagsToComponent(Component);
+
+            Row = tblComponents.FindDataRowById(Component.Id);
+            if (Row != null)
+                gridComponents.PositionToRow(Row);
         }
 
         // ● event handlers

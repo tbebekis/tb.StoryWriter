@@ -37,13 +37,14 @@
             btnDown = new ToolStripButton();
             btnEditRtfText = new ToolStripButton();
             lboChapters = new ListBox();
+            toolStripSeparator2 = new ToolStripSeparator();
             ToolBar.SuspendLayout();
             SuspendLayout();
             // 
             // ToolBar
             // 
             ToolBar.ImageScalingSize = new Size(24, 24);
-            ToolBar.Items.AddRange(new ToolStripItem[] { btnAdd, btnEdit, btnDelete, toolStripSeparator1, btnUp, btnDown, btnEditRtfText });
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnAdd, btnEdit, btnDelete, toolStripSeparator1, btnEditRtfText, toolStripSeparator2, btnUp, btnDown });
             ToolBar.Location = new Point(0, 0);
             ToolBar.Name = "ToolBar";
             ToolBar.Size = new Size(217, 31);
@@ -118,6 +119,11 @@
             lboChapters.Size = new Size(217, 590);
             lboChapters.TabIndex = 1;
             // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 31);
+            // 
             // UC_ChapterList
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -143,5 +149,6 @@
         private ToolStripButton btnDown;
         private ListBox lboChapters;
         private ToolStripButton btnEditRtfText;
+        private ToolStripSeparator toolStripSeparator2;
     }
 }

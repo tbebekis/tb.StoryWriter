@@ -89,9 +89,9 @@
         /// </summary>
         public bool Update()
         {
-            if (App.CurrentProject.ItemExists(this))
+            if (!App.CurrentProject.ItemExists(this))
             {
-                App.ErrorBox($"A chapter with the name '{Name}' already exists.");
+                App.ErrorBox($"A chapter with the name '{Name}' not found.");
                 return false;
             }
 

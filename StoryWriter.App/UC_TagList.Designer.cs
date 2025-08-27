@@ -31,6 +31,8 @@
             ToolBar = new ToolStrip();
             btnAddTag = new ToolStripButton();
             btnDeleteTag = new ToolStripButton();
+            toolStripSeparator1 = new ToolStripSeparator();
+            btnAddComponentsToTag = new ToolStripButton();
             panel1 = new Panel();
             edtFilter = new TextBox();
             label1 = new Label();
@@ -39,6 +41,8 @@
             coTagName = new DataGridViewTextBoxColumn();
             gridComponents = new DataGridView();
             coComponent = new DataGridViewTextBoxColumn();
+            btnAddDefaultTags = new ToolStripButton();
+            toolStripSeparator2 = new ToolStripSeparator();
             ToolBar.SuspendLayout();
             panel1.SuspendLayout();
             ((ISupportInitialize)splitContainer1).BeginInit();
@@ -52,7 +56,7 @@
             // ToolBar
             // 
             ToolBar.ImageScalingSize = new Size(24, 24);
-            ToolBar.Items.AddRange(new ToolStripItem[] { btnAddTag, btnDeleteTag });
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnAddTag, btnDeleteTag, toolStripSeparator1, btnAddDefaultTags, toolStripSeparator2, btnAddComponentsToTag });
             ToolBar.Location = new Point(0, 0);
             ToolBar.Name = "ToolBar";
             ToolBar.Size = new Size(350, 31);
@@ -76,6 +80,20 @@
             btnDeleteTag.Name = "btnDeleteTag";
             btnDeleteTag.Size = new Size(28, 28);
             btnDeleteTag.Text = "Remove";
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 31);
+            // 
+            // btnAddComponentsToTag
+            // 
+            btnAddComponentsToTag.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnAddComponentsToTag.Image = Properties.Resources.to_do_list_cheked;
+            btnAddComponentsToTag.ImageTransparentColor = Color.Magenta;
+            btnAddComponentsToTag.Name = "btnAddComponentsToTag";
+            btnAddComponentsToTag.Size = new Size(28, 28);
+            btnAddComponentsToTag.Text = "Add Components to Tag";
             // 
             // panel1
             // 
@@ -155,6 +173,20 @@
             coComponent.HeaderText = "Component";
             coComponent.Name = "coComponent";
             // 
+            // btnAddDefaultTags
+            // 
+            btnAddDefaultTags.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnAddDefaultTags.Image = Properties.Resources.textfield_add;
+            btnAddDefaultTags.ImageTransparentColor = Color.Magenta;
+            btnAddDefaultTags.Name = "btnAddDefaultTags";
+            btnAddDefaultTags.Size = new Size(28, 28);
+            btnAddDefaultTags.Text = "Add default tags";
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 31);
+            // 
             // UC_TagList
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -191,5 +223,9 @@
         private DataGridView gridComponents;
         private DataGridViewTextBoxColumn coTagName;
         private DataGridViewTextBoxColumn coComponent;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripButton btnAddComponentsToTag;
+        private ToolStripButton btnAddDefaultTags;
+        private ToolStripSeparator toolStripSeparator2;
     }
 }

@@ -58,9 +58,9 @@
         /// </summary>
         public bool Update()
         {
-            if (App.CurrentProject.ItemExists(this))
+            if (!App.CurrentProject.ItemExists(this))
             {
-                App.ErrorBox($"A component with the name '{Name}' already exists.");
+                App.ErrorBox($"A component with the name '{Name}' not found.");
                 return false;
             }
 
@@ -85,9 +85,7 @@
             App.CurrentProject.ComponentList.Remove(this);
             return true;
         }
-
-
-
+ 
         // ● properties
         /// <summary>
         /// The text of this instance.  

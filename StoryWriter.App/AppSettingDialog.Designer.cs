@@ -37,6 +37,8 @@
             btnCancel = new Button();
             label1 = new Label();
             edtAutoSaveSecondsInterval = new NumericUpDown();
+            mmoDefaultTags = new TextBox();
+            label2 = new Label();
             ((ISupportInitialize)nudFontSize).BeginInit();
             ((ISupportInitialize)edtAutoSaveSecondsInterval).BeginInit();
             SuspendLayout();
@@ -78,13 +80,13 @@
             cboFontFamily.FormattingEnabled = true;
             cboFontFamily.Location = new Point(179, 104);
             cboFontFamily.Name = "cboFontFamily";
-            cboFontFamily.Size = new Size(255, 23);
+            cboFontFamily.Size = new Size(149, 23);
             cboFontFamily.TabIndex = 6;
             // 
             // lblFontSize
             // 
             lblFontSize.AutoSize = true;
-            lblFontSize.Location = new Point(451, 106);
+            lblFontSize.Location = new Point(142, 135);
             lblFontSize.Name = "lblFontSize";
             lblFontSize.Size = new Size(27, 15);
             lblFontSize.TabIndex = 7;
@@ -92,7 +94,7 @@
             // 
             // nudFontSize
             // 
-            nudFontSize.Location = new Point(488, 104);
+            nudFontSize.Location = new Point(179, 133);
             nudFontSize.Maximum = new decimal(new int[] { 72, 0, 0, 0 });
             nudFontSize.Minimum = new decimal(new int[] { 8, 0, 0, 0 });
             nudFontSize.Name = "nudFontSize";
@@ -103,7 +105,7 @@
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(427, 156);
+            btnOK.Location = new Point(180, 342);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(80, 32);
             btnOK.TabIndex = 9;
@@ -114,7 +116,7 @@
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new Point(509, 156);
+            btnCancel.Location = new Point(262, 342);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(80, 32);
             btnCancel.TabIndex = 10;
@@ -140,13 +142,32 @@
             edtAutoSaveSecondsInterval.TabIndex = 12;
             edtAutoSaveSecondsInterval.Value = new decimal(new int[] { 10, 0, 0, 0 });
             // 
+            // mmoDefaultTags
+            // 
+            mmoDefaultTags.Location = new Point(179, 162);
+            mmoDefaultTags.Multiline = true;
+            mmoDefaultTags.Name = "mmoDefaultTags";
+            mmoDefaultTags.ScrollBars = ScrollBars.Both;
+            mmoDefaultTags.Size = new Size(149, 167);
+            mmoDefaultTags.TabIndex = 13;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(102, 165);
+            label2.Name = "label2";
+            label2.Size = new Size(71, 15);
+            label2.TabIndex = 14;
+            label2.Text = "Default Tags";
+            // 
             // AppSettingDialog
             // 
-            AcceptButton = btnOK;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(595, 194);
+            ClientSize = new Size(348, 380);
+            Controls.Add(label2);
+            Controls.Add(mmoDefaultTags);
             Controls.Add(edtAutoSaveSecondsInterval);
             Controls.Add(label1);
             Controls.Add(btnCancel);
@@ -174,5 +195,7 @@
 
         private Label label1;
         private NumericUpDown edtAutoSaveSecondsInterval;
+        private TextBox mmoDefaultTags;
+        private Label label2;
     }
 }

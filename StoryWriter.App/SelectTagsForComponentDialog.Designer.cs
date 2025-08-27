@@ -1,6 +1,6 @@
 ﻿namespace StoryWriter
 {
-    partial class SelectTagListDialog
+    partial class SelectTagsForComponentDialog
     {
         /// <summary>
         /// Required designer variable.

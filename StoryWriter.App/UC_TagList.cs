@@ -11,22 +11,26 @@
         BindingSource bsTags = new();
         BindingSource bsTagToComponents = new();
 
-        string Filter = string.Empty;
-
         void ControlInitialize()
         {
             ParentTabPage.Text = "Tags";
 
             btnAddTag.Click += (s, e) => AddTag();
             btnDeleteTag.Click += (s, e) => DeleteTag();
+            btnAddDefaultTags.Click += (s, e) => AddDefaultTags();
+            btnAddComponentsToTag.Click += (s, e) => AddComponentsToTag();
 
             edtFilter.TextChanged += (s, e) => FilterChanged();
+            gridComponents.MouseDoubleClick += (s, e) => EditComponentText();
 
             ReLoadTags();
 
             App.ProjectClosed += ProjectClosed;
             App.ProjectOpened += ProjectOpened;  
             App.TagToComponetsChanged += (s, e) => ReLoadTags();
+
+            
+            SelectedTagChanged();
         }
         void ReLoadTags()
         {
@@ -93,7 +97,7 @@
         }
         void SelectedTagChanged()
         {
-            DataRow Row = gridTags.CurrentDataRow();
+            DataRow Row = bsTags.CurrentDataRow();
 
             if (Row != null)
             {
@@ -141,9 +145,9 @@
 
                 if (Tag.Insert())
                 {
-                    tblTags.Rows.Add(Tag.Id, Tag.Name, Tag);
+                    DataRow Row = tblTags.Rows.Add(Tag.Id, Tag.Name, Tag);
                     tblTags.AcceptChanges();
-
+                    gridTags.PositionToRow(Row);
                 }
                 else
                 {
@@ -153,9 +157,84 @@
                 }
             }
         }
+ 
         void DeleteTag()
         {
-            // TODO: DeleteTag
+            App.InfoBox("Delete Tag. NOT YET IMPLEMENTED.");
+        }
+        void AddDefaultTags()
+        {
+            if (App.Settings.DefaultTags.Count == 0)
+            {
+                string Message = "No default tags defined in Application Settings";
+                App.ErrorBox(Message);
+                LogBox.AppendLine(Message);
+                return;
+            }
+
+            foreach (string TagName in App.Settings.DefaultTags)
+            {
+                Tag Tag = new();
+                
+                Tag.Name = TagName;
+
+                if (App.CurrentProject.ItemExists(Tag))
+                {
+                    string Message = $"Tag '{TagName}' already exists.";
+                    LogBox.AppendLine(Message);
+                    continue;
+                }
+
+                Tag.Id = Sys.GenId(UseBrackets: false);
+
+                if (Tag.Insert())
+                {
+                    DataRow Row = tblTags.Rows.Add(Tag.Id, Tag.Name, Tag);
+                    tblTags.AcceptChanges();
+                    gridTags.PositionToRow(Row);
+                }
+                else
+                {
+                    string Message = "Add Tag. Operation failed.";
+                    App.ErrorBox(Message);
+                    LogBox.AppendLine(Message);
+                }
+
+            }
+        }
+
+        void EditComponentText()
+        {
+            DataRow Row = bsTagToComponents.CurrentDataRow();
+            if (Row == null)
+                return;
+
+            TagToComponent TagToComponent = Row["OBJECT"] as TagToComponent;
+            if (TagToComponent == null)
+                return;
+
+            Component Component = TagToComponent.Component;
+            if (Component == null)
+                return;
+
+            App.ContentPagerHandler.ShowPage(typeof(UC_Component), Component.Id, Component);
+        }
+ 
+        void AddComponentsToTag()
+        {
+            DataRow Row = bsTags.CurrentDataRow();
+            if (Row == null)
+                return;
+
+            Tag Tag = Row["OBJECT"] as Tag;
+            if (Tag == null)
+                return;
+
+            App.AddComponentsToTag(Tag);
+
+            Row = tblTags.FindDataRowById(Tag.Id);
+            if (Row != null)
+                gridTags.PositionToRow(Row);
         }
 
         // ● event handlers

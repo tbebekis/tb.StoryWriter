@@ -1,4 +1,4 @@
-﻿using StoryWriter.Export;
+﻿using DocumentFormat.OpenXml.Bibliography;
 
 namespace StoryWriter
 {
@@ -8,6 +8,8 @@ namespace StoryWriter
         const string SProjectsFolder = "Projects";
         static SqlProvider SqlProvider;
         static decimal fZoomFactor = 1.0M;
+
+        static RichTextBox Editor;
 
         static AutoSaveService AutoSaveService;
         static System.Threading.Lock syncLock = new();
@@ -86,16 +88,13 @@ Do you want to continue?
             {
                 AutoSaveService.Enabled = false;
 
-                App.Settings.Save();
-
-                Message = $"Application Settings saved.";
-                LogBox.AppendLine(Message);
-
-                App.LoadLastProject();
+                App.Settings.Load();                
 
                 AutoSaveService.AutoSaveSecondsInterval = Settings.AutoSaveSecondsInterval;
                 AutoSaveService.Enabled = Settings.AutoSave;
             }
+
+            App.LoadLastProject();
         }
  
 
@@ -129,8 +128,11 @@ Do you want to continue?
             return MessageBox.Show(Message, "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
         }
 
-        // ● tag to components related
-        static public void EditComponentTags(Component Component)
+        // ● tag to components relation
+        /// <summary>
+        /// Edits the tags of the given component
+        /// </summary>
+        static public void AddTagsToComponent(Component Component)
         {
             List<string> ComponentTagList = CurrentProject.TagToComponentList
                 .Where(x => x.Component.Id == Component.Id)
@@ -139,11 +141,31 @@ Do you want to continue?
 
             List<Tag> TagList = new(CurrentProject.TagList);
 
-            if (SelectTagListDialog.ShowModal(TagList, Component, ComponentTagList))
+            TagList.Sort((x, y) => x.Name.CompareTo(y.Name));
+
+            if (SelectTagsForComponentDialog.ShowModal(TagList, Component, ComponentTagList))
             {
                 CurrentProject.AdjustComponentTags(Component, TagList);
                 TagToComponetsChanged?.Invoke(null, EventArgs.Empty);
             } 
+        }
+        static public void AddComponentsToTag(Tag Tag)
+        {
+            // List<string> TagComponentList;  // Component Ids under this Tag
+            List<string> TagComponentsList = CurrentProject.TagToComponentList
+                .Where(x => x.Tag.Id == Tag.Id)
+                .Select(x => x.Component.Id)
+                .ToList();
+
+            List<Component> ComponentList = new(CurrentProject.ComponentList);
+
+            ComponentList.Sort((x, y) => x.Name.CompareTo(y.Name));
+
+            if (SelectComponentsForTagDialog.ShowModal(ComponentList, Tag, TagComponentsList))
+            {
+                CurrentProject.AdjustTagComponents(Tag, ComponentList);
+                TagToComponetsChanged?.Invoke(null, EventArgs.Empty);
+            }
         }
 
         // ● project related
@@ -210,7 +232,8 @@ Do you want to continue?
 
             SideBarPagerHandler.ShowPage(typeof(UC_TagList), nameof(UC_TagList), null);
             SideBarPagerHandler.ShowPage(typeof(UC_ComponentList), nameof(UC_ComponentList), null);
-            SideBarPagerHandler.ShowPage(typeof(UC_ChapterList), nameof(UC_ChapterList), null);
+            var Page = SideBarPagerHandler.ShowPage(typeof(UC_ChapterList), nameof(UC_ChapterList), null);
+            (Page.Parent as TabControl).SelectTab(0);
 
             Message = $"Project '{ProjectName}' opened.";
             LogBox.AppendLine(Message);
@@ -260,7 +283,7 @@ Do you want to continue?
         /// <summary>
         /// Creates a new project and makes it the current project
         /// </summary>
-        static public void CreateNewProject()
+        static public void CreateNewProject(bool LoadToo)
         {
             if (NewProjectDialog.ShowModal(out string ProjectName))
             {
@@ -298,10 +321,102 @@ Do you want to continue?
                 Message = $"Project '{ProjectName}' created.";
                 LogBox.AppendLine(Message);
 
-                LoadProject(ProjectName);
+                if (LoadToo)
+                    LoadProject(ProjectName);
+                
+            }           
+        }
+
+        // ● export - import
+        static public string ToPlainText(string RtfText)
+        {
+            if (Editor == null)
+                Editor = new RichTextBox { DetectUrls = false };
+
+            Editor.Clear();
+            Editor.Rtf = RtfText;
+            return Editor.Text;
+        }
+        static public string ToRtfText(string PlainText)
+        {
+            if (IsRtf(PlainText))
+                return PlainText;
+
+            if (Editor == null)
+                Editor = new RichTextBox { DetectUrls = false };
+
+            Editor.Clear();
+            Editor.Text = PlainText;
+
+            return Editor.Rtf;
+        }
+        /// <summary>
+        /// Checks if the given string is an RTF text.
+        /// </summary>
+        public static bool IsRtf(string PlainText)
+        {
+            if (string.IsNullOrWhiteSpace(PlainText))
+                return true;
+
+            return PlainText.TrimStart().StartsWith(@"{\rtf", StringComparison.Ordinal);
+        }
+
+        static public void ExportProject()
+        {
+            ExportService Service = new();
+            if (Service.Export())
+            {
+                string Message = $"{App.CurrentProject.Name} exported to {Service.FilePath}";
+                LogBox.AppendLine(Message);
+                App.InfoBox(Message);
+
+
             }
         }
- 
+        static public void ImportProject()
+        {
+            string Message = @"This will close all opened UI. 
+Any unsaved changes will be lost. 
+Do you want to continue?
+";
+            if (!App.QuestionBox(Message))
+                return;
+
+            App.CloseProject();
+            Application.DoEvents();
+
+            // get the file
+            string FilePath = string.Empty;
+            
+            using (OpenFileDialog dlg = new())
+            {
+                string Filter = "JSON Files (*.json)|*.json|XML Files (*.xml)|*.xml|All Files (*.*)|*.*";
+                dlg.Filter = Filter;
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    FilePath = dlg.FileName;
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            // create a new empty project 
+            CreateNewProject(LoadToo: false);
+
+            // import
+            ImportService Service = new();
+            Service.Import(FilePath);
+            Application.DoEvents();
+
+            Message = $"{App.CurrentProject.Name} imported from {FilePath}";
+            LogBox.AppendLine(Message);
+            App.InfoBox(Message);
+
+            LoadProject(CurrentProject.Name);
+        }
+
         /// <summary>
         /// Exports the current project to RTF format
         /// </summary>
@@ -355,7 +470,7 @@ Do you want to continue?
                 Mode = ChapterExportMode.AltChunkRtf // ή PlainText για συμβατότητα με Libre/μη-Word viewers
             };
 
-            OpenXmlExporter.ExportProjectToDocx(CurrentProject, FilePath, opts);
+            //OpenXmlExporter.ExportProjectToDocx(CurrentProject, FilePath, opts);
         }
         /// <summary>
         /// Exports the current project to ODT format
@@ -384,7 +499,7 @@ Do you want to continue?
         {
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
             FilePath = Path.ChangeExtension(FilePath, ".md");
-            TextExporter.Export(CurrentProject, FilePath);
+            //MarkdownExporter.Export(CurrentProject, FilePath);
         }
 
 
@@ -414,6 +529,66 @@ Do you want to continue?
             }
 
         }
+
+        // ● miscs
+        /// <summary>
+        /// Returns the current <see cref="DataRow"/> of a BindingSource
+        /// </summary>
+        static public DataRow CurrentDataRow(this BindingSource BS)
+        {
+            if (BS.Position >= 0)
+            {
+                DataRowView DRV = BS.Current as DataRowView;
+                if (DRV != null)
+                    return DRV.Row;
+            }
+
+            return null;
+        }
+        static public DataRow FindDataRowById(this DataTable Table, string Id)
+        {
+            foreach (DataRow Row in Table.Rows)
+            {
+                if (Row["Id"]?.ToString() == Id)
+                    return Row;
+            }
+            return null;
+        }
+        /// <summary>
+        /// Waits until a file exists and can be opened for read access.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <param name="timeoutMilliseconds">Maximum wait time in milliseconds (0 means infinite).</param>
+        /// <param name="checkIntervalMilliseconds">Interval between checks in milliseconds.</param>
+        /// <returns>True if file is available within the timeout, otherwise false.</returns>
+        public static bool WaitForFileAvailable(string path, int timeoutMilliseconds = 30 * 1000, int checkIntervalMilliseconds = 300)
+        {
+            var start = DateTime.UtcNow;
+
+            while (true)
+            {
+                if (File.Exists(path))
+                {
+                    try
+                    {
+                        using (FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        {
+                            return true; // Success: file can be read
+                        }
+                    }
+                    catch (IOException)
+                    {
+                        // File exists but is still locked, retry
+                    }
+                }
+
+                if (timeoutMilliseconds > 0 && (DateTime.UtcNow - start).TotalMilliseconds > timeoutMilliseconds)
+                    return false; // Timeout
+
+                Thread.Sleep(checkIntervalMilliseconds);
+            }
+        }
+
 
         // ● properties 
         /// <summary>

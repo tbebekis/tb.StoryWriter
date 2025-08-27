@@ -84,9 +84,9 @@
         /// </summary>
         public bool Update()
         {
-            if (Chapter.SceneExists(this))
+            if (!Chapter.SceneExists(this))
             {
-                App.ErrorBox($"A scene with the name '{Name}' already exists.");
+                App.ErrorBox($"A scene with the name '{Name}' not found.");
                 return false;
             }
 

@@ -20,8 +20,5 @@
         /// The name of this instance. Must be unique across all instances.
         /// </summary>
         public string Name { get; set; }
-
-
- 
     }
 }

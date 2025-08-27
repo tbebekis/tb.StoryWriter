@@ -453,6 +453,26 @@ namespace StoryWriter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap table_export {
+            get {
+                object obj = ResourceManager.GetObject("table_export", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap table_import {
+            get {
+                object obj = ResourceManager.GetObject("table_import", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap table_insert {
             get {
                 object obj = ResourceManager.GetObject("table_insert", resourceCulture);
@@ -536,6 +556,16 @@ namespace StoryWriter.Properties {
         internal static System.Drawing.Bitmap text_underline {
             get {
                 object obj = ResourceManager.GetObject("text_underline", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap textfield_add {
+            get {
+                object obj = ResourceManager.GetObject("textfield_add", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

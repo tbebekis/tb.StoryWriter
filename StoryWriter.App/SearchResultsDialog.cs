@@ -3,6 +3,7 @@
     public partial class SearchResultsDialog : Form
     {
         List<LinkItem> LinkItems;
+        BindingSource bsLinkItems;
 
         // ● private
         void FormInitialize()
@@ -30,14 +31,17 @@
 
             tblLinkItems.AcceptChanges();
 
+            bsLinkItems = new();
+            bsLinkItems.DataSource = tblLinkItems;
+
             Grid.AutoGenerateColumns = false;
-            Grid.DataSource = tblLinkItems;
+            Grid.DataSource = bsLinkItems;
             Grid.InitializeReadOnly();
             Grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
         }
         void ControlsToItem()
         {
-            DataRow Row = Grid.CurrentDataRow();
+            DataRow Row = bsLinkItems.CurrentDataRow();
 
             if (Row != null)
             {

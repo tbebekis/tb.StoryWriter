@@ -4,27 +4,30 @@ A lightweight Windows app that helps novelists plan, write, and organize long-fo
 
 It combines a component tree (characters, locations, etc.), a chapter manager with reordering, a scene manager with reordering, and a focused tabbed editor for each chapter (Body, Scenes, Synopsis, Concept, Outcome).
 
+tbStoryWriter creates a new Sqlite database for each project/book.
+
+Chapter body, Scene, Synopsis, Concept, Outcome and Component body are saved in Rich Text Format (RTF). Actually the text editor of this application is a Rich Text editor.
+
 > Status: Feature-complete for the current phase. More features can be added later.
 
 ## Why tbStoryWriter?
 
 Long projects need structure **and** speed. tbStoryWriter gives you a left-hand sidebar to map your world, a chapter list you can rearrange in seconds, and a central editor that keeps each chapter’s materials (text, scenes, notes) together—no hunting through files.
 
-## Components
+## Components and Tags
 
-**Components** are your world-building building blocks: user-defined entries (e.g., persons, locations, artifacts) organized in the left sidebar as a tree with **up to two levels of grouping**. 
+**Components** are your world-building building blocks: user-defined entries (e.g., persons, locations, artifacts) organized in the left sidebar. 
 
-You control the taxonomy, for example, 
+A component may be assigned one or more tags. Tags are also uer defined.
 
-- *Person → Character/Historic* or 
-- *Location → Planet/Satellite/Continent/Country/City*.
+Some example tags could be *Character, Location, People, Device, Event, Artifact, etc*.
 
-You can freely add, rename, move, and re-order both groups and items to match your story’s structure. This keeps the universe tidy and navigable while you write.
+You can freely define as many tags as you like and assign them to components.
 
 A component like 
 
-- **Navek** (under *Person → Character*) or 
-- **Darky** (under *Location → Planet*) 
+- **Navek** (under *Character* tag) or 
+- **Darky** (under *Location and Planet* tags) 
 
 is always one double-click away, so you can maintain consistent names and details without hunting through files.
 
@@ -33,7 +36,7 @@ is always one double-click away, so you can maintain consistent names and detail
 Opening a chapter opens the following tabs:
 
 - **Body** — The main chapter text
-- **Scenes** — Add, edit, remove, and re-order scene cards within the chapter
+- **Scenes** — Short decriptions to help in writing a chapter. aAdd, edit, remove, and re-order scene cards within the chapter
 - **Synopsis** — A compact summary for quick orientation
 - **Concept** — The “idea core” of the chapter
 - **Outcome** — What changes (plot/character/world) after this chapter
@@ -68,6 +71,10 @@ public class AppSettings
  
 ## Screenshots
 
+Tags
+
+![Tags.png](./Images/Tags.png)
+
 Components
 
 ![Components.png](./Images/Components.png)
@@ -75,6 +82,10 @@ Components
 Chapters
 
 ![Chapters.png](./Images/Chapters.png)
+
+Scenes
+
+![Scenes.png](./Images/Scenes.png)
  
 ## Requirements
 
@@ -90,14 +101,19 @@ dotnet build
 dotnet run --project StoryWriter.App/StoryWriter.App.csproj
 ```
  
-## Exports
+## Export
 
 Currently the application can export a project/book to the following.
 
+- JSON, saves chapters and other
 - TXT (markdown)
 - RTF
 - DOCX
 - ODT
+
+## Import
+
+The application can import a previously exported JSON file and create a new project/book.
 
 ## Usage Notes
 

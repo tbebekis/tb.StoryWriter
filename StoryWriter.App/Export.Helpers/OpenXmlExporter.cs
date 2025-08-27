@@ -25,15 +25,15 @@
         public bool IncludeToc { get; set; } = true;
         public bool PageBreakBetweenChapters { get; set; } = true;
         public ChapterExportMode Mode { get; set; } = ChapterExportMode.AltChunkRtf;
-        public Func<int, Chapter, string> ChapterTitleResolver { get; set; } =
-            (i, ch) => string.IsNullOrWhiteSpace(ch?.Name) ? $"Chapter {i + 1}" : ch!.Name;
+        public Func<int, ChapterProxy, string> ChapterTitleResolver { get; set; } =
+            (i, ch) => string.IsNullOrWhiteSpace(ch?.Title) ? $"Chapter {i + 1}" : ch!.Title;
     }
 
     static public class OpenXmlExporter
     {
         static readonly char[] DoubleNewlineChars = new[] { '\r', '\n' };
 
-        public static void ExportProjectToDocx(Project project, string filePath, DocxExportOptions options = null)
+        public static void ExportProjectToDocx(ProjectProxy project, string filePath, DocxExportOptions options = null)
         {
             ArgumentNullException.ThrowIfNull(project);
             options ??= new DocxExportOptions();
@@ -48,8 +48,8 @@
             DocumentFormat.OpenXml.Wordprocessing.Body body = main.Document.Body!;
 
             // Τίτλος έργου
-            if (!string.IsNullOrWhiteSpace(project.Name))
-                body.Append(Heading("Title", project.Name));
+            if (!string.IsNullOrWhiteSpace(project.Title))
+                body.Append(Heading("Title", project.Title));
 
             // TOC placeholder (ο χρήστης κάνει Update Field στο Word)
             if (options.IncludeToc)

@@ -1,10 +1,10 @@
 ﻿namespace StoryWriter
 {
-    public partial class SelectTagListDialog : Form
+    public partial class SelectTagsForComponentDialog : Form
     {
-        List<Tag> TagList;
         Component Component;
-        List<string> ComponentTagList;
+        List<Tag> TagList;                  // initally all Tags - on OK only the selected ones        
+        List<string> ComponentTagsList;     // Tag Ids under this Component
 
         // ● private
         void FormInitialize()
@@ -26,7 +26,7 @@
             for (int i = 0; i < TagList.Count; i++)
             {
                 Tag Tag = TagList[i];
-                if (ComponentTagList.Contains(Tag.Id))
+                if (ComponentTagsList.Contains(Tag.Id))
                 {
                     lboTags.SetItemChecked(i, true);
                 }
@@ -58,20 +58,26 @@
         }
 
         // ● construction
-        public SelectTagListDialog()
+        public SelectTagsForComponentDialog()
         {
             InitializeComponent();
         }
 
 
-
-        static public bool ShowModal(List<Tag> TagList, Component Component, List<string> ComponentTagList)
+        /// <summary>
+        /// Displays the dialog
+        /// </summary>
+        /// <param name="TagList"> Initally all Tags - on OK only the selected ones</param>
+        /// <param name="Component"> The Component </param>
+        /// <param name="ComponentTagsList">Tag Ids under this Component</param>
+        /// <returns></returns>
+        static public bool ShowModal(List<Tag> TagList, Component Component, List<string> ComponentTagsList)
         {
-            using (SelectTagListDialog dlg = new ())
+            using (SelectTagsForComponentDialog dlg = new ())
             {
                 dlg.TagList = TagList;
                 dlg.Component = Component;
-                dlg.ComponentTagList = ComponentTagList;
+                dlg.ComponentTagsList = ComponentTagsList;
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {

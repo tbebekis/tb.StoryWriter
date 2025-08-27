@@ -39,14 +39,12 @@
             btnToggleSideBar = new ToolStripButton();
             btnToggleLog = new ToolStripButton();
             toolStripSeparator2 = new ToolStripSeparator();
-            btnExportToText = new ToolStripButton();
-            btnExportToRtf = new ToolStripButton();
-            btnExportToDocx = new ToolStripButton();
-            btnExportToOdt = new ToolStripButton();
-            toolStripSeparator5 = new ToolStripSeparator();
-            toolStripSeparator4 = new ToolStripSeparator();
+            btnExport = new ToolStripButton();
+            btnImport = new ToolStripButton();
+            toolStripSeparator6 = new ToolStripSeparator();
             toolStripLabel1 = new ToolStripLabel();
             edtSearh = new ToolStripTextBox();
+            toolStripSeparator4 = new ToolStripSeparator();
             btnExit = new ToolStripButton();
             splitMain = new SplitContainer();
             pagerSideBar = new TabControl();
@@ -89,7 +87,7 @@
             // ToolBar
             // 
             ToolBar.ImageScalingSize = new Size(24, 24);
-            ToolBar.Items.AddRange(new ToolStripItem[] { btnNewProject, btnOpenProject, toolStripSeparator1, btnSettings, toolStripSeparator3, btnToggleSideBar, btnToggleLog, toolStripSeparator2, btnExportToText, btnExportToRtf, btnExportToDocx, btnExportToOdt, toolStripSeparator5, toolStripLabel1, edtSearh, toolStripSeparator4, btnExit });
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnNewProject, btnOpenProject, toolStripSeparator1, btnSettings, toolStripSeparator3, btnToggleSideBar, btnToggleLog, toolStripSeparator2, btnExport, btnImport, toolStripSeparator6, toolStripLabel1, edtSearh, toolStripSeparator4, btnExit });
             ToolBar.Location = new Point(0, 24);
             ToolBar.Name = "ToolBar";
             ToolBar.Size = new Size(930, 31);
@@ -156,51 +154,28 @@
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new Size(6, 31);
             // 
-            // btnExportToText
+            // btnExport
             // 
-            btnExportToText.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnExportToText.Image = Properties.Resources.file_extension_txt;
-            btnExportToText.ImageTransparentColor = Color.Magenta;
-            btnExportToText.Name = "btnExportToText";
-            btnExportToText.Size = new Size(28, 28);
-            btnExportToText.Text = "Export to TXT";
+            btnExport.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnExport.Image = Properties.Resources.table_export;
+            btnExport.ImageTransparentColor = Color.Magenta;
+            btnExport.Name = "btnExport";
+            btnExport.Size = new Size(28, 28);
+            btnExport.Text = "Export current Project";
             // 
-            // btnExportToRtf
+            // btnImport
             // 
-            btnExportToRtf.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnExportToRtf.Image = Properties.Resources.file_extension_rtf;
-            btnExportToRtf.ImageTransparentColor = Color.Magenta;
-            btnExportToRtf.Name = "btnExportToRtf";
-            btnExportToRtf.Size = new Size(28, 28);
-            btnExportToRtf.Text = "Export to RTF document";
+            btnImport.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnImport.Image = Properties.Resources.table_import;
+            btnImport.ImageTransparentColor = Color.Magenta;
+            btnImport.Name = "btnImport";
+            btnImport.Size = new Size(28, 28);
+            btnImport.Text = "Import from file to a new Project";
             // 
-            // btnExportToDocx
+            // toolStripSeparator6
             // 
-            btnExportToDocx.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnExportToDocx.Image = Properties.Resources.file_extension_doc;
-            btnExportToDocx.ImageTransparentColor = Color.Magenta;
-            btnExportToDocx.Name = "btnExportToDocx";
-            btnExportToDocx.Size = new Size(28, 28);
-            btnExportToDocx.Text = "Export to DOCX";
-            // 
-            // btnExportToOdt
-            // 
-            btnExportToOdt.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnExportToOdt.Image = Properties.Resources.document_export;
-            btnExportToOdt.ImageTransparentColor = Color.Magenta;
-            btnExportToOdt.Name = "btnExportToOdt";
-            btnExportToOdt.Size = new Size(28, 28);
-            btnExportToOdt.Text = "Export To ODT";
-            // 
-            // toolStripSeparator5
-            // 
-            toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(6, 31);
-            // 
-            // toolStripSeparator4
-            // 
-            toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new Size(6, 31);
+            toolStripSeparator6.Name = "toolStripSeparator6";
+            toolStripSeparator6.Size = new Size(6, 31);
             // 
             // toolStripLabel1
             // 
@@ -212,6 +187,11 @@
             // 
             edtSearh.Name = "edtSearh";
             edtSearh.Size = new Size(100, 31);
+            // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new Size(6, 31);
             // 
             // btnExit
             // 
@@ -385,13 +365,11 @@
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripButton btnToggleSideBar;
         private ToolStripButton btnToggleLog;
-        private ToolStripButton btnExportToRtf;
         private ToolStripSeparator toolStripSeparator4;
-        private ToolStripButton btnExportToDocx;
-        private ToolStripButton btnExportToOdt;
-        private ToolStripButton btnExportToText;
-        private ToolStripSeparator toolStripSeparator5;
         private ToolStripLabel toolStripLabel1;
         private ToolStripTextBox edtSearh;
+        private ToolStripButton btnExport;
+        private ToolStripButton btnImport;
+        private ToolStripSeparator toolStripSeparator6;
     }
 }

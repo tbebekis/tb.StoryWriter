@@ -3,13 +3,12 @@
     public partial class AppSettingDialog : Form
     {
         // ● private
-        AppSettings Settings = new();
+        AppSettings Settings = App.Settings;
  
         void FormInitialize()
-        {
-            AcceptButton = btnOK;
+        {             
+            
             CancelButton = btnCancel;
-
             cboFontFamily.Focus();
 
             PopulateFonts();
@@ -58,6 +57,8 @@
             chkAutoSave.Checked = Settings.AutoSave;
             SetNumericValue(edtAutoSaveSecondsInterval, Settings.AutoSaveSecondsInterval);
             SetNumericValue(nudFontSize, Settings.FontSize); 
+
+            mmoDefaultTags.Text = string.Join(Environment.NewLine, Settings.DefaultTags);
         }
         void ControlsToItem()
         {
@@ -66,6 +67,18 @@
             Settings.AutoSaveSecondsInterval = (int)edtAutoSaveSecondsInterval.Value;
             Settings.FontFamily = string.IsNullOrWhiteSpace(cboFontFamily.Text) ? "Arial" : cboFontFamily.Text.Trim();
             Settings.FontSize = (int)nudFontSize.Value;
+
+            Settings.DefaultTags.Clear();
+            foreach (string Line in mmoDefaultTags.Lines)
+            {
+                if (!string.IsNullOrWhiteSpace(Line))
+                    Settings.DefaultTags.Add(Line.Trim());
+            }
+
+            Settings.Save();
+
+            string Message = $"Application Settings saved.";
+            LogBox.AppendLine(Message);
 
             this.DialogResult = DialogResult.OK;
         }
