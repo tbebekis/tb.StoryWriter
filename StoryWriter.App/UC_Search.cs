@@ -14,7 +14,7 @@
         {
             ParentTabPage.Text = "Search";
 
-            edtSearch.TextChanged += (s, e) => PerformSearch();
+            edtSearch.TextChanged += (s, e) => SearchTextChanged();
             Grid.MouseDoubleClick += (s, e) =>
             {
                 if (App.CurrentProject == null)
@@ -45,14 +45,20 @@
             App.ProjectOpened += ProjectOpened;
             App.SearchResultsChanged += SearchResultsChanged;
         }
-        void PerformSearch()
+        void SearchTextChanged()
         {
             if (App.CurrentProject == null) 
                 return;
+
             string Term = edtSearch.Text.Trim();
-            if (Term.Length > 2)
+
+            if (string.IsNullOrWhiteSpace(Term))
             {
-                App.CurrentProject.SearchItems(Term); 
+                ClearResults();
+            }
+            else if (Term.Length > 2)
+            {
+                App.CurrentProject.SearchItems(Term);
             }
         }
         void ClearResults()

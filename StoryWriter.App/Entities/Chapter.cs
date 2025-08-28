@@ -179,13 +179,6 @@ namespace StoryWriter
                 || App.RichTextContainsTerm(Concept, Term)
                 || App.RichTextContainsTerm(Outcome, Term))
                 return true;
-
-            foreach (var Scene in SceneList)
-            {
-                if (App.RichTextContainsTerm(Scene.BodyText, Term))
-                    return true;
-            }
-
                 
             return false;
         }

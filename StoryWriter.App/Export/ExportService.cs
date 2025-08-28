@@ -130,7 +130,7 @@
                 }
 
                 string ProjectName = App.CurrentProject.Name.Replace(' ', '_');
-                string DT = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+                string DT = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss");
 
                 return $"{ProjectName} {DT}.{Ext}";
             }

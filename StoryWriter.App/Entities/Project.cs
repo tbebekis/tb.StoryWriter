@@ -176,7 +176,7 @@
             return Result;
         }
 
-        // ● schema
+        // ● static - schema
         /// <summary>
         /// Adds a table to a schema version
         /// </summary>
@@ -371,7 +371,8 @@ create table {TableName} (
         {
             return ItemExists(ChapterList.Cast<BaseEntity>(), Name, Id);
         }
- 
+
+        // ● add to list
         /// <summary>
         /// Adds a specified instance to the corresponding list if it does not already exist
         /// </summary>
@@ -466,15 +467,14 @@ create table {TableName} (
                     {
                         if (Item.Name.ContainsText(Term))
                         {
-                            var Link = new LinkItem(ItemType, "Title", Item.Name, Item);
+                            var Link = new LinkItem(ItemType, "Title", Item.ToString(), Item);
                             LinkItems.Add(Link);
                         }
                         else if (Item.RichTextContainsTerm(Term))
                         {
-                            var Link = new LinkItem(ItemType, "Text", Item.Name, Item);
+                            var Link = new LinkItem(ItemType, "Text", Item.ToString(), Item);
                             LinkItems.Add(Link);
                         }
-
                     }
                 }
                 // ---------------------------------------------------------------------

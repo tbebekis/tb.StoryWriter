@@ -127,6 +127,14 @@
         }
 
         /// <summary>
+        /// Returns true if any of this instance rich texts contains a specified term.
+        /// </summary>
+        public override bool RichTextContainsTerm(string Term)
+        {
+            return App.RichTextContainsTerm(BodyText, Term);
+        }
+
+        /// <summary>
         /// The parent Chapter of this scene.
         /// </summary>
         public Chapter Chapter => App.CurrentProject?.ChapterList.FirstOrDefault(ch => ch.Id == ChapterId);

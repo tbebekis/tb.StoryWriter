@@ -27,140 +27,146 @@
 
         private void InitializeComponent()
         {
-            this.lblFind = new System.Windows.Forms.Label();
-            this.lblReplace = new System.Windows.Forms.Label();
-            this.txtFind = new System.Windows.Forms.TextBox();
-            this.txtReplace = new System.Windows.Forms.TextBox();
-            this.chkMatchCase = new System.Windows.Forms.CheckBox();
-            this.chkWholeWord = new System.Windows.Forms.CheckBox();
-            this.chkSearchUp = new System.Windows.Forms.CheckBox();
-            this.btnFindNext = new System.Windows.Forms.Button();
-            this.btnReplace = new System.Windows.Forms.Button();
-            this.btnReplaceAll = new System.Windows.Forms.Button();
-            this.btnClose = new System.Windows.Forms.Button();
-            this.SuspendLayout();
+            lblFind = new Label();
+            lblReplace = new Label();
+            txtFind = new TextBox();
+            txtReplace = new TextBox();
+            chkMatchCase = new CheckBox();
+            chkWholeWord = new CheckBox();
+            chkSearchUp = new CheckBox();
+            btnFindNext = new Button();
+            btnReplace = new Button();
+            btnReplaceAll = new Button();
+            btnClose = new Button();
+            SuspendLayout();
             // 
             // lblFind
             // 
-            this.lblFind.AutoSize = true;
-            this.lblFind.Location = new System.Drawing.Point(12, 15);
-            this.lblFind.Name = "lblFind";
-            this.lblFind.Size = new System.Drawing.Size(30, 15);
-            this.lblFind.TabIndex = 0;
-            this.lblFind.Text = "Find:";
+            lblFind.AutoSize = true;
+            lblFind.Location = new Point(34, 10);
+            lblFind.Name = "lblFind";
+            lblFind.Size = new Size(30, 15);
+            lblFind.TabIndex = 0;
+            lblFind.Text = "Find";
             // 
             // lblReplace
             // 
-            this.lblReplace.AutoSize = true;
-            this.lblReplace.Location = new System.Drawing.Point(12, 45);
-            this.lblReplace.Name = "lblReplace";
-            this.lblReplace.Size = new System.Drawing.Size(52, 15);
-            this.lblReplace.TabIndex = 1;
-            this.lblReplace.Text = "Replace:";
+            lblReplace.AutoSize = true;
+            lblReplace.Location = new Point(16, 38);
+            lblReplace.Name = "lblReplace";
+            lblReplace.Size = new Size(48, 15);
+            lblReplace.TabIndex = 1;
+            lblReplace.Text = "Replace";
             // 
             // txtFind
             // 
-            this.txtFind.Location = new System.Drawing.Point(80, 12);
-            this.txtFind.Name = "txtFind";
-            this.txtFind.Size = new System.Drawing.Size(330, 23);
-            this.txtFind.TabIndex = 2;
+            txtFind.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtFind.Location = new Point(67, 7);
+            txtFind.Name = "txtFind";
+            txtFind.Size = new Size(331, 23);
+            txtFind.TabIndex = 2;
             // 
             // txtReplace
             // 
-            this.txtReplace.Location = new System.Drawing.Point(80, 42);
-            this.txtReplace.Name = "txtReplace";
-            this.txtReplace.Size = new System.Drawing.Size(330, 23);
-            this.txtReplace.TabIndex = 3;
+            txtReplace.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtReplace.Location = new Point(67, 34);
+            txtReplace.Name = "txtReplace";
+            txtReplace.Size = new Size(331, 23);
+            txtReplace.TabIndex = 3;
             // 
             // chkMatchCase
             // 
-            this.chkMatchCase.AutoSize = true;
-            this.chkMatchCase.Location = new System.Drawing.Point(80, 71);
-            this.chkMatchCase.Name = "chkMatchCase";
-            this.chkMatchCase.Size = new System.Drawing.Size(88, 19);
-            this.chkMatchCase.TabIndex = 4;
-            this.chkMatchCase.Text = "Match case";
-            this.chkMatchCase.UseVisualStyleBackColor = true;
+            chkMatchCase.AutoSize = true;
+            chkMatchCase.Location = new Point(80, 61);
+            chkMatchCase.Name = "chkMatchCase";
+            chkMatchCase.Size = new Size(86, 19);
+            chkMatchCase.TabIndex = 4;
+            chkMatchCase.Text = "Match case";
+            chkMatchCase.UseVisualStyleBackColor = true;
             // 
             // chkWholeWord
             // 
-            this.chkWholeWord.AutoSize = true;
-            this.chkWholeWord.Location = new System.Drawing.Point(200, 71);
-            this.chkWholeWord.Name = "chkWholeWord";
-            this.chkWholeWord.Size = new System.Drawing.Size(90, 19);
-            this.chkWholeWord.TabIndex = 5;
-            this.chkWholeWord.Text = "Whole word";
-            this.chkWholeWord.UseVisualStyleBackColor = true;
+            chkWholeWord.AutoSize = true;
+            chkWholeWord.Location = new Point(200, 61);
+            chkWholeWord.Name = "chkWholeWord";
+            chkWholeWord.Size = new Size(90, 19);
+            chkWholeWord.TabIndex = 5;
+            chkWholeWord.Text = "Whole word";
+            chkWholeWord.UseVisualStyleBackColor = true;
             // 
             // chkSearchUp
             // 
-            this.chkSearchUp.AutoSize = true;
-            this.chkSearchUp.Location = new System.Drawing.Point(320, 71);
-            this.chkSearchUp.Name = "chkSearchUp";
-            this.chkSearchUp.Size = new System.Drawing.Size(82, 19);
-            this.chkSearchUp.TabIndex = 6;
-            this.chkSearchUp.Text = "Search up";
-            this.chkSearchUp.UseVisualStyleBackColor = true;
+            chkSearchUp.AutoSize = true;
+            chkSearchUp.Location = new Point(320, 61);
+            chkSearchUp.Name = "chkSearchUp";
+            chkSearchUp.Size = new Size(78, 19);
+            chkSearchUp.TabIndex = 6;
+            chkSearchUp.Text = "Search up";
+            chkSearchUp.UseVisualStyleBackColor = true;
             // 
             // btnFindNext
             // 
-            this.btnFindNext.Location = new System.Drawing.Point(80, 100);
-            this.btnFindNext.Name = "btnFindNext";
-            this.btnFindNext.Size = new System.Drawing.Size(90, 27);
-            this.btnFindNext.TabIndex = 7;
-            this.btnFindNext.Text = "Find Next";
-            this.btnFindNext.UseVisualStyleBackColor = true;
-            this.btnFindNext.Click += new System.EventHandler(this.btnFindNext_Click);
+            btnFindNext.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnFindNext.Location = new Point(67, 93);
+            btnFindNext.Name = "btnFindNext";
+            btnFindNext.Size = new Size(75, 27);
+            btnFindNext.TabIndex = 7;
+            btnFindNext.Text = "Find Next";
+            btnFindNext.UseVisualStyleBackColor = true;
+            btnFindNext.Click += btnFindNext_Click;
             // 
             // btnReplace
             // 
-            this.btnReplace.Location = new System.Drawing.Point(180, 100);
-            this.btnReplace.Name = "btnReplace";
-            this.btnReplace.Size = new System.Drawing.Size(90, 27);
-            this.btnReplace.TabIndex = 8;
-            this.btnReplace.Text = "Replace";
-            this.btnReplace.UseVisualStyleBackColor = true;
-            this.btnReplace.Click += new System.EventHandler(this.btnReplace_Click);
+            btnReplace.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnReplace.Location = new Point(144, 93);
+            btnReplace.Name = "btnReplace";
+            btnReplace.Size = new Size(75, 27);
+            btnReplace.TabIndex = 8;
+            btnReplace.Text = "Replace";
+            btnReplace.UseVisualStyleBackColor = true;
+            btnReplace.Click += btnReplace_Click;
             // 
             // btnReplaceAll
             // 
-            this.btnReplaceAll.Location = new System.Drawing.Point(280, 100);
-            this.btnReplaceAll.Name = "btnReplaceAll";
-            this.btnReplaceAll.Size = new System.Drawing.Size(90, 27);
-            this.btnReplaceAll.TabIndex = 9;
-            this.btnReplaceAll.Text = "Replace All";
-            this.btnReplaceAll.UseVisualStyleBackColor = true;
-            this.btnReplaceAll.Click += new System.EventHandler(this.btnReplaceAll_Click);
+            btnReplaceAll.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnReplaceAll.Location = new Point(220, 93);
+            btnReplaceAll.Name = "btnReplaceAll";
+            btnReplaceAll.Size = new Size(75, 27);
+            btnReplaceAll.TabIndex = 9;
+            btnReplaceAll.Text = "Replace All";
+            btnReplaceAll.UseVisualStyleBackColor = true;
+            btnReplaceAll.Click += btnReplaceAll_Click;
             // 
             // btnClose
             // 
-            this.btnClose.Location = new System.Drawing.Point(320, 135);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(90, 27);
-            this.btnClose.TabIndex = 10;
-            this.btnClose.Text = "Close";
-            this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            btnClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnClose.Location = new Point(323, 93);
+            btnClose.Name = "btnClose";
+            btnClose.Size = new Size(75, 27);
+            btnClose.TabIndex = 10;
+            btnClose.Text = "Close";
+            btnClose.UseVisualStyleBackColor = true;
+            btnClose.Click += btnClose_Click;
             // 
-            // FindReplaceForm
+            // FindReplaceDialog
             // 
-            this.ClientSize = new System.Drawing.Size(424, 174);
-            this.Controls.Add(this.btnClose);
-            this.Controls.Add(this.btnReplaceAll);
-            this.Controls.Add(this.btnReplace);
-            this.Controls.Add(this.btnFindNext);
-            this.Controls.Add(this.chkSearchUp);
-            this.Controls.Add(this.chkWholeWord);
-            this.Controls.Add(this.chkMatchCase);
-            this.Controls.Add(this.txtReplace);
-            this.Controls.Add(this.txtFind);
-            this.Controls.Add(this.lblReplace);
-            this.Controls.Add(this.lblFind);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Name = "FindReplaceForm";
-            this.Text = "Find / Replace";
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            ClientSize = new Size(404, 123);
+            Controls.Add(btnClose);
+            Controls.Add(btnReplaceAll);
+            Controls.Add(btnReplace);
+            Controls.Add(btnFindNext);
+            Controls.Add(chkSearchUp);
+            Controls.Add(chkWholeWord);
+            Controls.Add(chkMatchCase);
+            Controls.Add(txtReplace);
+            Controls.Add(txtFind);
+            Controls.Add(lblReplace);
+            Controls.Add(lblFind);
+            FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            Name = "FindReplaceDialog";
+            Text = "Find / Replace";
+            ResumeLayout(false);
+            PerformLayout();
         }
     }
 }

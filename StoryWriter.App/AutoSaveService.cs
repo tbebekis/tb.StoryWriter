@@ -4,7 +4,7 @@
     /// Minimal, safe autosave: σώζει μόνο όταν ο χρήστης είναι ανενεργός
     /// (IdleThreshold) και έχει περάσει διάστημα από το τελευταίο save (Interval).
     /// </summary>
-    public class AutoSaveService : IDisposable
+    public class AutoSaveService
     {
         // ● private 
         static System.Threading.Lock syncLock = new();
@@ -47,7 +47,7 @@
             this.SaveProc = SaveProc;
 
             fTimer = new System.Windows.Forms.Timer();
-            AutoSaveSecondsInterval = 15;
+            AutoSaveSecondsInterval = App.Settings.AutoSaveSecondsInterval;
             fTimer.Tick += (t, e) => Execute(); 
         }
         public void MarkAsDirty()
@@ -58,8 +58,6 @@
             }           
         }
  
-        public void Dispose() => fTimer?.Dispose();
-
         // ● properties
         public bool Enabled
         {
