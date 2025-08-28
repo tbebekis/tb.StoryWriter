@@ -45,15 +45,10 @@
             btnExport.Click += (s, e) => App.ExportProject();
             btnImport.Click += (s, e) => App.ImportProject();
             
-            btnExit.Click += (s, e) => Close();
-
-            edtSearh.TextChanged += (s, e) => GlobalSearch();
+            btnExit.Click += (s, e) => Close(); 
 
             App.ZoomFactor = App.Settings.ZoomFactor;
             App.Initialize(this);
-
-            edtSearh.Focus();
-
         }
         void AddToolBarControls()
         {
@@ -104,17 +99,7 @@
         }
  
  
-        void GlobalSearch()
-        {
-            if (App.CurrentProject != null)
-            {
-                string Term = edtSearh.Text.Trim();
-                if (Term.Length > 2)
-                {
-                    App.CurrentProject.ShowPageByTerm(Term);
-                }
-            }
-        }
+ 
 
  
 

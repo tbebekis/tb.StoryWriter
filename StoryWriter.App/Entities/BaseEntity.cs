@@ -11,6 +11,15 @@
             return Name;
         }
         
+
+        /// <summary>
+        /// Returns true if any of this instance rich texts contains a specified term.
+        /// </summary>
+        public virtual bool RichTextContainsTerm(string Term)
+        {
+            return false;
+        }
+
         // ● properties
         /// <summary>
         /// The unique identifier of this instance.

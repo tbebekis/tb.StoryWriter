@@ -429,9 +429,7 @@ create table {TableName} (
                 TagToComponent.Insert();
             }
         }
-
-         
-
+ 
         // ● miscs
         /// <summary>
         /// Renumbers the chapters
@@ -448,88 +446,59 @@ create table {TableName} (
             foreach (var Chapter in ChapterList)
                 Chapter.UpdateOrderIndex();
         }
- 
-        // ● links
+
+        // ● global search
         /// <summary>
         /// Returns a list of items that match a specified search term
         /// </summary>
-        List<LinkItem> SearchItems(string Term)
+        public void SearchItems(string Term)
         {
-            List<LinkItem> TempLinkList = new ();
+            LogBox.AppendLine($"Searching for '{Term}'");
+
+            List<LinkItem> LinkItems = new ();
 
             if (!string.IsNullOrWhiteSpace(Term))
             {
+                // ---------------------------------------------------------------------
                 void AddLinks(IEnumerable<BaseEntity> EntityList, ItemType ItemType)
                 {
-                    var Entities = EntityList.Where(item => item.Name.ContainsText(Term));
-                    if (Entities.Any())
+                    foreach (var Item in EntityList)
                     {
-                        foreach (var Item in Entities)
+                        if (Item.Name.ContainsText(Term))
                         {
-                            var Link = new LinkItem(ItemType, Item.Name, Item);
-                            TempLinkList.Add(Link);
+                            var Link = new LinkItem(ItemType, "Title", Item.Name, Item);
+                            LinkItems.Add(Link);
                         }
+                        else if (Item.RichTextContainsTerm(Term))
+                        {
+                            var Link = new LinkItem(ItemType, "Text", Item.Name, Item);
+                            LinkItems.Add(Link);
+                        }
+
                     }
                 }
+                // ---------------------------------------------------------------------
 
-                
                 AddLinks(ComponentList.Cast<BaseEntity>(), ItemType.Component);
                 AddLinks(ChapterList.Cast<BaseEntity>(), ItemType.Chapter);
                 foreach (var Chapter in ChapterList)
                     AddLinks(Chapter.SceneList.Cast<BaseEntity>(), ItemType.Scene);
             }
-            
-            return TempLinkList;
 
-        }
-        /// <summary>
-        /// Shows the page for a specified link item, i.e. shows a component page or a chapter page.
-        /// </summary>
-        public void ShowPageByLinkItem(LinkItem LinkItem)
-        {
-            switch (LinkItem.ItemType)
+            if (LinkItems.Count == 0)
             {
-                case ItemType.Component:
-                    Component Component = LinkItem.Item as Component;
-                    App.ContentPagerHandler.ShowPage(typeof(UC_Component), Component.Id, Component);
-                    break;
-                case ItemType.Chapter:
-                    Chapter Chapter = LinkItem.Item as Chapter;
-                    App.ContentPagerHandler.ShowPage(typeof(UC_Chapter), Chapter.Id, Chapter);
-                    break;
-                case ItemType.Scene:
-                    Scene Scene = LinkItem.Item as Scene;
-                    App.ContentPagerHandler.ShowPage(typeof(UC_Chapter), Scene.Chapter.Id, Scene.Chapter);
-                    break;
-
-            }
-        }
-        /// <summary>
-        /// Shows the page for a specified search term, i.e. shows a component page or a chapter page
-        /// </summary>
-        public void ShowPageByTerm(string Term)
-        {
-            if (string.IsNullOrWhiteSpace(Term))
-                return;
-
-            List<LinkItem> TempLinkList = SearchItems(Term);   
-
-            if (TempLinkList.Count == 0)
-            {
-                string Message = $"No results found for '{Term}'";
+                string Message = "No search results for '{Term}'";
                 LogBox.AppendLine(Message);
+                App.InfoBox(Message);
             }
-            else if (TempLinkList.Count == 1)
+            else
             {
-                LinkItem LinkItem = TempLinkList[0];
-                ShowPageByLinkItem(LinkItem);
+                App.DisplaySearchResults(LinkItems);
             }
-            else if (TempLinkList.Count > 1)
-            {
-                SearchResultsDialog.ShowModal(TempLinkList);
-            }
+ 
 
         }
+
 
         // ● properties 
         /// <summary>

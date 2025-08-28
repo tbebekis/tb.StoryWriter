@@ -70,7 +70,18 @@
             App.CurrentProject.ComponentList.Remove(this);
             return true;
         }
- 
+
+        /// <summary>
+        /// Returns true if any of this instance rich texts contains a specified term.
+        /// </summary>
+        public override bool RichTextContainsTerm(string Term)
+        {
+            if (string.IsNullOrWhiteSpace(BodyText))
+                return false;
+
+            return App.RichTextContainsTerm(BodyText, Term);
+        }
+
         // ● properties
         /// <summary>
         /// The text of this instance.  

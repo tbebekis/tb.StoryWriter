@@ -1,9 +1,8 @@
 ﻿namespace StoryWriter
 {
-    using System;
     using System.Windows.Forms;
 
-    public static class RtbFindReplace
+    public static class RichTextBoxFindReplace
     {
         public static int FindNext(
             RichTextBox rtb,

@@ -3,7 +3,7 @@
     public partial class UC_RichText : UserControl
     {
         // ● fields
-        FindReplaceForm _findReplaceForm;
+        FindReplaceDialog _findReplaceForm;
 
         
         NumericUpDown nudFontSize;
@@ -404,19 +404,20 @@
                 int index = Editor.GetCharIndexFromPosition(clientPt);      //int index = Editor.GetCharIndexFromPosition(e.Location);
 
                 Term = Editor.GetWordAtIndex(index);
-            }
+            } 
 
-            if (string.IsNullOrWhiteSpace(Term))
-                return;
-           
-            App.CurrentProject.ShowPageByTerm(Term);     //LogBox.AppendLine($"GoToLink(\"{Term}\")");
+            if (!string.IsNullOrWhiteSpace(Term) && Term.Length > 2)
+            {
+                App.CurrentProject.SearchItems(Term);
+            }
+ 
         }
  
         void ShowFindReplaceDialog()
         {
             if (_findReplaceForm == null || _findReplaceForm.IsDisposed)
             {
-                _findReplaceForm = new FindReplaceForm(Editor);
+                _findReplaceForm = new FindReplaceDialog(Editor);
                 _findReplaceForm.Owner = this.FindForm();
 
                 // Υπολογισμός θέσης: πάνω–δεξιά του RichTextBox

@@ -1,6 +1,6 @@
 ﻿namespace StoryWriter
 {
-    partial class FindReplaceForm
+    partial class FindReplaceDialog
     {
         private System.ComponentModel.IContainer components = null;
 

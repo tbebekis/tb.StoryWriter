@@ -45,13 +45,13 @@
             btnLink = new ToolStripButton();
             toolStripSeparator4 = new ToolStripSeparator();
             btnSave = new ToolStripButton();
+            lblTitle = new ToolStripLabel();
             StatuBar = new StatusStrip();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             lblWords = new ToolStripStatusLabel();
             toolStripStatusLabel2 = new ToolStripStatusLabel();
             lblPages = new ToolStripStatusLabel();
             edtRichText = new RichTextBoxEx();
-            lblTitle = new ToolStripLabel();
             ToolBar.SuspendLayout();
             StatuBar.SuspendLayout();
             SuspendLayout();
@@ -188,7 +188,14 @@
             btnSave.ImageTransparentColor = Color.Magenta;
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(28, 28);
-            btnSave.Text = "Save";
+            btnSave.Text = "Save (Ctrl + S)";
+            // 
+            // lblTitle
+            // 
+            lblTitle.Font = new Font("Arial", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 161);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Size = new Size(277, 28);
+            lblTitle.Text = "Here goes the title of the item";
             // 
             // StatuBar
             // 
@@ -235,13 +242,6 @@
             edtRichText.Size = new Size(749, 275);
             edtRichText.TabIndex = 3;
             edtRichText.Text = "";
-            // 
-            // lblTitle
-            // 
-            lblTitle.Font = new Font("Arial", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 161);
-            lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(277, 28);
-            lblTitle.Text = "Here goes the title of the item";
             // 
             // UC_RichText
             // 

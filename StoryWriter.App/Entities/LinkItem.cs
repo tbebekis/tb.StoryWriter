@@ -16,9 +16,10 @@
         /// <summary>
         /// Constructor
         /// </summary>
-        public LinkItem(ItemType Type, string Name, object Item)
+        public LinkItem(ItemType Type, string Place, string Name, object Item)
         {
             this.Name = Name;
+            this.Place = Place;
             this.Item = Item;
             this.ItemType = Type;
         }
@@ -34,6 +35,7 @@
         /// <para>Valid values are component and chapter. </para>
         /// </summary>
         public ItemType ItemType { get; set; } 
+        public string Place { get; set; } // title or text
         public string Name { get; set; }
         /// <summary>
         /// The item

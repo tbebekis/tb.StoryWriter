@@ -1,10 +1,10 @@
 ﻿namespace StoryWriter
 {
-    public partial class FindReplaceForm : Form
+    public partial class FindReplaceDialog : Form
     {
         private readonly RichTextBox _rtb;
 
-        public FindReplaceForm(RichTextBox rtb)
+        public FindReplaceDialog(RichTextBox rtb)
         {
             InitializeComponent();
             _rtb = rtb;
@@ -17,7 +17,7 @@
 
         private void btnFindNext_Click(object sender, EventArgs e)
         {
-            var hit = RtbFindReplace.FindNext(
+            var hit = RichTextBoxFindReplace.FindNext(
                 _rtb,
                 txtFind.Text,
                 matchCase: chkMatchCase.Checked,
@@ -38,7 +38,7 @@
                 return;
             }
 
-            if (RtbFindReplace.ReplaceSelection(_rtb, txtReplace.Text))
+            if (RichTextBoxFindReplace.ReplaceSelection(_rtb, txtReplace.Text))
             {
                 btnFindNext.PerformClick();
             }
@@ -61,7 +61,7 @@
 
         private void btnReplaceAll_Click(object sender, EventArgs e)
         {
-            int n = RtbFindReplace.ReplaceAll(
+            int n = RichTextBoxFindReplace.ReplaceAll(
                 _rtb,
                 txtFind.Text,
                 txtReplace.Text,

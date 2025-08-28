@@ -42,9 +42,6 @@
             btnExport = new ToolStripButton();
             btnImport = new ToolStripButton();
             toolStripSeparator6 = new ToolStripSeparator();
-            toolStripLabel1 = new ToolStripLabel();
-            edtSearh = new ToolStripTextBox();
-            toolStripSeparator4 = new ToolStripSeparator();
             btnExit = new ToolStripButton();
             splitMain = new SplitContainer();
             pagerSideBar = new TabControl();
@@ -87,7 +84,7 @@
             // ToolBar
             // 
             ToolBar.ImageScalingSize = new Size(24, 24);
-            ToolBar.Items.AddRange(new ToolStripItem[] { btnNewProject, btnOpenProject, toolStripSeparator1, btnSettings, toolStripSeparator3, btnToggleSideBar, btnToggleLog, toolStripSeparator2, btnExport, btnImport, toolStripSeparator6, toolStripLabel1, edtSearh, toolStripSeparator4, btnExit });
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnNewProject, btnOpenProject, toolStripSeparator1, btnSettings, toolStripSeparator3, btnToggleSideBar, btnToggleLog, toolStripSeparator2, btnExport, btnImport, toolStripSeparator6, btnExit });
             ToolBar.Location = new Point(0, 24);
             ToolBar.Name = "ToolBar";
             ToolBar.Size = new Size(930, 31);
@@ -176,22 +173,6 @@
             // 
             toolStripSeparator6.Name = "toolStripSeparator6";
             toolStripSeparator6.Size = new Size(6, 31);
-            // 
-            // toolStripLabel1
-            // 
-            toolStripLabel1.Name = "toolStripLabel1";
-            toolStripLabel1.Size = new Size(42, 28);
-            toolStripLabel1.Text = "Search";
-            // 
-            // edtSearh
-            // 
-            edtSearh.Name = "edtSearh";
-            edtSearh.Size = new Size(100, 31);
-            // 
-            // toolStripSeparator4
-            // 
-            toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new Size(6, 31);
             // 
             // btnExit
             // 
@@ -365,9 +346,6 @@
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripButton btnToggleSideBar;
         private ToolStripButton btnToggleLog;
-        private ToolStripSeparator toolStripSeparator4;
-        private ToolStripLabel toolStripLabel1;
-        private ToolStripTextBox edtSearh;
         private ToolStripButton btnExport;
         private ToolStripButton btnImport;
         private ToolStripSeparator toolStripSeparator6;

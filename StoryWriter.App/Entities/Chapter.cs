@@ -1,4 +1,6 @@
-﻿namespace StoryWriter
+﻿using MySqlX.XDevAPI.Common;
+
+namespace StoryWriter
 {
     /// <summary>
     /// Book chapter data model
@@ -168,16 +170,24 @@
         }
 
         /// <summary>
-        /// Returns true if this chapter contains the specified term
+        /// Returns true if any of this instance rich texts contains a specified term.
         /// </summary>
-        public bool IsLinkOf(string Term)
+        public override bool RichTextContainsTerm(string Term)
         {
-            bool Result = Name.ContainsText(Term);
+            if (App.RichTextContainsTerm(BodyText, Term)
+                || App.RichTextContainsTerm(Synopsis, Term)
+                || App.RichTextContainsTerm(Concept, Term)
+                || App.RichTextContainsTerm(Outcome, Term))
+                return true;
 
-            if (!Result)
-                Result = SceneList.Any(item => item.Name.ContainsText(Term));
+            foreach (var Scene in SceneList)
+            {
+                if (App.RichTextContainsTerm(Scene.BodyText, Term))
+                    return true;
+            }
 
-            return Result;
+                
+            return false;
         }
 
         // ● scenes

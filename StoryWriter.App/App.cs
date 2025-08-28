@@ -230,6 +230,7 @@ Do you want to continue?
 
             SideBarPagerHandler.ShowPage(typeof(UC_TagList), nameof(UC_TagList), null);
             SideBarPagerHandler.ShowPage(typeof(UC_ComponentList), nameof(UC_ComponentList), null);
+            SideBarPagerHandler.ShowPage(typeof(UC_Search), nameof(UC_Search), null);
             var Page = SideBarPagerHandler.ShowPage(typeof(UC_ChapterList), nameof(UC_ChapterList), null);
             (Page.Parent as TabControl).SelectTab(0);
 
@@ -326,6 +327,9 @@ Do you want to continue?
         }
 
         // ● export - import
+        /// <summary>
+        /// Converts RTF to plain text
+        /// </summary>
         static public string ToPlainText(string RtfText)
         {
             if (Editor == null)
@@ -335,6 +339,9 @@ Do you want to continue?
             Editor.Rtf = RtfText;
             return Editor.Text;
         }
+        /// <summary>
+        /// Converts plain text to RTF
+        /// </summary>
         static public string ToRtfText(string PlainText)
         {
             if (IsRtf(PlainText))
@@ -358,6 +365,14 @@ Do you want to continue?
 
             return PlainText.TrimStart().StartsWith(@"{\rtf", StringComparison.Ordinal);
         }
+        public static bool RichTextContainsTerm(string RtfText, string PlainTextTerm)
+        {
+            if (string.IsNullOrWhiteSpace(RtfText))
+                return false;
+            string PlainText = ToPlainText(RtfText);
+            return PlainText.Contains(PlainTextTerm, StringComparison.OrdinalIgnoreCase);
+        }
+
 
         static public void ExportProject()
         {
@@ -473,7 +488,7 @@ Do you want to continue?
         /// <param name="timeoutMilliseconds">Maximum wait time in milliseconds (0 means infinite).</param>
         /// <param name="checkIntervalMilliseconds">Interval between checks in milliseconds.</param>
         /// <returns>True if file is available within the timeout, otherwise false.</returns>
-        public static bool WaitForFileAvailable(string path, int timeoutMilliseconds = 30 * 1000, int checkIntervalMilliseconds = 300)
+        static public bool WaitForFileAvailable(string path, int timeoutMilliseconds = 30 * 1000, int checkIntervalMilliseconds = 300)
         {
             var start = DateTime.UtcNow;
 
@@ -500,7 +515,11 @@ Do you want to continue?
                 Thread.Sleep(checkIntervalMilliseconds);
             }
         }
+        static public void DisplaySearchResults(List<LinkItem> LinkItems)
+        {
+            SearchResultsChanged?.Invoke(null, LinkItems);
 
+        }
 
         // ● properties 
         /// <summary>
@@ -556,6 +575,7 @@ Do you want to continue?
         static public event EventHandler ProjectOpened;
         static public event EventHandler TagToComponetsChanged;
         static public event EventHandler ZoomFactorChanged;
+        static public event EventHandler<List<LinkItem>> SearchResultsChanged;
 
 
     }
