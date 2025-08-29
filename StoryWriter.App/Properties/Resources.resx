@@ -202,6 +202,9 @@
   <data name="link" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\link.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="menu_item" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\menu_item.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="open_folder" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\open_folder.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -247,6 +250,15 @@
   <data name="table_replace" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\table_replace.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="table_row_delete" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\table_row_delete.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="table_row_insert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\table_row_insert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="table_tab_search" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\table_tab_search.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="textfield_add" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\textfield_add.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -273,5 +285,8 @@
   </data>
   <data name="to_do_list_cheked" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\to_do_list_cheked_1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="wishlist_add" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\wishlist_add.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 
 namespace StoryWriter
 {
@@ -18,10 +19,14 @@ namespace StoryWriter
         {
             ParentTabPage.Text = "Components";
 
+            gridComponents.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
+            gridTags.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
+
             btnAddComponent.Click += (s, e) => AddComponent();
             btnEditComponent.Click += (s, e) => EditComponent();
             btnDeleteComponent.Click += (s, e) => DeleteComponent();
             btnEditRtfText.Click += (s, e) => EditComponentText();
+            btnAddToQuickView.Click += (s, e) => AddToQuickView();
 
             edtFilter.TextChanged += (s, e) => FilterChanged();
             gridComponents.MouseDoubleClick += (s, e) => EditComponentText();
@@ -226,7 +231,6 @@ namespace StoryWriter
 
             App.ContentPagerHandler.ShowPage(typeof(UC_Component), Component.Id, Component);
         }
-
         void AdjustComponentTags()
         {
             DataRow Row = bsComponents.CurrentDataRow();
@@ -242,6 +246,30 @@ namespace StoryWriter
             Row = tblComponents.FindDataRowById(Component.Id);
             if (Row != null)
                 gridComponents.PositionToRow(Row);
+        }
+        void AddToQuickView()
+        {
+            DataRow Row = bsComponents.CurrentDataRow();
+            if (Row != null)
+            {
+                string ComponentId = Row.AsString("ComponentId");
+                Component Component = App.CurrentProject.ComponentList.FirstOrDefault(x => x.Id == ComponentId);
+                if (Component != null)
+                {
+                    LinkItem LinkItem = new();
+                    LinkItem.ItemType = ItemType.Component;
+                    LinkItem.Place = LinkPlace.Title;
+                    LinkItem.Name = Component.ToString();
+                    LinkItem.Item = Component;
+
+                    TabPage Page = App.SideBarPagerHandler.FindTabPage(nameof(UC_QuickViewList));
+                    if (Page != null)
+                    {
+                        UC_QuickViewList ucQuickViewList = Page.Tag as UC_QuickViewList;
+                        ucQuickViewList.AddToQuickView(LinkItem);
+                    }
+                }       
+            }
         }
 
         // ● event handlers

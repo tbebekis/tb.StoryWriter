@@ -343,6 +343,16 @@ namespace StoryWriter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap menu_item {
+            get {
+                object obj = ResourceManager.GetObject("menu_item", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap open_folder {
             get {
                 object obj = ResourceManager.GetObject("open_folder", resourceCulture);
@@ -493,6 +503,36 @@ namespace StoryWriter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap table_row_delete {
+            get {
+                object obj = ResourceManager.GetObject("table_row_delete", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap table_row_insert {
+            get {
+                object obj = ResourceManager.GetObject("table_row_insert", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap table_tab_search {
+            get {
+                object obj = ResourceManager.GetObject("table_tab_search", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap text_bold {
             get {
                 object obj = ResourceManager.GetObject("text_bold", resourceCulture);
@@ -576,6 +616,16 @@ namespace StoryWriter.Properties {
         internal static System.Drawing.Bitmap to_do_list_cheked {
             get {
                 object obj = ResourceManager.GetObject("to_do_list_cheked", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap wishlist_add {
+            get {
+                object obj = ResourceManager.GetObject("wishlist_add", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

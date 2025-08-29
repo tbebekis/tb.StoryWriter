@@ -98,11 +98,6 @@
             splitContent.Panel2Collapsed = !splitContent.Panel2Collapsed;            
         }
  
- 
- 
-
- 
-
         // ● overrides
         protected override void OnShown(EventArgs e)
         {

@@ -1,28 +1,33 @@
-﻿namespace StoryWriter
+﻿using System;
+
+namespace StoryWriter
 {
-    public partial class UC_Search : UserControl, IPanel
+    public partial class UC_QuickViewList : UserControl, IPanel
     {
         // ● private
         TabPage ParentTabPage { get { return this.Parent as TabPage; } }
 
         DataTable tblList;
+
         BindingSource bsList = new();
 
         void ControlInitialize()
         {
-            ParentTabPage.Text = "Search";
+            ParentTabPage.Text = "Quick View";
 
             lblItemTitle.Text = "No selection";
             ucRichText.Editor.Clear();
             Grid.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
+ 
 
             ucRichText.SetToolBarVisible(false);
-            ucRichText.SetStatusBarVisible(false);            
+            ucRichText.SetStatusBarVisible(false);
             ucRichText.SetEditorReadOnly(true);
-
-            btnAddToQuickView.Click += (s, e) => AddToQuickView();
-            edtSearch.TextChanged += (s, e) => SearchTextChanged();
-            Grid.MouseDoubleClick += (s, e) => ShowLinkItemPage(); 
+ 
+            btnDisplayItem.Click += (s, e) => ShowLinkItemPage();
+            btnRemoveItem.Click += (s, e) => RemoveLinkItem();
+            btnRemoveAll.Click += (s, e) => RemoveAllLinkItems();
+            Grid.MouseDoubleClick += (s, e) => ShowLinkItemPage();
 
             tblList = new DataTable("Results");
             tblList.Columns.Add("Type", typeof(string));
@@ -38,27 +43,9 @@
             Grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
             App.ProjectClosed += ProjectClosed;
-            App.ProjectOpened += ProjectOpened;
-            App.SearchTermIsSet += SearchTermIsSet;
-            App.SearchResultsChanged += SearchResultsChanged;
+            App.ProjectOpened += ProjectOpened; 
 
             bsList.PositionChanged += (s, e) => SelectedLinkItemRowChanged();
-        }
-        void SearchTextChanged()
-        {
-            if (App.CurrentProject == null) 
-                return;
-
-            string Term = edtSearch.Text.Trim();
- 
-            if (Term.Length > 2)
-            {
-                App.CurrentProject.SearchItems(Term);
-            }
-            else
-            {
-                ClearAll();
-            }
         }
         void SelectedLinkItemRowChanged()
         {
@@ -88,10 +75,10 @@
                         ucRichText.Editor.Rtf = Scene.BodyText;
                         break;
                 }
+
             }
- 
         }
-        void ClearAll()
+        void ClearResults()
         {
             bsList.SuspendBinding();
             tblList.DeleteRows();
@@ -131,49 +118,30 @@
                     break;
             }
         }
-        void AddToQuickView()
+        void RemoveLinkItem()
         {
             DataRow Row = bsList.CurrentDataRow();
             if (Row != null)
             {
-                LinkItem LinkItem = Row["OBJECT"] as LinkItem;
-
-                TabPage Page = App.SideBarPagerHandler.FindTabPage(nameof(UC_QuickViewList));
-                if (Page != null)
-                {
-                    UC_QuickViewList ucQuickViewList = Page.Tag as UC_QuickViewList;
-                    ucQuickViewList.AddToQuickView(LinkItem);
-                }
-            } 
+                Row.Delete();
+                tblList.AcceptChanges();
+            }
         }
-
+        void RemoveAllLinkItems()
+        {
+            tblList.DeleteRows();
+            tblList.AcceptChanges();
+        }
+ 
         // ● event handlers
         void ProjectClosed(object sender, EventArgs e)
         {
-            ClearAll();
+            ClearResults();
         }
         void ProjectOpened(object sender, EventArgs e)
-        { 
-        }
-        void SearchTermIsSet(object sender, string NewTerm)
         {
-            this.edtSearch.Text = NewTerm;
         }
-        void SearchResultsChanged(object sender, List<LinkItem> LinkItems)
-        {
-            ClearAll();
-
-            bsList.SuspendBinding();
-            foreach (var LinkItem in LinkItems)
-            {
-                tblList.Rows.Add(LinkItem.ItemType, LinkItem.Place, LinkItem.Name, LinkItem);
-            }
-            tblList.AcceptChanges();
-            bsList.ResumeBinding();
-
-            (ParentTabPage.Parent as TabControl).SelectedTab = ParentTabPage;
-        }
-        
+ 
         // ● overrides  
         protected override void OnLoad(EventArgs e)
         {
@@ -184,7 +152,7 @@
         }
 
         // ● construction
-        public UC_Search()
+        public UC_QuickViewList()
         {
             InitializeComponent();
         }
@@ -199,6 +167,13 @@
             TabControl Pager = ParentTabPage.Parent as TabControl;
             if ((Pager != null) && (Pager.TabPages.Contains(ParentTabPage)))
                 Pager.TabPages.Remove(ParentTabPage);
+        }
+        public void AddToQuickView(LinkItem LinkItem)
+        {
+            tblList.Rows.Add(LinkItem.ItemType, LinkItem.Place, LinkItem.Name, LinkItem);
+
+            string Message = $"{LinkItem.ItemType} - {LinkItem.Name} added to Quick View";
+            LogBox.AppendLine(Message);
         }
 
         // ● properties

@@ -1,4 +1,6 @@
-﻿namespace StoryWriter
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+
+namespace StoryWriter
 {
     static public partial class App
     {
@@ -69,7 +71,9 @@
             ContentPagerHandler.CloseAll();
         }
 
-        
+        /// <summary>
+        /// Shows the settings dialog
+        /// </summary>
         static public void ShowSettingsDialog()
         {
             string Message = @"This will close all opened UI. 
@@ -231,6 +235,7 @@ Do you want to continue?
             SideBarPagerHandler.ShowPage(typeof(UC_TagList), nameof(UC_TagList), null);
             SideBarPagerHandler.ShowPage(typeof(UC_ComponentList), nameof(UC_ComponentList), null);
             SideBarPagerHandler.ShowPage(typeof(UC_Search), nameof(UC_Search), null);
+            SideBarPagerHandler.ShowPage(typeof(UC_QuickViewList), nameof(UC_QuickViewList), null);            
             var Page = SideBarPagerHandler.ShowPage(typeof(UC_ChapterList), nameof(UC_ChapterList), null);
             (Page.Parent as TabControl).SelectTab(0);
 
@@ -358,14 +363,17 @@ Do you want to continue?
         /// <summary>
         /// Checks if the given string is an RTF text.
         /// </summary>
-        public static bool IsRtf(string PlainText)
+        static public bool IsRtf(string PlainText)
         {
             if (string.IsNullOrWhiteSpace(PlainText))
                 return true;
 
             return PlainText.TrimStart().StartsWith(@"{\rtf", StringComparison.Ordinal);
         }
-        public static bool RichTextContainsTerm(string RtfText, string PlainTextTerm)
+        /// <summary>
+        /// Returns true if the given RTF text contains the given term
+        /// </summary>
+        static public bool RichTextContainsTerm(string RtfText, string PlainTextTerm)
         {
             if (string.IsNullOrWhiteSpace(RtfText))
                 return false;
@@ -373,7 +381,9 @@ Do you want to continue?
             return PlainText.Contains(PlainTextTerm, StringComparison.OrdinalIgnoreCase);
         }
 
-
+        /// <summary>
+        /// Exports the current project
+        /// </summary>
         static public void ExportProject()
         {
             ExportService Service = new();
@@ -386,6 +396,9 @@ Do you want to continue?
 
             }
         }
+        /// <summary>
+        /// Imports a project. It creates a new project and makes it the current one.
+        /// </summary>
         static public void ImportProject()
         {
             string Message = @"This will close all opened UI. 
@@ -472,6 +485,9 @@ Do you want to continue?
 
             return null;
         }
+        /// <summary>
+        /// Returns the <see cref="DataRow"/> with the given Id
+        /// </summary>
         static public DataRow FindDataRowById(this DataTable Table, string Id)
         {
             foreach (DataRow Row in Table.Rows)
@@ -515,11 +531,21 @@ Do you want to continue?
                 Thread.Sleep(checkIntervalMilliseconds);
             }
         }
+        /// <summary>
+        /// Triggers the <see cref="SearchTermIsSet"/> event
+        /// </summary>
+        static public void SetSearchTerm(string Term)
+        {
+            SearchTermIsSet?.Invoke(null, Term);
+        }
+        /// <summary>
+        /// Triggers the <see cref="SearchResultsChanged"/> event
+        /// </summary>
         static public void DisplaySearchResults(List<LinkItem> LinkItems)
         {
             SearchResultsChanged?.Invoke(null, LinkItems);
-
         }
+
 
         // ● properties 
         /// <summary>
@@ -554,6 +580,14 @@ Do you want to continue?
         /// </summary>
         static public MainForm MainForm { get; private set; }
         /// <summary>
+        /// The <see cref="PagerHandler"/> for the side bar
+        /// </summary>
+        static public PagerHandler SideBarPagerHandler { get; set; }
+        /// <summary>
+        /// The <see cref="PagerHandler"/> for the content
+        /// </summary>
+        static public PagerHandler ContentPagerHandler { get; set; }
+        /// <summary>
         /// The zoom factor to be used by all rich edit boxes in this application
         /// </summary>
         static public decimal ZoomFactor
@@ -565,17 +599,32 @@ Do you want to continue?
                 ZoomFactorChanged?.Invoke(null, EventArgs.Empty);                
             }
         }
-
-        static public PagerHandler SideBarPagerHandler { get; set; }
-        static public PagerHandler ContentPagerHandler { get; set; }
-        //static public AutoSaveService AutoSaveService { get; set; }
-
+ 
         // ● events
+        /// <summary>
+        /// Triggered when a new project is closed
+        /// </summary>
         static public event EventHandler ProjectClosed;
+        /// <summary>
+        /// Triggered when a new project is opened
+        /// </summary>
         static public event EventHandler ProjectOpened;
+        /// <summary>
+        /// Triggered when a tag is added to a component
+        /// </summary>
         static public event EventHandler TagToComponetsChanged;
+        /// <summary>
+        /// Triggered when the global zoom factor is changed
+        /// </summary>
         static public event EventHandler ZoomFactorChanged;
+        /// <summary>
+        /// Triggered when the search results are changed
+        /// </summary>
         static public event EventHandler<List<LinkItem>> SearchResultsChanged;
+        /// <summary>
+        /// Triggered when the search term is set
+        /// </summary>
+        static public event EventHandler<string> SearchTermIsSet;
 
 
     }

@@ -15,10 +15,15 @@
         {
             ParentTabPage.Text = "Tags";
 
+            gridComponents.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
+            gridTags.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
+
             btnAddTag.Click += (s, e) => AddTag();
             btnDeleteTag.Click += (s, e) => DeleteTag();
             btnAddDefaultTags.Click += (s, e) => AddDefaultTags();
             btnAddComponentsToTag.Click += (s, e) => AddComponentsToTag();
+            btnAddToQuickView.Click += (s, e) => AddToQuickView();
+
 
             edtFilter.TextChanged += (s, e) => FilterChanged();
             gridComponents.MouseDoubleClick += (s, e) => EditComponentText();
@@ -208,7 +213,6 @@
 
             }
         }
-
         void EditComponentText()
         {
             DataRow Row = bsTagToComponents.CurrentDataRow();
@@ -225,7 +229,6 @@
 
             App.ContentPagerHandler.ShowPage(typeof(UC_Component), Component.Id, Component);
         }
- 
         void AddComponentsToTag()
         {
             DataRow Row = bsTags.CurrentDataRow();
@@ -241,6 +244,31 @@
             Row = tblTags.FindDataRowById(Tag.Id);
             if (Row != null)
                 gridTags.PositionToRow(Row);
+        }
+        void AddToQuickView()
+        {
+            DataRow Row = bsTagToComponents.CurrentDataRow();
+ 
+            if (Row != null)
+            {
+                string ComponentId = Row.AsString("ComponentId");
+                Component Component = App.CurrentProject.ComponentList.FirstOrDefault(x => x.Id == ComponentId);
+                if (Component != null)
+                {
+                    LinkItem LinkItem = new();
+                    LinkItem.ItemType = ItemType.Component;
+                    LinkItem.Place = LinkPlace.Title;
+                    LinkItem.Name = Component.ToString();
+                    LinkItem.Item = Component;
+
+                    TabPage Page = App.SideBarPagerHandler.FindTabPage(nameof(UC_QuickViewList));
+                    if (Page != null)
+                    {
+                        UC_QuickViewList ucQuickViewList = Page.Tag as UC_QuickViewList;
+                        ucQuickViewList.AddToQuickView(LinkItem);
+                    }
+                }
+            }
         }
 
         // ● event handlers

@@ -1,6 +1,6 @@
 ﻿namespace StoryWriter
 {
-    partial class UC_Search
+    partial class UC_QuickViewList
     {
         /// <summary> 
         /// Required designer variable.
@@ -28,68 +28,48 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new Container();
-            panel1 = new Panel();
-            btnAddToQuickView = new Button();
-            edtSearch = new TextBox();
-            label1 = new Label();
+            splitContainer1 = new SplitContainer();
             Grid = new DataGridView();
             coType = new DataGridViewTextBoxColumn();
             coPlace = new DataGridViewTextBoxColumn();
             coName = new DataGridViewTextBoxColumn();
-            splitContainer1 = new SplitContainer();
             ucRichText = new UC_RichText();
             panel2 = new Panel();
             lblItemTitle = new Label();
-            ToolTipProvider = new ToolTip(components);
-            panel1.SuspendLayout();
-            ((ISupportInitialize)Grid).BeginInit();
+            ToolBar = new ToolStrip();
+            btnDisplayItem = new ToolStripButton();
+            btnRemoveItem = new ToolStripButton();
+            btnRemoveAll = new ToolStripButton();
             ((ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
+            ((ISupportInitialize)Grid).BeginInit();
             panel2.SuspendLayout();
+            ToolBar.SuspendLayout();
             SuspendLayout();
             // 
-            // panel1
+            // splitContainer1
             // 
-            panel1.Controls.Add(btnAddToQuickView);
-            panel1.Controls.Add(edtSearch);
-            panel1.Controls.Add(label1);
-            panel1.Dock = DockStyle.Top;
-            panel1.Location = new Point(0, 0);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(351, 37);
-            panel1.TabIndex = 0;
+            splitContainer1.BackColor = SystemColors.Control;
+            splitContainer1.BorderStyle = BorderStyle.FixedSingle;
+            splitContainer1.Dock = DockStyle.Fill;
+            splitContainer1.Location = new Point(0, 31);
+            splitContainer1.Name = "splitContainer1";
+            splitContainer1.Orientation = Orientation.Horizontal;
             // 
-            // btnAddToQuickView
+            // splitContainer1.Panel1
             // 
-            btnAddToQuickView.Dock = DockStyle.Left;
-            btnAddToQuickView.Image = Properties.Resources.wishlist_add;
-            btnAddToQuickView.Location = new Point(0, 0);
-            btnAddToQuickView.Name = "btnAddToQuickView";
-            btnAddToQuickView.Size = new Size(45, 37);
-            btnAddToQuickView.TabIndex = 2;
-            btnAddToQuickView.TextImageRelation = TextImageRelation.ImageBeforeText;
-            ToolTipProvider.SetToolTip(btnAddToQuickView, "Add selected item to Quick View List");
-            btnAddToQuickView.UseVisualStyleBackColor = true;
+            splitContainer1.Panel1.Controls.Add(Grid);
             // 
-            // edtSearch
+            // splitContainer1.Panel2
             // 
-            edtSearch.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            edtSearch.Location = new Point(106, 8);
-            edtSearch.Name = "edtSearch";
-            edtSearch.Size = new Size(238, 23);
-            edtSearch.TabIndex = 1;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(57, 12);
-            label1.Name = "label1";
-            label1.Size = new Size(42, 15);
-            label1.TabIndex = 0;
-            label1.Text = "Search";
+            splitContainer1.Panel2.Controls.Add(ucRichText);
+            splitContainer1.Panel2.Controls.Add(panel2);
+            splitContainer1.Size = new Size(351, 596);
+            splitContainer1.SplitterDistance = 313;
+            splitContainer1.SplitterWidth = 6;
+            splitContainer1.TabIndex = 3;
             // 
             // Grid
             // 
@@ -98,7 +78,7 @@
             Grid.Dock = DockStyle.Fill;
             Grid.Location = new Point(0, 0);
             Grid.Name = "Grid";
-            Grid.Size = new Size(349, 309);
+            Grid.Size = new Size(349, 311);
             Grid.TabIndex = 1;
             // 
             // coType
@@ -119,34 +99,12 @@
             coName.HeaderText = "Name";
             coName.Name = "coName";
             // 
-            // splitContainer1
-            // 
-            splitContainer1.BackColor = SystemColors.Control;
-            splitContainer1.BorderStyle = BorderStyle.FixedSingle;
-            splitContainer1.Dock = DockStyle.Fill;
-            splitContainer1.Location = new Point(0, 37);
-            splitContainer1.Name = "splitContainer1";
-            splitContainer1.Orientation = Orientation.Horizontal;
-            // 
-            // splitContainer1.Panel1
-            // 
-            splitContainer1.Panel1.Controls.Add(Grid);
-            // 
-            // splitContainer1.Panel2
-            // 
-            splitContainer1.Panel2.Controls.Add(ucRichText);
-            splitContainer1.Panel2.Controls.Add(panel2);
-            splitContainer1.Size = new Size(351, 590);
-            splitContainer1.SplitterDistance = 311;
-            splitContainer1.SplitterWidth = 6;
-            splitContainer1.TabIndex = 2;
-            // 
             // ucRichText
             // 
             ucRichText.Dock = DockStyle.Fill;
             ucRichText.Location = new Point(0, 25);
             ucRichText.Name = "ucRichText";
-            ucRichText.Size = new Size(349, 246);
+            ucRichText.Size = new Size(349, 250);
             ucRichText.TabIndex = 0;
             // 
             // panel2
@@ -168,40 +126,77 @@
             lblItemTitle.TabIndex = 0;
             lblItemTitle.Text = "lblItemTitle";
             // 
-            // UC_Search
+            // ToolBar
+            // 
+            ToolBar.ImageScalingSize = new Size(24, 24);
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnDisplayItem, btnRemoveItem, btnRemoveAll });
+            ToolBar.Location = new Point(0, 0);
+            ToolBar.Name = "ToolBar";
+            ToolBar.Size = new Size(351, 31);
+            ToolBar.TabIndex = 4;
+            ToolBar.Text = "toolStrip1";
+            // 
+            // btnDisplayItem
+            // 
+            btnDisplayItem.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnDisplayItem.Image = Properties.Resources.table_row_insert;
+            btnDisplayItem.ImageTransparentColor = Color.Magenta;
+            btnDisplayItem.Name = "btnDisplayItem";
+            btnDisplayItem.Size = new Size(28, 28);
+            btnDisplayItem.Text = "Display Item";
+            // 
+            // btnRemoveItem
+            // 
+            btnRemoveItem.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnRemoveItem.Image = Properties.Resources.table_row_delete;
+            btnRemoveItem.ImageTransparentColor = Color.Magenta;
+            btnRemoveItem.Name = "btnRemoveItem";
+            btnRemoveItem.Size = new Size(28, 28);
+            btnRemoveItem.Text = "Remove Item";
+            // 
+            // btnRemoveAll
+            // 
+            btnRemoveAll.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnRemoveAll.Image = Properties.Resources.table_delete;
+            btnRemoveAll.ImageTransparentColor = Color.Magenta;
+            btnRemoveAll.Name = "btnRemoveAll";
+            btnRemoveAll.Size = new Size(28, 28);
+            btnRemoveAll.Text = "Remove All";
+            // 
+            // UC_QuickViewList
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(splitContainer1);
-            Controls.Add(panel1);
-            Name = "UC_Search";
+            Controls.Add(ToolBar);
+            Name = "UC_QuickViewList";
             Size = new Size(351, 627);
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
-            ((ISupportInitialize)Grid).EndInit();
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
             ((ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
+            ((ISupportInitialize)Grid).EndInit();
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
+            ToolBar.ResumeLayout(false);
+            ToolBar.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
-        private Panel panel1;
-        private TextBox edtSearch;
-        private Label label1;
+        private SplitContainer splitContainer1;
         private DataGridView Grid;
         private DataGridViewTextBoxColumn coType;
         private DataGridViewTextBoxColumn coPlace;
         private DataGridViewTextBoxColumn coName;
-        private SplitContainer splitContainer1;
         private UC_RichText ucRichText;
         private Panel panel2;
         private Label lblItemTitle;
-        private Button btnAddToQuickView;
-        private ToolTip ToolTipProvider;
+        private ToolStrip ToolBar;
+        private ToolStripButton btnDisplayItem;
+        private ToolStripButton btnRemoveItem;
+        private ToolStripButton btnRemoveAll;
     }
 }

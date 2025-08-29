@@ -32,6 +32,8 @@
             btnAddTag = new ToolStripButton();
             btnDeleteTag = new ToolStripButton();
             toolStripSeparator1 = new ToolStripSeparator();
+            btnAddDefaultTags = new ToolStripButton();
+            toolStripSeparator2 = new ToolStripSeparator();
             btnAddComponentsToTag = new ToolStripButton();
             panel1 = new Panel();
             edtFilter = new TextBox();
@@ -41,8 +43,8 @@
             coTagName = new DataGridViewTextBoxColumn();
             gridComponents = new DataGridView();
             coComponent = new DataGridViewTextBoxColumn();
-            btnAddDefaultTags = new ToolStripButton();
-            toolStripSeparator2 = new ToolStripSeparator();
+            toolStrip1 = new ToolStrip();
+            btnAddToQuickView = new ToolStripButton();
             ToolBar.SuspendLayout();
             panel1.SuspendLayout();
             ((ISupportInitialize)splitContainer1).BeginInit();
@@ -51,6 +53,7 @@
             splitContainer1.SuspendLayout();
             ((ISupportInitialize)gridTags).BeginInit();
             ((ISupportInitialize)gridComponents).BeginInit();
+            toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // ToolBar
@@ -85,6 +88,20 @@
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new Size(6, 31);
+            // 
+            // btnAddDefaultTags
+            // 
+            btnAddDefaultTags.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnAddDefaultTags.Image = Properties.Resources.textfield_add;
+            btnAddDefaultTags.ImageTransparentColor = Color.Magenta;
+            btnAddDefaultTags.Name = "btnAddDefaultTags";
+            btnAddDefaultTags.Size = new Size(28, 28);
+            btnAddDefaultTags.Text = "Add default tags";
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 31);
             // 
             // btnAddComponentsToTag
             // 
@@ -124,6 +141,7 @@
             // 
             // splitContainer1
             // 
+            splitContainer1.BorderStyle = BorderStyle.FixedSingle;
             splitContainer1.Dock = DockStyle.Fill;
             splitContainer1.Location = new Point(0, 63);
             splitContainer1.Name = "splitContainer1";
@@ -136,6 +154,7 @@
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(gridComponents);
+            splitContainer1.Panel2.Controls.Add(toolStrip1);
             splitContainer1.Size = new Size(350, 598);
             splitContainer1.SplitterDistance = 375;
             splitContainer1.SplitterWidth = 6;
@@ -148,7 +167,7 @@
             gridTags.Dock = DockStyle.Fill;
             gridTags.Location = new Point(0, 0);
             gridTags.Name = "gridTags";
-            gridTags.Size = new Size(350, 375);
+            gridTags.Size = new Size(348, 373);
             gridTags.TabIndex = 0;
             // 
             // coTagName
@@ -162,9 +181,9 @@
             gridComponents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             gridComponents.Columns.AddRange(new DataGridViewColumn[] { coComponent });
             gridComponents.Dock = DockStyle.Fill;
-            gridComponents.Location = new Point(0, 0);
+            gridComponents.Location = new Point(0, 31);
             gridComponents.Name = "gridComponents";
-            gridComponents.Size = new Size(350, 217);
+            gridComponents.Size = new Size(348, 184);
             gridComponents.TabIndex = 0;
             // 
             // coComponent
@@ -173,19 +192,24 @@
             coComponent.HeaderText = "Component";
             coComponent.Name = "coComponent";
             // 
-            // btnAddDefaultTags
+            // toolStrip1
             // 
-            btnAddDefaultTags.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnAddDefaultTags.Image = Properties.Resources.textfield_add;
-            btnAddDefaultTags.ImageTransparentColor = Color.Magenta;
-            btnAddDefaultTags.Name = "btnAddDefaultTags";
-            btnAddDefaultTags.Size = new Size(28, 28);
-            btnAddDefaultTags.Text = "Add default tags";
+            toolStrip1.ImageScalingSize = new Size(24, 24);
+            toolStrip1.Items.AddRange(new ToolStripItem[] { btnAddToQuickView });
+            toolStrip1.Location = new Point(0, 0);
+            toolStrip1.Name = "toolStrip1";
+            toolStrip1.Size = new Size(348, 31);
+            toolStrip1.TabIndex = 1;
+            toolStrip1.Text = "toolStrip1";
             // 
-            // toolStripSeparator2
+            // btnAddToQuickView
             // 
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(6, 31);
+            btnAddToQuickView.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnAddToQuickView.Image = Properties.Resources.wishlist_add;
+            btnAddToQuickView.ImageTransparentColor = Color.Magenta;
+            btnAddToQuickView.Name = "btnAddToQuickView";
+            btnAddToQuickView.Size = new Size(28, 28);
+            btnAddToQuickView.Text = "Add selected item to Quick View List";
             // 
             // UC_TagList
             // 
@@ -202,10 +226,13 @@
             panel1.PerformLayout();
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
+            splitContainer1.Panel2.PerformLayout();
             ((ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
             ((ISupportInitialize)gridTags).EndInit();
             ((ISupportInitialize)gridComponents).EndInit();
+            toolStrip1.ResumeLayout(false);
+            toolStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -227,5 +254,7 @@
         private ToolStripButton btnAddComponentsToTag;
         private ToolStripButton btnAddDefaultTags;
         private ToolStripSeparator toolStripSeparator2;
+        private ToolStrip toolStrip1;
+        private ToolStripButton btnAddToQuickView;
     }
 }

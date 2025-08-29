@@ -28,6 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            StatuBar = new StatusStrip();
+            toolStripStatusLabel1 = new ToolStripStatusLabel();
+            lblWords = new ToolStripStatusLabel();
+            toolStripStatusLabel2 = new ToolStripStatusLabel();
+            lblPages = new ToolStripStatusLabel();
+            edtRichText = new RichTextBoxEx();
+            pnlTop = new Panel();
+            pnlFindAndReplace = new UC_RichTextFindAndReplace();
             ToolBar = new ToolStrip();
             btnBold = new ToolStripButton();
             btnItalic = new ToolStripButton();
@@ -42,28 +50,88 @@
             btnFind = new ToolStripButton();
             toolStripSeparator5 = new ToolStripSeparator();
             btnResetSelectionToDefault = new ToolStripButton();
-            btnLink = new ToolStripButton();
+            btnSearchForTerm = new ToolStripButton();
             toolStripSeparator4 = new ToolStripSeparator();
             btnSave = new ToolStripButton();
             lblTitle = new ToolStripLabel();
-            StatuBar = new StatusStrip();
-            toolStripStatusLabel1 = new ToolStripStatusLabel();
-            lblWords = new ToolStripStatusLabel();
-            toolStripStatusLabel2 = new ToolStripStatusLabel();
-            lblPages = new ToolStripStatusLabel();
-            edtRichText = new RichTextBoxEx();
-            ToolBar.SuspendLayout();
             StatuBar.SuspendLayout();
+            pnlTop.SuspendLayout();
+            ToolBar.SuspendLayout();
             SuspendLayout();
+            // 
+            // StatuBar
+            // 
+            StatuBar.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1, lblWords, toolStripStatusLabel2, lblPages });
+            StatuBar.Location = new Point(0, 546);
+            StatuBar.Name = "StatuBar";
+            StatuBar.Size = new Size(749, 22);
+            StatuBar.TabIndex = 2;
+            StatuBar.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            toolStripStatusLabel1.Size = new Size(47, 17);
+            toolStripStatusLabel1.Text = "Words: ";
+            // 
+            // lblWords
+            // 
+            lblWords.AutoSize = false;
+            lblWords.Name = "lblWords";
+            lblWords.Size = new Size(55, 17);
+            lblWords.Text = "0";
+            lblWords.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // toolStripStatusLabel2
+            // 
+            toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            toolStripStatusLabel2.Size = new Size(47, 17);
+            toolStripStatusLabel2.Text = " Pages: ";
+            // 
+            // lblPages
+            // 
+            lblPages.AutoSize = false;
+            lblPages.Name = "lblPages";
+            lblPages.Size = new Size(55, 17);
+            lblPages.Text = "0";
+            lblPages.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // edtRichText
+            // 
+            edtRichText.Dock = DockStyle.Fill;
+            edtRichText.Location = new Point(0, 68);
+            edtRichText.Name = "edtRichText";
+            edtRichText.Size = new Size(749, 478);
+            edtRichText.TabIndex = 3;
+            edtRichText.Text = "";
+            // 
+            // pnlTop
+            // 
+            pnlTop.Controls.Add(pnlFindAndReplace);
+            pnlTop.Controls.Add(ToolBar);
+            pnlTop.Dock = DockStyle.Top;
+            pnlTop.Location = new Point(0, 0);
+            pnlTop.Name = "pnlTop";
+            pnlTop.Size = new Size(749, 68);
+            pnlTop.TabIndex = 5;
+            // 
+            // pnlFindAndReplace
+            // 
+            pnlFindAndReplace.Dock = DockStyle.Top;
+            pnlFindAndReplace.Location = new Point(0, 31);
+            pnlFindAndReplace.Name = "pnlFindAndReplace";
+            pnlFindAndReplace.Padding = new Padding(8, 6, 8, 6);
+            pnlFindAndReplace.Size = new Size(749, 35);
+            pnlFindAndReplace.TabIndex = 6;
             // 
             // ToolBar
             // 
             ToolBar.ImageScalingSize = new Size(24, 24);
-            ToolBar.Items.AddRange(new ToolStripItem[] { btnBold, btnItalic, btnUnderline, toolStripSeparator1, btnFontColor, btnBackColor, toolStripSeparator2, btnBullets, btnNumbers, toolStripSeparator3, btnFind, toolStripSeparator5, btnResetSelectionToDefault, btnLink, toolStripSeparator4, btnSave, lblTitle });
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnBold, btnItalic, btnUnderline, toolStripSeparator1, btnFontColor, btnBackColor, toolStripSeparator2, btnBullets, btnNumbers, toolStripSeparator3, btnFind, toolStripSeparator5, btnResetSelectionToDefault, btnSearchForTerm, toolStripSeparator4, btnSave, lblTitle });
             ToolBar.Location = new Point(0, 0);
             ToolBar.Name = "ToolBar";
             ToolBar.Size = new Size(749, 31);
-            ToolBar.TabIndex = 0;
+            ToolBar.TabIndex = 1;
             ToolBar.Text = "toolStrip1";
             // 
             // btnBold
@@ -167,14 +235,14 @@
             btnResetSelectionToDefault.Size = new Size(28, 28);
             btnResetSelectionToDefault.Text = "Reset formatting to default (Shift + Esc)";
             // 
-            // btnLink
+            // btnSearchForTerm
             // 
-            btnLink.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnLink.Image = Properties.Resources.link;
-            btnLink.ImageTransparentColor = Color.Magenta;
-            btnLink.Name = "btnLink";
-            btnLink.Size = new Size(28, 28);
-            btnLink.Text = "Go to link (Ctrl + L or Ctrl + LeftClick)";
+            btnSearchForTerm.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnSearchForTerm.Image = Properties.Resources.table_tab_search;
+            btnSearchForTerm.ImageTransparentColor = Color.Magenta;
+            btnSearchForTerm.Name = "btnSearchForTerm";
+            btnSearchForTerm.Size = new Size(28, 28);
+            btnSearchForTerm.Text = "Search for Term (Ctrl + T or Ctrl + LeftClick)";
             // 
             // toolStripSeparator4
             // 
@@ -197,94 +265,51 @@
             lblTitle.Size = new Size(277, 28);
             lblTitle.Text = "Here goes the title of the item";
             // 
-            // StatuBar
-            // 
-            StatuBar.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1, lblWords, toolStripStatusLabel2, lblPages });
-            StatuBar.Location = new Point(0, 306);
-            StatuBar.Name = "StatuBar";
-            StatuBar.Size = new Size(749, 22);
-            StatuBar.TabIndex = 2;
-            StatuBar.Text = "statusStrip1";
-            // 
-            // toolStripStatusLabel1
-            // 
-            toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            toolStripStatusLabel1.Size = new Size(47, 17);
-            toolStripStatusLabel1.Text = "Words: ";
-            // 
-            // lblWords
-            // 
-            lblWords.AutoSize = false;
-            lblWords.Name = "lblWords";
-            lblWords.Size = new Size(55, 17);
-            lblWords.Text = "0";
-            lblWords.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // toolStripStatusLabel2
-            // 
-            toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            toolStripStatusLabel2.Size = new Size(47, 17);
-            toolStripStatusLabel2.Text = " Pages: ";
-            // 
-            // lblPages
-            // 
-            lblPages.AutoSize = false;
-            lblPages.Name = "lblPages";
-            lblPages.Size = new Size(55, 17);
-            lblPages.Text = "0";
-            lblPages.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // edtRichText
-            // 
-            edtRichText.Dock = DockStyle.Fill;
-            edtRichText.Location = new Point(0, 31);
-            edtRichText.Name = "edtRichText";
-            edtRichText.Size = new Size(749, 275);
-            edtRichText.TabIndex = 3;
-            edtRichText.Text = "";
-            // 
             // UC_RichText
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(edtRichText);
+            Controls.Add(pnlTop);
             Controls.Add(StatuBar);
-            Controls.Add(ToolBar);
             Name = "UC_RichText";
-            Size = new Size(749, 328);
-            ToolBar.ResumeLayout(false);
-            ToolBar.PerformLayout();
+            Size = new Size(749, 568);
             StatuBar.ResumeLayout(false);
             StatuBar.PerformLayout();
+            pnlTop.ResumeLayout(false);
+            pnlTop.PerformLayout();
+            ToolBar.ResumeLayout(false);
+            ToolBar.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private ToolStrip ToolBar;
-        private ToolStripButton btnBold;
-        private ToolStripButton btnItalic;
-        private ToolStripButton btnUnderline;
-        private ToolStripSeparator toolStripSeparator1;
-        private ToolStripButton btnLink;
-        private ToolStripSeparator toolStripSeparator2;
-        private ToolStripButton btnFind;
-        private ToolStripSeparator toolStripSeparator3;
-        private ToolStripButton btnBullets;
-        private ToolStripButton btnNumbers;
-        private ToolStripSeparator toolStripSeparator4;
-        private ToolStripButton btnSave;
-        private ToolStripButton btnFontColor;
-        private ToolStripButton btnBackColor;
-        private ToolStripButton btnResetSelectionToDefault;
-        private ToolStripSeparator toolStripSeparator5;
         private StatusStrip StatuBar;
         private ToolStripStatusLabel toolStripStatusLabel1;
         private ToolStripStatusLabel lblWords;
         private ToolStripStatusLabel toolStripStatusLabel2;
         private ToolStripStatusLabel lblPages;
         private RichTextBoxEx edtRichText;
+        private Panel pnlTop;
+        private ToolStrip ToolBar;
+        private ToolStripButton btnBold;
+        private ToolStripButton btnItalic;
+        private ToolStripButton btnUnderline;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripButton btnFontColor;
+        private ToolStripButton btnBackColor;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripButton btnBullets;
+        private ToolStripButton btnNumbers;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripButton btnFind;
+        private ToolStripSeparator toolStripSeparator5;
+        private ToolStripButton btnResetSelectionToDefault;
+        private ToolStripButton btnSearchForTerm;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripButton btnSave;
         private ToolStripLabel lblTitle;
+        private UC_RichTextFindAndReplace pnlFindAndReplace;
     }
 }

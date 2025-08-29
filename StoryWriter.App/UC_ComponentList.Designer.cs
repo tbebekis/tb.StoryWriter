@@ -34,6 +34,7 @@
             btnDeleteComponent = new ToolStripButton();
             toolStripSeparator1 = new ToolStripSeparator();
             btnEditRtfText = new ToolStripButton();
+            btnAdjustComponentTags = new ToolStripButton();
             panel2 = new Panel();
             edtFilter = new TextBox();
             label2 = new Label();
@@ -42,8 +43,7 @@
             splitContainer1 = new SplitContainer();
             gridTags = new DataGridView();
             coTag = new DataGridViewTextBoxColumn();
-            toolStripSeparator2 = new ToolStripSeparator();
-            btnAdjustComponentTags = new ToolStripButton();
+            btnAddToQuickView = new ToolStripButton();
             ToolBar.SuspendLayout();
             panel2.SuspendLayout();
             ((ISupportInitialize)gridComponents).BeginInit();
@@ -57,7 +57,7 @@
             // ToolBar
             // 
             ToolBar.ImageScalingSize = new Size(24, 24);
-            ToolBar.Items.AddRange(new ToolStripItem[] { btnAddComponent, btnEditComponent, btnDeleteComponent, toolStripSeparator1, btnEditRtfText, toolStripSeparator2, btnAdjustComponentTags });
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnAddComponent, btnEditComponent, btnDeleteComponent, toolStripSeparator1, btnEditRtfText, btnAdjustComponentTags, btnAddToQuickView });
             ToolBar.Location = new Point(0, 0);
             ToolBar.Name = "ToolBar";
             ToolBar.Size = new Size(351, 31);
@@ -104,6 +104,15 @@
             btnEditRtfText.Name = "btnEditRtfText";
             btnEditRtfText.Size = new Size(28, 28);
             btnEditRtfText.Text = "Edit Text";
+            // 
+            // btnAdjustComponentTags
+            // 
+            btnAdjustComponentTags.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnAdjustComponentTags.Image = Properties.Resources.to_do_list_cheked;
+            btnAdjustComponentTags.ImageTransparentColor = Color.Magenta;
+            btnAdjustComponentTags.Name = "btnAdjustComponentTags";
+            btnAdjustComponentTags.Size = new Size(28, 28);
+            btnAdjustComponentTags.Text = "Adjust Component Tags";
             // 
             // panel2
             // 
@@ -183,19 +192,14 @@
             coTag.HeaderText = "Tag";
             coTag.Name = "coTag";
             // 
-            // toolStripSeparator2
+            // btnAddToQuickView
             // 
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(6, 31);
-            // 
-            // btnAdjustComponentTags
-            // 
-            btnAdjustComponentTags.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnAdjustComponentTags.Image = Properties.Resources.to_do_list_cheked;
-            btnAdjustComponentTags.ImageTransparentColor = Color.Magenta;
-            btnAdjustComponentTags.Name = "btnAdjustComponentTags";
-            btnAdjustComponentTags.Size = new Size(28, 28);
-            btnAdjustComponentTags.Text = "Adjust Component Tags";
+            btnAddToQuickView.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnAddToQuickView.Image = Properties.Resources.wishlist_add;
+            btnAddToQuickView.ImageTransparentColor = Color.Magenta;
+            btnAddToQuickView.Name = "btnAddToQuickView";
+            btnAddToQuickView.Size = new Size(28, 28);
+            btnAddToQuickView.Text = "Add selected item to Quick View List";
             // 
             // UC_ComponentList
             // 
@@ -236,7 +240,7 @@
         private DataGridViewTextBoxColumn coComponent;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripButton btnEditRtfText;
-        private ToolStripSeparator toolStripSeparator2;
         private ToolStripButton btnAdjustComponentTags;
+        private ToolStripButton btnAddToQuickView;
     }
 }

@@ -2,10 +2,7 @@
 {
     public partial class UC_RichText : UserControl
     {
-        // ● fields
-        FindReplaceDialog _findReplaceForm;
-
-        
+        // ● fields        
         NumericUpDown nudFontSize;
         ToolStripControlHost hostFontSize;
 
@@ -20,8 +17,7 @@
         int _lastLength = -1;
         const int WordsPerPage = 400;
 
-        System.Windows.Forms.Timer timerWordCounter;
-
+        System.Windows.Forms.Timer timerWordCounter; 
 
         // ● private
         void ControlInitialize()
@@ -32,18 +28,11 @@
             btnItalic.Click += (s, e) => ToggleItalic();
             btnUnderline.Click += (s, e) => ToggleUnderline();
             btnResetSelectionToDefault.Click += (s, e) => ResetSelectionToDefault();
-            btnLink.Click += (s, e) => GoToLink();
-            btnFind.Click += (s, e) => ShowFindReplaceDialog();            
+            btnSearchForTerm.Click += (s, e) => SearchForTerm();
             btnSave.Click += (s, e) => SaveText();
-            //btnBullets.Click += btnBullets_Click;
-           // btnNumbers.Click += btnNumbers_Click;
             btnFontColor.Click += btnFontColor_Click;
             btnBackColor.Click += btnBackColor_Click;
- 
 
-            //Editor.KeyDown += Editor_KeyDown; 
-            //Editor.MouseDown += Editor_MouseDown;
-            //Editor.TextChanged += (s, e) => Editor.Modified = true;
             Editor.SelectionChanged += Editor_SelectionChanged;
 
             btnBullets.CheckOnClick = true;
@@ -55,19 +44,16 @@
             timerWordCounter.Interval = 3 * 1000;
             timerWordCounter.Tick += async (s, e) => await UpdateWordCounter();
             timerWordCounter.Start();
-
+ 
+            pnlFindAndReplace.FindAndReplaceVisibleChanged += (s, flag) => pnlTop.Height = flag? 67: 31;
+            pnlFindAndReplace.HideBar();
+            pnlFindAndReplace.Editor = Editor;
         }
         void SetEditorFont()
         {
             string family = string.IsNullOrWhiteSpace(App.Settings.FontFamily) ? "Times New Roman" : App.Settings.FontFamily;
             float size = Math.Max(12, App.Settings.FontSize);
-            
-            //int selStart = Editor.SelectionStart;
-            //int selLen = Editor.SelectionLength;
 
-            //Editor.SelectAll();
-            //Editor.SelectionFont = new Font(family, size, FontStyle.Regular);
-            //Editor.Select(selStart, selLen);
             Editor.Font = new System.Drawing.Font(family, size, FontStyle.Regular);
             Editor.Update();
         }
@@ -191,18 +177,20 @@
                         SaveText();
                         e.SuppressKeyPress = true;
                         break;
-                    case Keys.L:
-                        GoToLink();
+                    case Keys.T:
+                        SearchForTerm();
                         e.SuppressKeyPress = true;
                         break;
                     case Keys.F:
-                        ShowFindReplaceDialog(); 
+                        //ShowFindAndReplace();
+                        pnlFindAndReplace.ShowBar(GetSelectedWord());
                         e.SuppressKeyPress = true;
                         break;
  
                 }
             }
 
+ 
             // ● reset any formatting (bold, italic, underline, colors, etc.) to default on current selection, if any.
             if (e.Shift)
             {
@@ -212,44 +200,40 @@
                         ResetSelectionToDefault();
                         e.SuppressKeyPress = true;
                         break;
+                    case Keys.F3:
+                        pnlFindAndReplace.FindPrev();
+                        e.SuppressKeyPress = true;
+                        break;
                 }
             }
+
+            // close find and replace bar if visible
+            if (e.Modifiers == Keys.None)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Escape:
+                        if (IsFindAndReplaseVisible)
+                        {
+                            pnlFindAndReplace.HideBar(); //HideFindAndReplace();
+                            e.SuppressKeyPress = true;
+                        }
+                        e.SuppressKeyPress = true;
+                        break;
+                    case Keys.F3:
+                        pnlFindAndReplace.FindNext();
+                        e.SuppressKeyPress = true;
+                        break;
+                }
+            }
+
  
+
 
             // ● bullets and numbers
             ListHandler.HandleKeyDown(e);
  
-            /*
-            // Continue numbering on Enter
-            if (ListHandler.NumberMode && e.KeyCode == Keys.Enter)
-            {
-                e.SuppressKeyPress = true;
-
-                // If current line contains only "N. " → stop numbering
-                if (IsCurrentLineOnlyPrefix(Editor))
-                {
-                    RemoveCurrentLineIfOnlyPrefix(Editor);
-                    StopNumbering(updateButtons: true);
-                    Editor.SelectedText = Environment.NewLine; // blank line
-                    return;
-                }
-
-                _currentNumber++;
-                Editor.SelectedText = Environment.NewLine;
-                InsertNumberPrefix(_currentNumber);
-                return;
-            }
-
-            // Backspace at start-of-line while in bullet mode → stop bullets
-            if (_bulletMode && e.KeyCode == Keys.Back && Editor.IsAtLineStart())
-            {
-                e.SuppressKeyPress = true;
-                Editor.ApplyBullets(false);
-                _bulletMode = false;
-                btnBullets.Checked = false;
-                return;
-            }
-            */
+            
         }
         void Editor_MouseDown(object sender, MouseEventArgs e)
         {
@@ -260,7 +244,7 @@
             if (!ctrl) 
                 return;
 
-            GoToLink();
+            SearchForTerm();
         }
         void Editor_SelectionChanged(object sender, EventArgs e)
         {
@@ -395,53 +379,34 @@
             FontStyle NewStyle = Editor.SelectionFont.Underline ? Editor.SelectionFont.Style ^ FontStyle.Underline : Editor.SelectionFont.Style | FontStyle.Underline;
             Editor.SelectionFont = new Font(Editor.SelectionFont, NewStyle);
         }
-        void GoToLink()
+        void SearchForTerm()
         {
-            string Term = Editor.SelectedText;
-            if (string.IsNullOrWhiteSpace(Term))
+            string Term = GetSelectedWord(); 
+
+            if (!string.IsNullOrWhiteSpace(Term) && Term.Length > 2)
+            {                
+                App.SetSearchTerm(Term);   //App.CurrentProject.SearchItems(Term);
+            }
+ 
+        }
+        public string GetSelectedWord()
+        {
+            string Result = Editor.SelectedText;
+
+            if (string.IsNullOrWhiteSpace(Result))
             {
                 Point clientPt = Editor.PointToClient(Cursor.Position);
                 int index = Editor.GetCharIndexFromPosition(clientPt);      //int index = Editor.GetCharIndexFromPosition(e.Location);
 
-                Term = Editor.GetWordAtIndex(index);
-            } 
-
-            if (!string.IsNullOrWhiteSpace(Term) && Term.Length > 2)
-            {
-                App.CurrentProject.SearchItems(Term);
+                Result = Editor.GetWordAtIndex(index);
             }
- 
+
+            return Result;
         }
  
-        void ShowFindReplaceDialog()
-        {
-            if (_findReplaceForm == null || _findReplaceForm.IsDisposed)
-            {
-                _findReplaceForm = new FindReplaceDialog(Editor);
-                _findReplaceForm.Owner = this.FindForm();
-
-                // Υπολογισμός θέσης: πάνω–δεξιά του RichTextBox
-                Rectangle rtbRect = Editor.RectangleToScreen(Editor.ClientRectangle);
-                int x = rtbRect.Right - _findReplaceForm.Width;
-                int y = rtbRect.Top;
-
-                _findReplaceForm.StartPosition = FormStartPosition.Manual;
-                _findReplaceForm.Location = new Point(x, y);
-
-                _findReplaceForm.Show(this);
-            }
-            else
-            {
-                _findReplaceForm.Activate();
-            }
-        }
-
-
-
-        // ● helpers for links  
+        // ● find and replace
+        bool IsFindAndReplaseVisible => pnlFindAndReplace.Visible; //pnlTop.Height > 35;
  
-
-
         // ● overrides  
         protected override void OnLoad(EventArgs e)
         {
@@ -480,7 +445,18 @@
             if (EditorHandler != null)
                 EditorHandler.SaveEditorText(this.Editor);
         }
- 
+        public void SetToolBarVisible(bool Flag)
+        {
+            this.ToolBar.Visible = Flag;
+        }
+        public void SetStatusBarVisible(bool Flag)
+        {
+            this.StatuBar.Visible = Flag;
+        }
+        public void SetEditorReadOnly(bool Flag)
+        {
+            this.Editor.ReadOnly = Flag;
+        }
 
         // ● properties
         public RichTextBoxEx Editor => edtRichText;

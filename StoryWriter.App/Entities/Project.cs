@@ -457,6 +457,7 @@ create table {TableName} (
             LogBox.AppendLine($"Searching for '{Term}'");
 
             List<LinkItem> LinkItems = new ();
+            List<LinkItem> TextLinkItems = new();
 
             if (!string.IsNullOrWhiteSpace(Term))
             {
@@ -467,13 +468,13 @@ create table {TableName} (
                     {
                         if (Item.Name.ContainsText(Term))
                         {
-                            var Link = new LinkItem(ItemType, "Title", Item.ToString(), Item);
+                            var Link = new LinkItem(ItemType, LinkPlace.Title, Item.ToString(), Item);
                             LinkItems.Add(Link);
                         }
                         else if (Item.RichTextContainsTerm(Term))
                         {
-                            var Link = new LinkItem(ItemType, "Text", Item.ToString(), Item);
-                            LinkItems.Add(Link);
+                            var Link = new LinkItem(ItemType, LinkPlace.Text, Item.ToString(), Item);
+                            TextLinkItems.Add(Link);
                         }
                     }
                 }
@@ -484,6 +485,8 @@ create table {TableName} (
                 foreach (var Chapter in ChapterList)
                     AddLinks(Chapter.SceneList.Cast<BaseEntity>(), ItemType.Scene);
             }
+
+            LinkItems.AddRange(TextLinkItems);
 
             if (LinkItems.Count == 0)
             {

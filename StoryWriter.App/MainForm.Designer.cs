@@ -185,6 +185,7 @@
             // 
             // splitMain
             // 
+            splitMain.BorderStyle = BorderStyle.FixedSingle;
             splitMain.Dock = DockStyle.Fill;
             splitMain.Location = new Point(0, 55);
             splitMain.Name = "splitMain";
@@ -197,7 +198,7 @@
             // 
             splitMain.Panel2.Controls.Add(splitContent);
             splitMain.Size = new Size(930, 556);
-            splitMain.SplitterDistance = 142;
+            splitMain.SplitterDistance = 233;
             splitMain.SplitterWidth = 6;
             splitMain.TabIndex = 3;
             // 
@@ -209,7 +210,7 @@
             pagerSideBar.Location = new Point(0, 0);
             pagerSideBar.Name = "pagerSideBar";
             pagerSideBar.SelectedIndex = 0;
-            pagerSideBar.Size = new Size(142, 556);
+            pagerSideBar.Size = new Size(231, 554);
             pagerSideBar.TabIndex = 0;
             // 
             // tabPage3
@@ -217,7 +218,7 @@
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(134, 528);
+            tabPage3.Size = new Size(223, 526);
             tabPage3.TabIndex = 0;
             tabPage3.Text = "tabPage3";
             tabPage3.UseVisualStyleBackColor = true;
@@ -227,13 +228,14 @@
             tabPage4.Location = new Point(4, 24);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(134, 528);
+            tabPage4.Size = new Size(132, 526);
             tabPage4.TabIndex = 1;
             tabPage4.Text = "tabPage4";
             tabPage4.UseVisualStyleBackColor = true;
             // 
             // splitContent
             // 
+            splitContent.BorderStyle = BorderStyle.FixedSingle;
             splitContent.Dock = DockStyle.Fill;
             splitContent.Location = new Point(0, 0);
             splitContent.Name = "splitContent";
@@ -246,8 +248,8 @@
             // splitContent.Panel2
             // 
             splitContent.Panel2.Controls.Add(edtLog);
-            splitContent.Size = new Size(782, 556);
-            splitContent.SplitterDistance = 503;
+            splitContent.Size = new Size(691, 556);
+            splitContent.SplitterDistance = 502;
             splitContent.SplitterWidth = 6;
             splitContent.TabIndex = 0;
             // 
@@ -259,7 +261,7 @@
             pagerContent.Location = new Point(0, 0);
             pagerContent.Name = "pagerContent";
             pagerContent.SelectedIndex = 0;
-            pagerContent.Size = new Size(782, 503);
+            pagerContent.Size = new Size(689, 500);
             pagerContent.TabIndex = 0;
             // 
             // tabPage1
@@ -267,7 +269,7 @@
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(774, 475);
+            tabPage1.Size = new Size(681, 472);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "tabPage1";
             tabPage1.UseVisualStyleBackColor = true;
@@ -277,7 +279,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(774, 475);
+            tabPage2.Size = new Size(772, 472);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
@@ -289,7 +291,7 @@
             edtLog.Font = new Font("Courier New", 9F);
             edtLog.Location = new Point(0, 0);
             edtLog.Name = "edtLog";
-            edtLog.Size = new Size(782, 47);
+            edtLog.Size = new Size(689, 46);
             edtLog.TabIndex = 0;
             edtLog.Text = "";
             // 
