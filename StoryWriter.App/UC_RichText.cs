@@ -1,10 +1,13 @@
-﻿namespace StoryWriter
+﻿using DocumentFormat.OpenXml.Bibliography;
+
+namespace StoryWriter
 {
     public partial class UC_RichText : UserControl
     {
         // ● fields        
         NumericUpDown nudFontSize;
         ToolStripControlHost hostFontSize;
+        Font DefaultEditorFont;
 
         //NumericUpDown nudZoom;
         //ToolStripControlHost hostZoom;
@@ -44,7 +47,10 @@
             timerWordCounter.Interval = 3 * 1000;
             timerWordCounter.Tick += async (s, e) => await UpdateWordCounter();
             timerWordCounter.Start();
- 
+
+            var defaultSize = App.Settings.FontSize;
+            DefaultEditorFont = new Font(Editor.Font.FontFamily, defaultSize, FontStyle.Regular);
+
             pnlFindAndReplace.FindAndReplaceVisibleChanged += (s, flag) => pnlTop.Height = flag? 67: 31;
             pnlFindAndReplace.HideBar();
             pnlFindAndReplace.Editor = Editor;
@@ -137,10 +143,7 @@
         }
         void ResetSelectionToDefault()
         {
-            var defaultSize = App.Settings.FontSize;
-            var defaultFont = new Font(Editor.Font.FontFamily, defaultSize, FontStyle.Regular);
-
-            Editor.SelectionFont = defaultFont;
+            Editor.SelectionFont = DefaultEditorFont;
             Editor.SelectionColor = Color.Black;
 
             try
@@ -363,21 +366,27 @@
             }
         }
 
-        // ● formatting, find/replace and links
+        // ● formatting, find/replace and links 
         void ToggleBold()
         {
-            FontStyle NewStyle = Editor.SelectionFont.Bold? Editor.SelectionFont.Style ^ FontStyle.Bold: Editor.SelectionFont.Style | FontStyle.Bold;
-            Editor.SelectionFont = new Font(Editor.SelectionFont, NewStyle);
+            Font BaseFont = Editor.SelectionFont ?? Editor.Font;
+            FontStyle NewStyle = BaseFont.Bold ? (BaseFont.Style & ~FontStyle.Bold)
+                                            : (BaseFont.Style | FontStyle.Bold);
+            Editor.SelectionFont = new Font(BaseFont, NewStyle);
         }
         void ToggleItalic()
         {
-            FontStyle NewStyle = Editor.SelectionFont.Italic ? Editor.SelectionFont.Style ^ FontStyle.Italic : Editor.SelectionFont.Style | FontStyle.Italic;
-            Editor.SelectionFont = new Font(Editor.SelectionFont, NewStyle);
+            Font BaseFont = Editor.SelectionFont ?? Editor.Font;
+            FontStyle NewStyle = BaseFont.Italic ? (BaseFont.Style & ~FontStyle.Italic)
+                                : (BaseFont.Style | FontStyle.Italic);
+            Editor.SelectionFont = new Font(BaseFont, NewStyle);
         }
         void ToggleUnderline()
         {
-            FontStyle NewStyle = Editor.SelectionFont.Underline ? Editor.SelectionFont.Style ^ FontStyle.Underline : Editor.SelectionFont.Style | FontStyle.Underline;
-            Editor.SelectionFont = new Font(Editor.SelectionFont, NewStyle);
+            Font BaseFont = Editor.SelectionFont ?? Editor.Font;
+            FontStyle NewStyle = BaseFont.Underline ? (BaseFont.Style & ~FontStyle.Underline)
+                                : (BaseFont.Style | FontStyle.Underline);
+            Editor.SelectionFont = new Font(BaseFont, NewStyle);
         }
         void SearchForTerm()
         {

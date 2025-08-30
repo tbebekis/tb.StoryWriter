@@ -113,7 +113,8 @@ namespace StoryWriter
             }
             else
             {
-                bsTagToComponents.Filter = string.Empty;
+                bsTagToComponents.Filter = $"ComponentId = 'NOT EXISTEND ID'";
+                
             }
         }
         void FilterChanged()
@@ -123,6 +124,7 @@ namespace StoryWriter
             if (!string.IsNullOrWhiteSpace(S) && S.Length > 2)
             {
                 bsComponents.Filter = $"Name LIKE '%{S}%'";
+                SelectedComponentChanged();
             }
             else
             {
@@ -192,9 +194,13 @@ namespace StoryWriter
                 {
                     Row["Name"] = Component.Name;
                     TabPage Page = App.ContentPagerHandler.FindTabPage(Component.Id);
-                    UC_Component ucComponent = Page.Tag as UC_Component;
-                    if (ucComponent != null)
-                        ucComponent.ucRichText.Title = Component.Name;
+                    if (Page != null)
+                    {
+                        UC_Component ucComponent = Page.Tag as UC_Component;
+                        if (ucComponent != null)
+                            ucComponent.ucRichText.Title = Component.Name;
+                    }                  
+                    
                 }
                 else
                 {

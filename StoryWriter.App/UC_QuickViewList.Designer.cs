@@ -37,7 +37,7 @@
             panel2 = new Panel();
             lblItemTitle = new Label();
             ToolBar = new ToolStrip();
-            btnDisplayItem = new ToolStripButton();
+            btnEditRtfText = new ToolStripButton();
             btnRemoveItem = new ToolStripButton();
             btnRemoveAll = new ToolStripButton();
             ((ISupportInitialize)splitContainer1).BeginInit();
@@ -129,26 +129,26 @@
             // ToolBar
             // 
             ToolBar.ImageScalingSize = new Size(24, 24);
-            ToolBar.Items.AddRange(new ToolStripItem[] { btnDisplayItem, btnRemoveItem, btnRemoveAll });
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnRemoveItem, btnRemoveAll, btnEditRtfText });
             ToolBar.Location = new Point(0, 0);
             ToolBar.Name = "ToolBar";
             ToolBar.Size = new Size(351, 31);
             ToolBar.TabIndex = 4;
             ToolBar.Text = "toolStrip1";
             // 
-            // btnDisplayItem
+            // btnEditRtfText
             // 
-            btnDisplayItem.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnDisplayItem.Image = Properties.Resources.table_row_insert;
-            btnDisplayItem.ImageTransparentColor = Color.Magenta;
-            btnDisplayItem.Name = "btnDisplayItem";
-            btnDisplayItem.Size = new Size(28, 28);
-            btnDisplayItem.Text = "Display Item";
+            btnEditRtfText.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnEditRtfText.Image = Properties.Resources.page_edit;
+            btnEditRtfText.ImageTransparentColor = Color.Magenta;
+            btnEditRtfText.Name = "btnEditRtfText";
+            btnEditRtfText.Size = new Size(28, 28);
+            btnEditRtfText.Text = "Edit Text";
             // 
             // btnRemoveItem
             // 
             btnRemoveItem.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnRemoveItem.Image = Properties.Resources.table_row_delete;
+            btnRemoveItem.Image = Properties.Resources.table_delete;
             btnRemoveItem.ImageTransparentColor = Color.Magenta;
             btnRemoveItem.Name = "btnRemoveItem";
             btnRemoveItem.Size = new Size(28, 28);
@@ -157,7 +157,7 @@
             // btnRemoveAll
             // 
             btnRemoveAll.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnRemoveAll.Image = Properties.Resources.table_delete;
+            btnRemoveAll.Image = Properties.Resources.shape_square_delete;
             btnRemoveAll.ImageTransparentColor = Color.Magenta;
             btnRemoveAll.Name = "btnRemoveAll";
             btnRemoveAll.Size = new Size(28, 28);
@@ -195,7 +195,7 @@
         private Panel panel2;
         private Label lblItemTitle;
         private ToolStrip ToolBar;
-        private ToolStripButton btnDisplayItem;
+        private ToolStripButton btnEditRtfText;
         private ToolStripButton btnRemoveItem;
         private ToolStripButton btnRemoveAll;
     }

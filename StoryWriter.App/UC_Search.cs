@@ -16,8 +16,7 @@
             ucRichText.Editor.Clear();
             Grid.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
 
-            ucRichText.SetToolBarVisible(false);
-            ucRichText.SetStatusBarVisible(false);            
+            ucRichText.SetTopPanelVisible(false);
             ucRichText.SetEditorReadOnly(true);
 
             btnAddToQuickView.Click += (s, e) => AddToQuickView();

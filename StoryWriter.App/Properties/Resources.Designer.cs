@@ -363,6 +363,16 @@ namespace StoryWriter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap page_delete {
+            get {
+                object obj = ResourceManager.GetObject("page_delete", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap page_edit {
             get {
                 object obj = ResourceManager.GetObject("page_edit", resourceCulture);
@@ -416,6 +426,16 @@ namespace StoryWriter.Properties {
         internal static System.Drawing.Bitmap setting_tools {
             get {
                 object obj = ResourceManager.GetObject("setting_tools", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap shape_square_delete {
+            get {
+                object obj = ResourceManager.GetObject("shape_square_delete", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

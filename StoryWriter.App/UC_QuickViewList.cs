@@ -20,7 +20,7 @@
             ucRichText.SetTopPanelVisible(false);
             ucRichText.SetEditorReadOnly(true);
  
-            btnDisplayItem.Click += (s, e) => ShowLinkItemPage();
+            btnEditRtfText.Click += (s, e) => ShowLinkItemPage();
             btnRemoveItem.Click += (s, e) => RemoveLinkItem();
             btnRemoveAll.Click += (s, e) => RemoveAllLinkItems();
             Grid.MouseDoubleClick += (s, e) => ShowLinkItemPage();
@@ -187,11 +187,10 @@
                 string JsonText = File.ReadAllText(QuickViewListFilePath);
                 LinkItemProxyList ProxyList = Json.Deserialize<LinkItemProxyList>(JsonText);
 
-
                 foreach (LinkItemProxy LinkItemProxy in ProxyList.List)
                 {
                     LinkItem LinkItem = LinkItemProxy.ToLinkItem();
-                    tblList.Rows.Add(LinkItem.ItemType, LinkItem.Place, LinkItem.Name, LinkItem);
+                    tblList.Rows.Add(LinkItem.ItemType, LinkItem.Place, LinkItem.Item.ToString(), LinkItem);
                 }
 
                 tblList.AcceptChanges();

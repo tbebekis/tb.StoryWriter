@@ -110,7 +110,7 @@
             }
             else
             {
-                bsTagToComponents.Filter = string.Empty;
+                bsTagToComponents.Filter = $"ComponentId = 'NOT EXISTEND ID'";
             }
         }
         void FilterChanged()
@@ -120,6 +120,7 @@
             if (!string.IsNullOrWhiteSpace(S) && S.Length > 2)
             {
                 bsTags.Filter = $"Name LIKE '%{S}%'";
+                SelectedTagChanged();
             }
             else
             {

@@ -121,11 +121,13 @@
         {
             if (!DesignMode && m.Msg == WM_PASTE)
             {
-                int selStart = SelectionStart;
+                int selStart = SelectionStart;  // θέση πριν το paste
                 int selLen = SelectionLength;
                 int lenBefore = TextLength;
 
                 base.WndProc(ref m);
+
+                //int selEnd = SelectionStart;    // μετά το paste, ο caret πάει στο τέλος του επικολλημένου κειμένου
 
                 int lenAfter = TextLength;
                 int delta = lenAfter - (lenBefore - selLen);
@@ -135,7 +137,7 @@
                 if (insertedLen > 0)
                     ApplyParagraphSpacingToRange(insertedStart, insertedLen);
                 else
-                    ApplySpacingToParagraphAt(insertedStart);
+                    ApplySpacingToParagraphAt(insertedStart); 
 
                 return;
             }
