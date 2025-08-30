@@ -1,8 +1,9 @@
 ﻿namespace StoryWriter
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum LinkPlace
     {
-        Title,
-        Text,
+        Title = 0,
+        Text = 1,
     }
 }

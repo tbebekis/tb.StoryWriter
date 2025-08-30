@@ -23,6 +23,7 @@
             DoubleBuffered = true;
         }
 
+
         /// <summary>
         /// Binds UI events.
         /// </summary>

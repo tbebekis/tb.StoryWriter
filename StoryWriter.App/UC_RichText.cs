@@ -445,9 +445,17 @@
             if (EditorHandler != null)
                 EditorHandler.SaveEditorText(this.Editor);
         }
+        public void SetTopPanelVisible(bool Flag)
+        {
+            pnlTop.Visible = Flag;
+        }
         public void SetToolBarVisible(bool Flag)
         {
             this.ToolBar.Visible = Flag;
+        }
+        public void SetFindAndReplaceVisible(bool Flag)
+        {
+            pnlTop.Height = Flag ? 67 : 31;
         }
         public void SetStatusBarVisible(bool Flag)
         {

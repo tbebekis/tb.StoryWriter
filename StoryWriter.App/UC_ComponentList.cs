@@ -252,7 +252,7 @@ namespace StoryWriter
             DataRow Row = bsComponents.CurrentDataRow();
             if (Row != null)
             {
-                string ComponentId = Row.AsString("ComponentId");
+                string ComponentId = Row.AsString("Id");
                 Component Component = App.CurrentProject.ComponentList.FirstOrDefault(x => x.Id == ComponentId);
                 if (Component != null)
                 {

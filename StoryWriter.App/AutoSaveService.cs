@@ -1,8 +1,7 @@
 ﻿namespace StoryWriter
 {
     /// <summary>
-    /// Minimal, safe autosave: σώζει μόνο όταν ο χρήστης είναι ανενεργός
-    /// (IdleThreshold) και έχει περάσει διάστημα από το τελευταίο save (Interval).
+    /// AutoSaveService
     /// </summary>
     public class AutoSaveService
     {

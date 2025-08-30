@@ -11,7 +11,7 @@
         {
             base.AfterLoad();
 
-            if (DefaultTags.Count == 0)
+            if (this.DefaultTags.Count == 0)
             {
                 DefaultTags.AddRange(new string[] { "Character", "Location", "People", "Trait", "Event", "Artifact", "Planet" });
             }

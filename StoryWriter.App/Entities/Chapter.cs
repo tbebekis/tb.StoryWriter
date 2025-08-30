@@ -1,6 +1,4 @@
-﻿using MySqlX.XDevAPI.Common;
-
-namespace StoryWriter
+﻿namespace StoryWriter
 {
     /// <summary>
     /// Book chapter data model

@@ -4,6 +4,8 @@
     /// <summary>
     /// Indicates the type of an item.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [Flags]
     public enum ItemType
     {
         None = 0,

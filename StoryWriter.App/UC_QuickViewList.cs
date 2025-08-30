@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace StoryWriter
+﻿namespace StoryWriter
 {
     public partial class UC_QuickViewList : UserControl, IPanel
     {
@@ -18,10 +16,8 @@ namespace StoryWriter
             lblItemTitle.Text = "No selection";
             ucRichText.Editor.Clear();
             Grid.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
- 
 
-            ucRichText.SetToolBarVisible(false);
-            ucRichText.SetStatusBarVisible(false);
+            ucRichText.SetTopPanelVisible(false);
             ucRichText.SetEditorReadOnly(true);
  
             btnDisplayItem.Click += (s, e) => ShowLinkItemPage();
@@ -46,6 +42,8 @@ namespace StoryWriter
             App.ProjectOpened += ProjectOpened; 
 
             bsList.PositionChanged += (s, e) => SelectedLinkItemRowChanged();
+
+            LoadQuickViewList();
         }
         void SelectedLinkItemRowChanged()
         {
@@ -86,7 +84,7 @@ namespace StoryWriter
             bsList.ResumeBinding();
 
             lblItemTitle.Text = "No selection";
-            ucRichText.Editor.Clear();
+            ucRichText.Editor.Clear(); 
         }
         /// <summary>
         /// Shows the page for a specified link item, i.e. shows a component page or a chapter page.
@@ -123,16 +121,83 @@ namespace StoryWriter
             DataRow Row = bsList.CurrentDataRow();
             if (Row != null)
             {
+                LinkItem LinkItem = Row["OBJECT"] as LinkItem;
+
+                if (!App.QuestionBox($"Are you sure you want to remove '{LinkItem.Item}' from Quick View?"))
+                    return;
+
                 Row.Delete();
                 tblList.AcceptChanges();
+
+                SaveQuickViewList();
             }
         }
         void RemoveAllLinkItems()
         {
+            if (tblList.Rows.Count == 0)
+                return;
+
+            if (!App.QuestionBox("Are you sure you want to remove all items from Quick View?"))
+                return;
+
             tblList.DeleteRows();
             tblList.AcceptChanges();
+
+            SaveQuickViewList();
         }
  
+        static string GetQuickViewListFilePath()
+        {
+            string FileName = Project.ProjectNameToProjectFileName(App.CurrentProject.Name);
+            FileName = "QuickViewList_" + FileName;
+            FileName = Path.ChangeExtension(FileName, ".json");
+            string QuickViewListFilePath = Path.Combine(App.ProjectsPath, FileName);
+            return QuickViewListFilePath;
+        }
+ 
+        public void SaveQuickViewList()
+        {
+            if (App.CurrentProject == null)
+                return;            
+
+            List<LinkItem> LinkItems = tblList.Rows.Cast<DataRow>().Select(x => x["OBJECT"] as LinkItem).ToList();
+
+            LinkItemProxyList ProxyList = new();
+
+            foreach (LinkItem LinkItem in LinkItems)
+            {
+                LinkItemProxy LinkItemProxy = new LinkItemProxy();
+                LinkItemProxy.FromLinkItem(LinkItem);
+                ProxyList.List.Add(LinkItemProxy);
+            }
+
+            string QuickViewListFilePath = GetQuickViewListFilePath();
+
+            Json.SaveToFile(ProxyList, QuickViewListFilePath);
+        }
+        public void LoadQuickViewList()
+        {
+            if (App.CurrentProject == null)
+                return;
+
+            string QuickViewListFilePath = GetQuickViewListFilePath();
+
+            if (File.Exists(QuickViewListFilePath))
+            {
+                string JsonText = File.ReadAllText(QuickViewListFilePath);
+                LinkItemProxyList ProxyList = Json.Deserialize<LinkItemProxyList>(JsonText);
+
+
+                foreach (LinkItemProxy LinkItemProxy in ProxyList.List)
+                {
+                    LinkItem LinkItem = LinkItemProxy.ToLinkItem();
+                    tblList.Rows.Add(LinkItem.ItemType, LinkItem.Place, LinkItem.Name, LinkItem);
+                }
+
+                tblList.AcceptChanges();
+            }
+        }
+
         // ● event handlers
         void ProjectClosed(object sender, EventArgs e)
         {
@@ -140,8 +205,10 @@ namespace StoryWriter
         }
         void ProjectOpened(object sender, EventArgs e)
         {
+            ClearResults();
+            LoadQuickViewList();
         }
- 
+
         // ● overrides  
         protected override void OnLoad(EventArgs e)
         {
@@ -170,11 +237,29 @@ namespace StoryWriter
         }
         public void AddToQuickView(LinkItem LinkItem)
         {
-            tblList.Rows.Add(LinkItem.ItemType, LinkItem.Place, LinkItem.Name, LinkItem);
+            if (App.CurrentProject == null)
+                return;
 
-            string Message = $"{LinkItem.ItemType} - {LinkItem.Name} added to Quick View";
-            LogBox.AppendLine(Message);
+            List<LinkItem> LinkItems = tblList.Rows.Cast<DataRow>().Select(x => x["OBJECT"] as LinkItem).ToList();
+            LinkItem Item = LinkItems.FirstOrDefault(x => (x.Item as BaseEntity).Id == (LinkItem.Item as BaseEntity).Id);
+
+            if (Item == null)
+            {
+                tblList.Rows.Add(LinkItem.ItemType, LinkItem.Place, LinkItem.Name, LinkItem);
+
+                SaveQuickViewList();
+
+                string Message = $"{LinkItem.ItemType} - {LinkItem.Name} added to Quick View";
+                LogBox.AppendLine(Message);
+            }
+            else
+            {
+                string Message = $"{LinkItem.ItemType} - {LinkItem.Name} is already in Quick View";
+                LogBox.AppendLine(Message);
+            }
+
         }
+
 
         // ● properties
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

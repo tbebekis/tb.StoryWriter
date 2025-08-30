@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-
-namespace StoryWriter
+﻿namespace StoryWriter
 {
     static public partial class App
     {
@@ -19,20 +17,23 @@ namespace StoryWriter
         {
             lock (syncLock)
             {
-                if (DirtyEditors.Count > 0)
+                if (CurrentProject != null)
                 {
-                    while (DirtyEditors.Count > 0)
+                    if (DirtyEditors.Count > 0)
                     {
-                        UC_RichText ucRichText = DirtyEditors[0];
-                        DirtyEditors.RemoveAt(0);
-                        try
+                        while (DirtyEditors.Count > 0)
                         {
-                            if (ucRichText.Editor.Modified)
-                                ucRichText.SaveText();
+                            UC_RichText ucRichText = DirtyEditors[0];
+                            DirtyEditors.RemoveAt(0);
+                            try
+                            {
+                                if (ucRichText.Editor.Modified)
+                                    ucRichText.SaveText();
+                            }
+                            catch
+                            {
+                            }
                         }
-                        catch  
-                        {
-                        }                        
                     }
                 }
             }
@@ -464,7 +465,6 @@ Do you want to continue?
                 }
                 catch
                 {
-
                 }
             }
 
@@ -546,6 +546,23 @@ Do you want to continue?
             SearchResultsChanged?.Invoke(null, LinkItems);
         }
 
+        // ●
+        /// <summary>
+        /// Returns the user control of the given type, if any, else null
+        /// </summary>
+        static public T GetUserControl<T>(this PagerHandler PagerHandler) where T : UserControl
+        {
+            Type UserControlClass = typeof(T);
+            string PageId = UserControlClass.Name;
+            TabPage Page = PagerHandler.FindTabPage(PageId);
+            if (Page != null)
+            {
+                UserControl Result = Page.Tag as T;
+                return Result as T;
+            }
+
+            return null;
+        }
 
         // ● properties 
         /// <summary>
