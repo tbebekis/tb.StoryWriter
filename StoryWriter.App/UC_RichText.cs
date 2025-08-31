@@ -1,9 +1,13 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-
-namespace StoryWriter
+﻿namespace StoryWriter
 {
     public partial class UC_RichText : UserControl
     {
+        const string SSelectionFontProblem = @"
+SelectionFont is null. This usually happens when the selection contains characters from multiple Font Families.
+Instead of SelectionFont, the current Editor Font will be used to format the current selection.
+Select a smaller part of the sentence or individual words and reapply the formatting.
+";
+
         // ● fields        
         NumericUpDown nudFontSize;
         ToolStripControlHost hostFontSize;
@@ -65,6 +69,8 @@ namespace StoryWriter
         }
         void ApplySelectionFontSize(float size)
         {
+            CheckSelectionFont();
+
             var rtb = Editor;
 
             // Αν υπάρχουν mixed fonts στο selection, SelectionFont == null.
@@ -156,6 +162,11 @@ namespace StoryWriter
 
             Editor.Focus();
         }
+        void CheckSelectionFont()
+        {
+            if (Editor.SelectionFont == null)
+                LogBox.AppendLine(SSelectionFontProblem);
+        }
 
         // ● event handlers
         void Editor_KeyDown(object sender, KeyEventArgs e)
@@ -184,9 +195,8 @@ namespace StoryWriter
                         SearchForTerm();
                         e.SuppressKeyPress = true;
                         break;
-                    case Keys.F:
-                        //ShowFindAndReplace();
-                        pnlFindAndReplace.ShowBar(GetSelectedWord());
+                    case Keys.F:                        
+                        pnlFindAndReplace.ShowBar(Editor.SelectionLength > 0? Editor.SelectedText: null);
                         e.SuppressKeyPress = true;
                         break;
  
@@ -369,6 +379,8 @@ namespace StoryWriter
         // ● formatting, find/replace and links 
         void ToggleBold()
         {
+            CheckSelectionFont();
+
             Font BaseFont = Editor.SelectionFont ?? Editor.Font;
             FontStyle NewStyle = BaseFont.Bold ? (BaseFont.Style & ~FontStyle.Bold)
                                             : (BaseFont.Style | FontStyle.Bold);
@@ -376,6 +388,8 @@ namespace StoryWriter
         }
         void ToggleItalic()
         {
+            CheckSelectionFont();
+
             Font BaseFont = Editor.SelectionFont ?? Editor.Font;
             FontStyle NewStyle = BaseFont.Italic ? (BaseFont.Style & ~FontStyle.Italic)
                                 : (BaseFont.Style | FontStyle.Italic);
@@ -383,6 +397,8 @@ namespace StoryWriter
         }
         void ToggleUnderline()
         {
+            CheckSelectionFont();
+
             Font BaseFont = Editor.SelectionFont ?? Editor.Font;
             FontStyle NewStyle = BaseFont.Underline ? (BaseFont.Style & ~FontStyle.Underline)
                                 : (BaseFont.Style | FontStyle.Underline);
