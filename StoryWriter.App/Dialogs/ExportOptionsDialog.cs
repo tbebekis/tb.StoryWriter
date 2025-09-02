@@ -11,6 +11,7 @@
 
             lboFormats.DataSource = Enum.GetValues<ExportMode>();
             lboFormats.SelectedItem = ExportMode.JSON;
+            lboFormats.MouseDoubleClick += (s, e) => btnOK.PerformClick();
 
             btnOK.Click += (s, e) => ControlsToItem();
         }

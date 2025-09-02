@@ -61,7 +61,6 @@
             App.CurrentProject.TagList.Remove(this);
             return true;
         }
-    
-         
+      
     }
 }

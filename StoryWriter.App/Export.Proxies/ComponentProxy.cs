@@ -2,6 +2,8 @@
 {
     public class ComponentProxy
     {
+         
+
         public ComponentProxy() { }
 
         public void From(Component Source, ExportService Service)  
@@ -17,6 +19,12 @@
             Dest.Name = this.Title;
             Dest.BodyText = Service.GetText(this.BodyText);
             Dest.Insert();
+        }
+
+        public string GetTagsAsLine()
+        {
+            Component Source = App.CurrentProject.ComponentList.FirstOrDefault(x => x.Id == this.Id);
+            return Source.GetTagsAsLine();
         }
 
 

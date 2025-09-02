@@ -313,6 +313,16 @@ namespace StoryWriter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap inbox_document_text {
+            get {
+                object obj = ResourceManager.GetObject("inbox_document_text", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap layer_edit {
             get {
                 object obj = ResourceManager.GetObject("layer_edit", resourceCulture);

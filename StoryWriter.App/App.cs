@@ -390,7 +390,7 @@ Do you want to continue?
             ExportService Service = new();
             if (Service.Export())
             {
-                string Message = $"{App.CurrentProject.Name} exported to {Service.FilePath}";
+                string Message = Service.GetExportMessage();
                 LogBox.AppendLine(Message);
                 App.InfoBox(Message);
 
@@ -544,6 +544,13 @@ Do you want to continue?
         static public void DisplaySearchResults(List<LinkItem> LinkItems)
         {
             SearchResultsChanged?.Invoke(null, LinkItems);
+        }
+
+        static public string NormalizeFileName(string FileName)
+        {
+            var InvalidChars = System.IO.Path.GetInvalidFileNameChars();
+            FileName = String.Join("_", FileName.Split(InvalidChars, StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
+            return FileName;
         }
 
         // ●

@@ -71,6 +71,57 @@
             return true;
         }
 
+
+        static public DataTable GetComponentTagsTable()
+        {
+            string SqlText = $@"
+select 
+  co.Id        as ComponentId,
+  co.Name      as Component,
+  t.Id         as TagId, 
+  t.Name       as Tag  
+from 
+  {Project.STag} t
+     inner join {Project.STagToComponent} tc on tc.TagId = t.Id
+     inner join {Project.SComponent} co on co.Id = tc.ComponentId
+order by
+  co.Name 
+";
+            DataTable Table = App.SqlStore.Select(SqlText);
+
+            return Table;
+        }
+
+        public List<Tag> GetTagList()
+        {
+            DataTable Table = GetComponentTagsTable();
+
+            DataRow[] Rows = Table.Select($"ComponentId = '{Id}'");  
+
+            List<Tag> TagList = new List<Tag>();
+            foreach (DataRow Row in Rows)
+            {
+                Tag item = new Tag();
+
+                item.Id = Row.AsString("TagId");
+                item.Name = Row.AsString("Tag");
+                TagList.Add(item);
+            }
+            return TagList;
+        }
+        public string GetTagsAsLine()
+        {
+            List<Tag> TagList = GetTagList();
+            if (TagList.Count == 0)
+                return "";
+
+            List<string> TagNames = TagList.Select(x => x.Name).ToList();
+            string Result = string.Join(", ", TagNames.ToArray());
+
+            return Result;
+        }
+
+
         /// <summary>
         /// Returns true if any of this instance rich texts contains a specified term.
         /// </summary>

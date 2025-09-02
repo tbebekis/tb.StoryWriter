@@ -4,8 +4,17 @@
     { 
         void DisplayFileExplorer()
         {
-            App.WaitForFileAvailable(FilePath);  
-            string args = string.Format("/e, /select, \"{0}\"", FilePath);
+            string args;
+            if (ExportMode != ExportMode.PlainText)
+            {
+                App.WaitForFileAvailable(FilePath);
+                args = string.Format("/e, /select, \"{0}\"", FilePath);
+            }
+            else
+            {
+                args = string.Format("/e, /select, \"{0}\"", ExportFolder);
+            }
+
 
             ProcessStartInfo info = new ProcessStartInfo();
             info.FileName = "explorer";
@@ -37,7 +46,7 @@
         }
         public void DoExport()
         {
-            if (ExportMode == ExportMode.Markdown)
+            if (ExportMode == ExportMode.Markdown || ExportMode == ExportMode.PlainText)
                 this.RtfToPlainText = true;
 
             Project = new();
@@ -61,6 +70,9 @@
                     break;
                 case ExportMode.Markdown:                    
                     new MarkdownExporter(this).Execute();
+                    break;
+                case ExportMode.PlainText:
+                    new PlainTextExporter(this).Execute();
                     break;
             }
         }
@@ -102,8 +114,23 @@
             return true;
         }
 
+        public string GetExportMessage()
+        {
+            string Message;
+            if (ExportMode != ExportMode.PlainText)
+            {
+                Message = $"{App.CurrentProject.Name} exported to {this.FilePath}";
+            }
+            else
+            {
+                Message = $"{App.CurrentProject.Name} exported to {this.ExportFolder}";
+            }
+
+            return Message;
+        }
+
         // ● properties
-        public string ExportFolder { get; }
+        public string ExportFolder { get; set; }
         public string FileName
         {
             get
@@ -126,6 +153,9 @@
                         break;
                     case ExportMode.Markdown:
                         Ext = "md";
+                        break;
+                    case ExportMode.PlainText:
+                        Ext = "txt";
                         break;
                 }
 
