@@ -222,5 +222,7 @@
         public string Id { get; set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public object Info { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool CloseableByUser { get; set; } = false;
     }
 }

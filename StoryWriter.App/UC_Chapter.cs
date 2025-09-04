@@ -406,5 +406,7 @@
         public object Info { get; set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public UC_RichText ucRichText { get { return ucBodyText; } }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool CloseableByUser { get; set; } = true;
     }
 }
