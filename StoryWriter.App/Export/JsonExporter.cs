@@ -2,18 +2,21 @@
 {
     public class JsonExporter
     {
-        ExportService Service;
+        ExportContext ExportContext;
 
         // ● construction
-        public JsonExporter(ExportService Service)
+        public JsonExporter(ExportContext ExportContext)
         {
-            this.Service = Service;
+            this.ExportContext = ExportContext;
         }
 
         // ● public
         public void Execute()
         {
-            Tripous.Json.SaveToFile(Service.Project, Service.FilePath);
+            ExportContext.InPlainText = false;
+            string FilePath = Path.Combine(ExportContext.ExportFolderPath, "Backup.json");
+            Tripous.Json.SaveToFile(ExportContext.Story, FilePath);
+            App.WaitForFileAvailable(FilePath);
         }
     }
 }

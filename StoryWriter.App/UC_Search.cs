@@ -13,7 +13,7 @@
             ParentTabPage.Text = "Search";
 
             lblItemTitle.Text = "No selection";
-            ucRichText.Editor.Clear();
+            ucRichText.Clear();
             Grid.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
 
             ucRichText.SetTopPanelVisible(false);
@@ -36,8 +36,8 @@
             Grid.InitializeReadOnly();
             Grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
-            App.ProjectClosed += ProjectClosed;
-            App.ProjectOpened += ProjectOpened;
+            App.StoryClosed += StoryClosed;
+            App.StoryOpened += StoryOpened;
             App.SearchTermIsSet += SearchTermIsSet;
             App.SearchResultsChanged += SearchResultsChanged;
 
@@ -45,14 +45,14 @@
         }
         void SearchTextChanged()
         {
-            if (App.CurrentProject == null) 
+            if (App.CurrentStory == null) 
                 return;
 
             string Term = edtSearch.Text.Trim();
  
             if (Term.Length > 2)
             {
-                App.CurrentProject.SearchItems(Term);
+                App.CurrentStory.SearchItems(Term);
             }
             else
             {
@@ -62,7 +62,7 @@
         void SelectedLinkItemRowChanged()
         {
             lblItemTitle.Text = "No selection";
-            ucRichText.Editor.Clear();
+            ucRichText.Clear();
 
             DataRow Row = bsList.CurrentDataRow();
             if (Row != null)
@@ -74,17 +74,17 @@
                     case ItemType.Component:
                         Component Component = LinkItem.Item as Component;
                         lblItemTitle.Text = $"Component: {Component}"; // Component.ToString();
-                        ucRichText.Editor.Rtf = Component.BodyText;
+                        ucRichText.RtfText = Component.BodyText;
                         break;
                     case ItemType.Chapter:
                         Chapter Chapter = LinkItem.Item as Chapter;
                         lblItemTitle.Text = $"Chapter: {Chapter}"; // Chapter.ToString();
-                        ucRichText.Editor.Rtf = Chapter.BodyText;
+                        ucRichText.RtfText = Chapter.BodyText;
                         break;
                     case ItemType.Scene:
                         Scene Scene = LinkItem.Item as Scene;
                         lblItemTitle.Text = $"Scene: {Scene}"; // Scene.ToString();
-                        ucRichText.Editor.Rtf = Scene.BodyText;
+                        ucRichText.RtfText = Scene.BodyText;
                         break;
                 }
             }
@@ -98,14 +98,14 @@
             bsList.ResumeBinding();
 
             lblItemTitle.Text = "No selection";
-            ucRichText.Editor.Clear();
+            ucRichText.Clear();
         }
         /// <summary>
         /// Shows the page for a specified link item, i.e. shows a component page or a chapter page.
         /// </summary>
         void ShowLinkItemPage()
         {
-            if (App.CurrentProject == null)
+            if (App.CurrentStory == null)
                 return;
 
             DataRow Row = bsList.CurrentDataRow();
@@ -126,7 +126,7 @@
                     break;
                 case ItemType.Scene:
                     Scene Scene = LinkItem.Item as Scene;
-                    App.ContentPagerHandler.ShowPage(typeof(UC_Chapter), Scene.Chapter.Id, Scene.Chapter);
+                    App.ContentPagerHandler.ShowPage(typeof(UC_Scene), Scene.Id, Scene);
                     break;
             }
         }
@@ -147,11 +147,11 @@
         }
 
         // ● event handlers
-        void ProjectClosed(object sender, EventArgs e)
+        void StoryClosed(object sender, EventArgs e)
         {
             ClearAll();
         }
-        void ProjectOpened(object sender, EventArgs e)
+        void StoryOpened(object sender, EventArgs e)
         { 
         }
         void SearchTermIsSet(object sender, string NewTerm)
@@ -192,8 +192,8 @@
         // ● public
         public void Close()
         {
-            App.ProjectClosed -= ProjectClosed;
-            App.ProjectOpened -= ProjectOpened;
+            App.StoryClosed -= StoryClosed;
+            App.StoryOpened -= StoryOpened;
 
             TabControl Pager = ParentTabPage.Parent as TabControl;
             if ((Pager != null) && (Pager.TabPages.Contains(ParentTabPage)))

@@ -6,38 +6,32 @@
         TabPage ParentTabPage { get { return this.Parent as TabPage; } }
 
         DataTable tblTags;
-        DataTable tblTagToComponents;
 
         BindingSource bsTags = new();
-        BindingSource bsTagToComponents = new();
-
+ 
         void ControlInitialize()
         {
             ParentTabPage.Text = "Tags";
-
-            gridComponents.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
-            gridTags.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
+ 
+            Grid.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
 
             btnAddTag.Click += (s, e) => AddTag();
             btnDeleteTag.Click += (s, e) => DeleteTag();
-            btnAddDefaultTags.Click += (s, e) => AddDefaultTags();
             btnAddComponentsToTag.Click += (s, e) => AddComponentsToTag();
             btnAddToQuickView.Click += (s, e) => AddToQuickView();
 
-
             edtFilter.TextChanged += (s, e) => FilterChanged();
-            gridComponents.MouseDoubleClick += (s, e) => EditComponentText();
+            lboComponents.MouseDoubleClick += (s, e) => EditComponentText();
 
-            ReLoadTags();
+            ReLoad();
 
-            App.ProjectClosed += ProjectClosed;
-            App.ProjectOpened += ProjectOpened;  
-            App.TagToComponetsChanged += (s, e) => ReLoadTags();
-
+            App.StoryClosed += StoryClosed;
+            App.StoryOpened += StoryOpened;  
+            App.TagToComponetsChanged += (s, e) => ReLoad();
             
-            SelectedTagChanged();
+            SelectedItemChanged();
         }
-        void ReLoadTags()
+        void ReLoad()
         {
             if (tblTags == null)
             {
@@ -48,69 +42,47 @@
 
                 bsTags.DataSource = tblTags;
 
-                gridTags.AutoGenerateColumns = false;
-                gridTags.DataSource = bsTags;
-                gridTags.InitializeReadOnly();                
+                Grid.AutoGenerateColumns = false;
+                Grid.DataSource = bsTags;
+                Grid.InitializeReadOnly();                
 
-                bsTags.PositionChanged += (s, e) => SelectedTagChanged();
-            }
+                bsTags.PositionChanged += (s, e) => SelectedItemChanged();
+            } 
 
-            if (tblTagToComponents == null)
-            {
-                tblTagToComponents = new DataTable("TagToComponents");
-                tblTagToComponents.Columns.Add("TagId", typeof(string));
-                tblTagToComponents.Columns.Add("ComponentId", typeof(string));
-                tblTagToComponents.Columns.Add("Name", typeof(string));
-                tblTagToComponents.Columns.Add("OBJECT", typeof(object));
-
-                bsTagToComponents.DataSource = tblTagToComponents;
-
-                gridComponents.AutoGenerateColumns = false;
-                gridComponents.DataSource = bsTagToComponents;
-                gridComponents.InitializeReadOnly();                
-            }
-
-            if (App.CurrentProject != null)
+            if (App.CurrentStory != null)
             {
                 bsTags.SuspendBinding();
-                bsTagToComponents.SuspendBinding();
-
                 tblTags.Rows.Clear();
-                tblTagToComponents.Rows.Clear();
 
-                foreach (Tag item in App.CurrentProject.TagList)
+                foreach (Tag item in App.CurrentStory.TagList)
                 {
                     tblTags.Rows.Add(item.Id, item.Name, item);
                 }
 
-                foreach (TagToComponent item in App.CurrentProject.TagToComponentList)
-                {
-                    tblTagToComponents.Rows.Add(item.Tag.Id, item.Component.Id, item.Component.Name, item);
-                }
-
                 tblTags.AcceptChanges();
-                tblTagToComponents.AcceptChanges();
-
-                gridComponents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-                gridTags.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-
-                bsTagToComponents.ResumeBinding();
+                Grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
                 bsTags.ResumeBinding();
-
-                SelectedTagChanged();
+                SelectedItemChanged();
             }
         }
-        void SelectedTagChanged()
+        void SelectedItemChanged()
         {
             DataRow Row = bsTags.CurrentDataRow();
 
             if (Row != null)
             {
-                bsTagToComponents.Filter = $"TagId = '{Row["Id"]}'";
+                Tag Tag = Row["OBJECT"] as Tag;
+                if (Tag == null)
+                    return;
+
+                lboComponents.BeginUpdate();
+                lboComponents.Items.Clear();
+                lboComponents.Items.AddRange(Tag.GetComponentList().ToArray());
+                lboComponents.EndUpdate();
             }
             else
             {
-                bsTagToComponents.Filter = $"ComponentId = 'NOT EXISTEND ID'";
+                lboComponents.Items.Clear();
             }
         }
         void FilterChanged()
@@ -120,7 +92,7 @@
             if (!string.IsNullOrWhiteSpace(S) && S.Length > 2)
             {
                 bsTags.Filter = $"Name LIKE '%{S}%'";
-                SelectedTagChanged();
+                SelectedItemChanged();
             }
             else
             {
@@ -131,13 +103,14 @@
         // ● add/delete
         void AddTag()
         {
+            string Message;
             string ResultName = "";
 
-            if (EditItemDialog.ShowModal("Add Tag", App.CurrentProject.Name, ref ResultName))
+            if (EditItemDialog.ShowModal("Add Tag", App.CurrentStory.Name, ref ResultName))
             {
-                if (App.CurrentProject.TagExists(ResultName))
+                if (App.CurrentStory.TagExists(ResultName))
                 {
-                    string Message = $"Tag '{ResultName}' already exists.";
+                    Message = $"Tag '{ResultName}' already exists.";
                     App.ErrorBox(Message);
                     LogBox.AppendLine(Message);
                     return;
@@ -151,11 +124,14 @@
                 {
                     DataRow Row = tblTags.Rows.Add(Tag.Id, Tag.Name, Tag);
                     tblTags.AcceptChanges();
-                    gridTags.PositionToRow(Row);
+                    Grid.PositionToRow(Row);
+
+                    Message = $"Tag '{Tag.Name}' added.";
+                    LogBox.AppendLine(Message);
                 }
                 else
                 {
-                    string Message = "Add Tag. Operation failed.";
+                    Message = "Add Tag. Operation failed.";
                     App.ErrorBox(Message);
                     LogBox.AppendLine(Message);
                 }
@@ -174,57 +150,22 @@
             if (!App.QuestionBox($"Are you sure you want to delete the tag '{Tag.Name}'?"))
                 return;
 
-            App.InfoBox("Delete Tag. NOT YET IMPLEMENTED.");
-        }
-        void AddDefaultTags()
-        {
-            if (App.Settings.DefaultTags.Count == 0)
-            {
-                string Message = "No default tags defined in Application Settings";
-                App.ErrorBox(Message);
-                LogBox.AppendLine(Message);
-                return;
-            }
+            //App.InfoBox("Delete Tag. NOT YET IMPLEMENTED.");
 
-            foreach (string TagName in App.Settings.DefaultTags)
-            {
-                if (App.CurrentProject.TagExists(TagName))
-                {
-                    string Message = $"Tag '{TagName}' already exists.";
-                    LogBox.AppendLine(Message);
-                    continue;
-                }
+            TagToComponent.DeleteByTag(Tag.Id);
 
-                Tag Tag = new();
-                Tag.Id = Sys.GenId(UseBrackets: false);
-                Tag.Name = TagName;                
+            Tag.Delete();
+            Row.Delete();
+            tblTags.AcceptChanges();
 
-                if (Tag.Insert())
-                {
-                    DataRow Row = tblTags.Rows.Add(Tag.Id, Tag.Name, Tag);
-                    tblTags.AcceptChanges();
-                    gridTags.PositionToRow(Row);
-                }
-                else
-                {
-                    string Message = "Add Tag. Operation failed.";
-                    App.ErrorBox(Message);
-                    LogBox.AppendLine(Message);
-                }
+            SelectedItemChanged();
 
-            }
+            string Message = $"Tag '{Tag.Name}' deleted.";
+            LogBox.AppendLine(Message);
         }
         void EditComponentText()
         {
-            DataRow Row = bsTagToComponents.CurrentDataRow();
-            if (Row == null)
-                return;
-
-            TagToComponent TagToComponent = Row["OBJECT"] as TagToComponent;
-            if (TagToComponent == null)
-                return;
-
-            Component Component = TagToComponent.Component;
+            Component Component = lboComponents.SelectedItem as Component;
             if (Component == null)
                 return;
 
@@ -244,52 +185,45 @@
 
             Row = tblTags.FindDataRowById(Tag.Id);
             if (Row != null)
-                gridTags.PositionToRow(Row);
+                Grid.PositionToRow(Row);
         }
         void AddToQuickView()
         {
-            DataRow Row = bsTagToComponents.CurrentDataRow();
- 
-            if (Row != null)
-            {
-                string ComponentId = Row.AsString("ComponentId");
-                Component Component = App.CurrentProject.ComponentList.FirstOrDefault(x => x.Id == ComponentId);
-                if (Component != null)
-                {
-                    LinkItem LinkItem = new();
-                    LinkItem.ItemType = ItemType.Component;
-                    LinkItem.Place = LinkPlace.Title;
-                    LinkItem.Name = Component.ToString();
-                    LinkItem.Item = Component;
+            Component Component = lboComponents.SelectedItem as Component;
+            if (Component == null)
+                return;
 
-                    TabPage Page = App.SideBarPagerHandler.FindTabPage(nameof(UC_QuickViewList));
-                    if (Page != null)
-                    {
-                        UC_QuickViewList ucQuickViewList = Page.Tag as UC_QuickViewList;
-                        ucQuickViewList.AddToQuickView(LinkItem);
-                    }
-                }
+            LinkItem LinkItem = new();
+            LinkItem.ItemType = ItemType.Component;
+            LinkItem.Place = LinkPlace.Title;
+            LinkItem.Name = Component.ToString();
+            LinkItem.Item = Component;
+
+            TabPage Page = App.SideBarPagerHandler.FindTabPage(nameof(UC_QuickViewList));
+            if (Page != null)
+            {
+                UC_QuickViewList ucQuickViewList = Page.Tag as UC_QuickViewList;
+                ucQuickViewList.AddToQuickView(LinkItem);
             }
         }
 
         // ● event handlers
-        void ProjectClosed(object sender, EventArgs e)
+        void StoryClosed(object sender, EventArgs e)
         {
             bsTags.SuspendBinding();
-            bsTagToComponents.SuspendBinding();
 
             tblTags.Rows.Clear();
-            tblTagToComponents.Rows.Clear(); 
 
             tblTags.AcceptChanges();
-            tblTagToComponents.AcceptChanges();
 
-            bsTagToComponents.ResumeBinding();
+
             bsTags.ResumeBinding();
+
+            lboComponents.Items.Clear();
         }
-        void ProjectOpened(object sender, EventArgs e)
+        void StoryOpened(object sender, EventArgs e)
         {
-            ReLoadTags();
+            ReLoad();
         }
 
         // ● overrides  
@@ -310,8 +244,8 @@
         // ● public
         public void Close()
         {
-            App.ProjectClosed -= ProjectClosed;
-            App.ProjectOpened -= ProjectOpened;
+            App.StoryClosed -= StoryClosed;
+            App.StoryOpened -= StoryOpened;
 
             TabControl Pager = ParentTabPage.Parent as TabControl;
             if ((Pager != null) && (Pager.TabPages.Contains(ParentTabPage)))

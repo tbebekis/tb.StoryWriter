@@ -28,22 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            ucComponentText = new UC_RichText();
+            ucBodyText = new UC_RichText();
             SuspendLayout();
             // 
             // ucComponentText
             // 
-            ucComponentText.Dock = DockStyle.Fill;
-            ucComponentText.Location = new Point(0, 0);
-            ucComponentText.Name = "ucComponentText";
-            ucComponentText.Size = new Size(743, 609);
-            ucComponentText.TabIndex = 0;
+            ucBodyText.Dock = DockStyle.Fill;
+            ucBodyText.Location = new Point(0, 0);
+            ucBodyText.Name = "ucComponentText";
+            ucBodyText.Size = new Size(743, 609);
+            ucBodyText.TabIndex = 0;
             // 
             // UC_Component
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(ucComponentText);
+            Controls.Add(ucBodyText);
             Name = "UC_Component";
             Size = new Size(743, 609);
             ResumeLayout(false);
@@ -51,6 +51,6 @@
 
         #endregion
 
-        private UC_RichText ucComponentText;
+        private UC_RichText ucBodyText;
     }
 }

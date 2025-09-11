@@ -1,0 +1,533 @@
+﻿namespace StoryWriter
+{
+    public partial class UC_RichText : UserControl
+    {
+        const string SSelectionFontProblem = @"
+SelectionFont is null. This usually happens when the selection contains characters from multiple Font Families.
+Instead of SelectionFont, the current Editor Font will be used to format the current selection.
+Select a smaller part of the sentence or individual words and reapply the formatting.
+";
+
+        // ● fields        
+        NumericUpDown nudFontSize;
+        ToolStripControlHost hostFontSize;
+        Font DefaultEditorFont;
+        bool IsFirstTimeModified = false;
+
+        //NumericUpDown nudZoom;
+        //ToolStripControlHost hostZoom;
+
+        RichTextBoxListHandler ListHandler;
+
+        bool _syncingFromCode;
+
+        CancellationTokenSource _metricsCts;
+        int _lastLength = -1;
+        const int WordsPerPage = 400;
+
+        System.Windows.Forms.Timer timerWordCounter; 
+
+        // ● private
+        void ControlInitialize()
+        {
+            Editor.DetectUrls = false;
+
+            btnBold.Click += (s, e) => ToggleBold();
+            btnItalic.Click += (s, e) => ToggleItalic();
+            btnUnderline.Click += (s, e) => ToggleUnderline();
+            btnResetSelectionToDefault.Click += (s, e) => ResetSelectionToDefault();
+            btnSearchForTerm.Click += (s, e) => SearchForTerm();
+            btnSave.Click += (s, e) => SaveText();
+            btnFontColor.Click += btnFontColor_Click;
+            btnBackColor.Click += btnBackColor_Click;
+
+            Editor.SelectionChanged += Editor_SelectionChanged;
+            Editor.ModifiedChanged += (s, e) =>
+            {
+                if (Editor.Modified && !IsFirstTimeModified)
+                {
+                    IsFirstTimeModified = true;
+                }
+                else
+                {
+                    EditorModifiedChanged?.Invoke(this.Editor, EventArgs.Empty);
+                }
+            };
+
+            btnBullets.CheckOnClick = true;
+            btnNumbers.CheckOnClick = true;
+
+            ListHandler = new(Editor, btnBullets, btnNumbers);  // bullet/number list handler
+
+            timerWordCounter = new ();
+            timerWordCounter.Interval = 3 * 1000;
+            timerWordCounter.Tick += async (s, e) => await UpdateWordCounter();
+            timerWordCounter.Start();
+
+            var defaultSize = App.Settings.FontSize;
+            DefaultEditorFont = new Font(Editor.Font.FontFamily, defaultSize, FontStyle.Regular);
+
+            pnlFindAndReplace.FindAndReplaceVisibleChanged += (s, flag) => pnlTop.Height = flag? 67: 31;
+            pnlFindAndReplace.HideBar();
+            pnlFindAndReplace.Editor = Editor;
+
+            App.ZoomFactorChanged += (e, a) => ZoomFactorChanged();
+            ZoomFactorChanged();
+
+            Editor.BackColor = Color.White;
+        }
+        void SetEditorFont()
+        {
+            string family = string.IsNullOrWhiteSpace(App.Settings.FontFamily) ? "Times New Roman" : App.Settings.FontFamily;
+            float size = Math.Max(12, App.Settings.FontSize);
+
+            Editor.Font = new System.Drawing.Font(family, size, FontStyle.Regular);
+            Editor.Update();
+        }
+        void ApplySelectionFontSize(float size)
+        {
+            CheckSelectionFont();
+
+            var rtb = Editor;
+
+            // Αν υπάρχουν mixed fonts στο selection, SelectionFont == null.
+            // Τότε χρησιμοποιούμε το τρέχον Font του RichTextBox ως βάση.
+            var baseFont = rtb.SelectionFont ?? rtb.Font;
+            var newFont = new Font(baseFont.FontFamily, size, baseFont.Style, GraphicsUnit.Point);
+
+            rtb.SelectionFont = newFont;
+            rtb.Focus();
+        }
+        void AddToolBarControls()
+        {
+            // ● Font Size
+            nudFontSize = new NumericUpDown
+            {
+                Minimum = 6,
+                Maximum = 96,
+                DecimalPlaces = 0,
+                Increment = 1,
+                Value = (decimal)App.Settings.FontSize, // προεπιλογή
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            nudFontSize.ValueChanged += (s, e) => ApplySelectionFontSize((float)nudFontSize.Value);
+
+            hostFontSize = new ToolStripControlHost(nudFontSize)
+            {              
+                AutoSize = false,
+                Width = 50
+            };
+ 
+            int Index = ToolBar.Items.IndexOf(btnBullets);
+
+            Index--;
+            ToolStripSeparator sepFontSize = new ();
+            ToolBar.Items.Insert(Index, sepFontSize);
+
+            Index++;
+            ToolBar.Items.Insert(Index, new ToolStripLabel("Font Size"));
+
+            Index++;
+            ToolBar.Items.Insert(Index, hostFontSize);
+        }
+        void ResetSelectionToDefault()
+        {
+            Editor.SelectionFont = DefaultEditorFont;
+            Editor.SelectionColor = Color.Black;
+
+            try
+            {
+                Editor.SelectionBackColor = Color.White;
+            }
+            catch
+            {
+            }
+
+            Editor.Focus();
+        }
+        void CheckSelectionFont()
+        {
+            if (Editor.SelectionFont == null)
+                LogBox.AppendLine(SSelectionFontProblem);
+        }
+        void ZoomFactorChanged()
+        {
+            Editor.ZoomFactor = (float)App.ZoomFactor;
+        }
+
+        // ● event handlers
+        void Editor_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.B:
+                        ToggleBold();
+                        e.SuppressKeyPress = true;
+                        break;
+                    case Keys.I:
+                        ToggleItalic();
+                        e.SuppressKeyPress = true;
+                        break;
+                    case Keys.U:
+                        ToggleUnderline();
+                        e.SuppressKeyPress = true;
+                        break;
+                    case Keys.S:
+                        SaveText();
+                        e.SuppressKeyPress = true;
+                        break;
+                    case Keys.T:
+                        SearchForTerm();
+                        e.SuppressKeyPress = true;
+                        break;
+                    case Keys.F:                        
+                        pnlFindAndReplace.ShowBar(Editor.SelectionLength > 0? Editor.SelectedText: null);
+                        e.SuppressKeyPress = true;
+                        break;
+ 
+                }
+            }
+
+ 
+            // ● reset any formatting (bold, italic, underline, colors, etc.) to default on current selection, if any.
+            if (e.Shift)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Escape:
+                        ResetSelectionToDefault();
+                        e.SuppressKeyPress = true;
+                        break;
+                    case Keys.F3:
+                        pnlFindAndReplace.FindPrev();
+                        e.SuppressKeyPress = true;
+                        break;
+                }
+            }
+
+            // close find and replace bar if visible
+            if (e.Modifiers == Keys.None)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Escape:
+                        if (IsFindAndReplaseVisible)
+                        {
+                            pnlFindAndReplace.HideBar(); //HideFindAndReplace();
+                            e.SuppressKeyPress = true;
+                        }
+                        e.SuppressKeyPress = true;
+                        break;
+                    case Keys.F3:
+                        pnlFindAndReplace.FindNext();
+                        e.SuppressKeyPress = true;
+                        break;
+                }
+            }
+
+ 
+
+
+            // ● bullets and numbers
+            ListHandler.HandleKeyDown(e);
+ 
+            
+        }
+        void Editor_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left) 
+                return;
+
+            bool ctrl = (ModifierKeys & Keys.Control) == Keys.Control;
+            if (!ctrl) 
+                return;
+
+            SearchForTerm();
+        }
+        void Editor_SelectionChanged(object sender, EventArgs e)
+        {
+            if (_syncingFromCode) return;
+
+            var rtb = Editor;
+            try
+            {
+                _syncingFromCode = true;
+
+                var f = rtb.SelectionFont ?? rtb.Font;
+                if (nudFontSize.Value != (decimal)f.Size)
+                    nudFontSize.Value = (decimal)f.Size;
+
+                // Optional: θα μπορούσες να ενημερώνεις και κατάσταση bold/italic/underline κουμπιών εδώ.
+                // Optional: ενημέρωσε tooltip/preview χρωμάτων αν θέλεις.
+
+                // Αν η επιλογή είναι "μικτή" (διαφορετικά styles), το SelectionFont == null
+
+                // ● sync bold/italic/underline buttons
+                var selFont = rtb.SelectionFont;
+
+                if (selFont != null)
+                {
+                    btnBold.Checked = selFont.Bold;
+                    btnItalic.Checked = selFont.Italic;
+                    btnUnderline.Checked = selFont.Underline;
+
+                    // Αν θες και το NumericUpDown να συγχρονίζεται
+                    if (nudFontSize.Value != (decimal)selFont.Size)
+                        nudFontSize.Value = (decimal)selFont.Size;
+                }
+                else
+                {
+                    // Αν η επιλογή έχει μικτά styles, μπορείς να βάλεις "indeterminate" λογική.
+                    // Εδώ απλά ξετσεκάρω τα πάντα:
+                    btnBold.Checked = false;
+                    btnItalic.Checked = false;
+                    btnUnderline.Checked = false;
+                }
+            }
+            finally
+            {
+                _syncingFromCode = false;
+            }
+        }
+ 
+        void btnFontColor_Click(object sender, EventArgs e)
+        {
+            using var cd = new ColorDialog
+            {
+                AllowFullOpen = true,
+                FullOpen = true,
+                Color = Editor.SelectionColor.IsEmpty
+                ? Editor.ForeColor
+                : Editor.SelectionColor
+            };
+
+            if (cd.ShowDialog(this) == DialogResult.OK)
+            {
+                Editor.SelectionColor = cd.Color;
+                Editor.Focus();
+            }
+        }
+        void btnBackColor_Click(object sender, EventArgs e)
+        {
+            using var cd = new ColorDialog
+            {
+                AllowFullOpen = true,
+                FullOpen = true,
+                Color = Editor.SelectionBackColor.IsEmpty
+                ? Editor.BackColor
+                : Editor.SelectionBackColor
+            };
+
+            if (cd.ShowDialog(this) == DialogResult.OK)
+            {
+                // Απαιτεί .NET που υποστηρίζει SelectionBackColor (σύγχρονα WinForms το έχουν)
+                Editor.SelectionBackColor = cd.Color;
+                Editor.Focus();
+            }
+        }
+
+        async Task UpdateWordCounter()
+        {
+            // Πάρε το κείμενο ΜΙΑ ΦΟΡΑ στο UI thread
+            string txt = Editor.Text;
+
+            // Μικρό optimization: αν δεν άλλαξε μήκος, μην κάνεις τίποτα
+            if (txt.Length == _lastLength) return;
+            _lastLength = txt.Length;
+
+            // Ακύρωσε προηγούμενη μέτρηση (αν τρέχει)
+            _metricsCts?.Cancel();
+            _metricsCts?.Dispose();
+            _metricsCts = new CancellationTokenSource();
+            var token = _metricsCts.Token;
+
+            try
+            {
+                var stats = await TextMetrics.ComputeAsync(txt, WordsPerPage, token);
+                if (token.IsCancellationRequested) return; // προληπτικό
+
+                lblWords.Text = $"{stats.WordCount}";
+                lblPages.Text = $"~{stats.EstimatedPages:0.0}";
+            }
+            catch (OperationCanceledException)
+            {
+                // αθόρυβα — ξεκίνησε νέα μέτρηση εν τω μεταξύ
+            }
+            catch (Exception ex)
+            {
+                // προαιρετικά log
+                /// toolStripStatusLabel1.Text = "—";
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+        }
+
+        // ● formatting, find/replace and links 
+        void ToggleBold()
+        {
+            CheckSelectionFont();
+
+            Font BaseFont = Editor.SelectionFont ?? Editor.Font;
+            FontStyle NewStyle = BaseFont.Bold ? (BaseFont.Style & ~FontStyle.Bold)
+                                            : (BaseFont.Style | FontStyle.Bold);
+            Editor.SelectionFont = new Font(BaseFont, NewStyle);
+        }
+        void ToggleItalic()
+        {
+            CheckSelectionFont();
+
+            Font BaseFont = Editor.SelectionFont ?? Editor.Font;
+            FontStyle NewStyle = BaseFont.Italic ? (BaseFont.Style & ~FontStyle.Italic)
+                                : (BaseFont.Style | FontStyle.Italic);
+            Editor.SelectionFont = new Font(BaseFont, NewStyle);
+        }
+        void ToggleUnderline()
+        {
+            CheckSelectionFont();
+
+            Font BaseFont = Editor.SelectionFont ?? Editor.Font;
+            FontStyle NewStyle = BaseFont.Underline ? (BaseFont.Style & ~FontStyle.Underline)
+                                : (BaseFont.Style | FontStyle.Underline);
+            Editor.SelectionFont = new Font(BaseFont, NewStyle);
+        }
+        void SearchForTerm()
+        {
+            string Term = GetSelectedWord(); 
+
+            if (!string.IsNullOrWhiteSpace(Term) && Term.Length > 2)
+            {                
+                App.SetSearchTerm(Term);   //App.CurrentStory.SearchItems(Term);
+            }
+ 
+        }
+        public string GetSelectedWord()
+        {
+            string Result = Editor.SelectedText;
+
+            if (string.IsNullOrWhiteSpace(Result))
+            {
+                Point clientPt = Editor.PointToClient(Cursor.Position);
+                int index = Editor.GetCharIndexFromPosition(clientPt);      //int index = Editor.GetCharIndexFromPosition(e.Location);
+
+                Result = Editor.GetWordAtIndex(index);
+            }
+
+            return Result;
+        }
+ 
+        // ● find and replace
+        bool IsFindAndReplaseVisible => pnlFindAndReplace.Visible; //pnlTop.Height > 35;
+ 
+        // ● overrides  
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            if (!DesignMode)
+                ControlInitialize();
+        }
+
+        // ● construction
+        public UC_RichText()
+        {
+            InitializeComponent();
+
+            if (!DesignMode)
+            {
+                Title = string.Empty;
+                SetEditorFont();
+                AddToolBarControls();
+            }
+        }
+
+        // ● public        
+        public void InitializeEditor(bool FormattingEnabled)
+        {
+            Editor.KeyDown += Editor_KeyDown;
+            Editor.MouseDown += Editor_MouseDown;
+            //Editor.TextChanged += (s, e) => Editor.Modified = true;
+
+            hostFontSize.Enabled = FormattingEnabled;
+            btnFontColor.Enabled = FormattingEnabled;
+            btnBackColor.Enabled = FormattingEnabled;
+        }
+        public void SaveText()
+        {
+            if (EditorHandler != null)
+                EditorHandler.SaveEditorText(this.Editor);
+        }
+        public void Clear()
+        {
+            Editor.Rtf = string.Empty;
+            Editor.Modified = false;
+        }
+        public bool IsOwnEditor(RichTextBox OtherEditor) => this.Editor == OtherEditor;
+        public void SetEditorReadOnly(bool Flag)
+        {
+            this.Editor.ReadOnly = Flag;
+        }
+        public void SetTopPanelVisible(bool Flag)
+        {
+            pnlTop.Visible = Flag;
+        }
+        public void SetToolBarVisible(bool Flag)
+        {
+            this.ToolBar.Visible = Flag;
+        }
+        public void SetFindAndReplaceVisible(bool Flag)
+        {
+            pnlTop.Height = Flag ? 67 : 31;
+        }
+        public void SetStatusBarVisible(bool Flag)
+        {
+            this.StatuBar.Visible = Flag;
+        }
+
+
+        // ● properties
+        private RichTextBoxEx Editor => edtRichText;
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public string RtfText
+        {
+            get { return Editor.Rtf; }
+            set
+            {
+                IsFirstTimeModified = false;
+                Editor.Rtf = value;
+                Editor.Modified = false;
+                Editor.ZoomFactor = 1;
+                Editor.ZoomFactor = (float)App.ZoomFactor;
+
+                Editor.SelectAll();
+                Editor.SetSelectionParagraphSpacingBefore();
+                Editor.SetSelectionParagraphSpacingAfter();
+                Editor.DeselectAll();
+
+                Editor.Refresh();
+            }
+        }
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public IEditorHandler EditorHandler { get; set; }
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public string Title
+        {
+            get => lblTitle.Text;
+            set => lblTitle.Text = value;
+        }
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool Modified
+        {
+            get => Editor.Modified;
+            set => Editor.Modified = value;
+        }
+
+        // ● events
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public event EventHandler EditorModifiedChanged;
+
+    }
+
+
+
+}

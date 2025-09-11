@@ -37,9 +37,12 @@
             panel2 = new Panel();
             lblItemTitle = new Label();
             ToolBar = new ToolStrip();
-            btnEditRtfText = new ToolStripButton();
             btnRemoveItem = new ToolStripButton();
             btnRemoveAll = new ToolStripButton();
+            btnEditRtfText = new ToolStripButton();
+            toolStripSeparator1 = new ToolStripSeparator();
+            btnUp = new ToolStripButton();
+            btnDown = new ToolStripButton();
             ((ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -129,21 +132,12 @@
             // ToolBar
             // 
             ToolBar.ImageScalingSize = new Size(24, 24);
-            ToolBar.Items.AddRange(new ToolStripItem[] { btnRemoveItem, btnRemoveAll, btnEditRtfText });
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnRemoveItem, btnRemoveAll, btnEditRtfText, toolStripSeparator1, btnUp, btnDown });
             ToolBar.Location = new Point(0, 0);
             ToolBar.Name = "ToolBar";
             ToolBar.Size = new Size(351, 31);
             ToolBar.TabIndex = 4;
             ToolBar.Text = "toolStrip1";
-            // 
-            // btnEditRtfText
-            // 
-            btnEditRtfText.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnEditRtfText.Image = Properties.Resources.page_edit;
-            btnEditRtfText.ImageTransparentColor = Color.Magenta;
-            btnEditRtfText.Name = "btnEditRtfText";
-            btnEditRtfText.Size = new Size(28, 28);
-            btnEditRtfText.Text = "Edit Text";
             // 
             // btnRemoveItem
             // 
@@ -162,6 +156,38 @@
             btnRemoveAll.Name = "btnRemoveAll";
             btnRemoveAll.Size = new Size(28, 28);
             btnRemoveAll.Text = "Remove All";
+            // 
+            // btnEditRtfText
+            // 
+            btnEditRtfText.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnEditRtfText.Image = Properties.Resources.page_edit;
+            btnEditRtfText.ImageTransparentColor = Color.Magenta;
+            btnEditRtfText.Name = "btnEditRtfText";
+            btnEditRtfText.Size = new Size(28, 28);
+            btnEditRtfText.Text = "Edit Text";
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 31);
+            // 
+            // btnUp
+            // 
+            btnUp.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnUp.Image = Properties.Resources.arrow_up;
+            btnUp.ImageTransparentColor = Color.Magenta;
+            btnUp.Name = "btnUp";
+            btnUp.Size = new Size(28, 28);
+            btnUp.Text = "Move Up";
+            // 
+            // btnDown
+            // 
+            btnDown.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnDown.Image = Properties.Resources.arrow_down;
+            btnDown.ImageTransparentColor = Color.Magenta;
+            btnDown.Name = "btnDown";
+            btnDown.Size = new Size(28, 28);
+            btnDown.Text = "Move Down";
             // 
             // UC_QuickViewList
             // 
@@ -198,5 +224,8 @@
         private ToolStripButton btnEditRtfText;
         private ToolStripButton btnRemoveItem;
         private ToolStripButton btnRemoveAll;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripButton btnUp;
+        private ToolStripButton btnDown;
     }
 }

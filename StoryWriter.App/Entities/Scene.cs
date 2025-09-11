@@ -19,7 +19,7 @@
         /// </summary>
         public override string ToString()
         {
-            string Result = $"{OrderIndex}.{Name}";
+            string Result = $"{Chapter.OrderIndex}.{OrderIndex}. {Name}";
             return Result;
         }
 
@@ -35,6 +35,7 @@
                 ["ChapterId"] = ChapterId,
                 ["Name"] = Name,
                 ["BodyText"] = BodyText,
+                ["Synopsis"] = Synopsis,
                 ["CreatedAt"] = CreatedAt,
                 ["UpdatedAt"] = UpdatedAt,
                 ["OrderIndex"] = OrderIndex
@@ -49,6 +50,7 @@
             ChapterId = Row.AsString("ChapterId");
             Name = Row.AsString("Name");
             BodyText = Row.AsString("BodyText");
+            Synopsis = Row.AsString("Synopsis");
             CreatedAt = Row.AsDateTime("CreatedAt");
             UpdatedAt = Row.AsDateTime("UpdatedAt");
             OrderIndex = Row.AsInteger("OrderIndex");
@@ -58,19 +60,20 @@
         /// Inserts this instance into the database.
         /// </summary>
         public bool Insert()
-        { 
+        {
             // Set timestamps
-            if (CreatedAt == default) 
+            if (CreatedAt == default)
                 CreatedAt = DateTime.UtcNow;
             UpdatedAt = DateTime.UtcNow;
 
             string SqlText = @$"
-        INSERT INTO {Project.SScene} (Id, ChapterId, Name, BodyText, CreatedAt, UpdatedAt, OrderIndex)
-        VALUES (:Id, :ChapterId, :Name, :BodyText, :CreatedAt, :UpdatedAt, :OrderIndex)
+        INSERT INTO {Story.SScene} (Id, ChapterId, Name, BodyText, Synopsis, CreatedAt, UpdatedAt, OrderIndex)
+        VALUES (:Id, :ChapterId, :Name, :BodyText, :Synopsis, :CreatedAt, :UpdatedAt, :OrderIndex)
     ";
-            var Params = ToDictionary();  
+            var Params = ToDictionary();
             App.SqlStore.ExecSql(SqlText, Params);
-            
+            App.CurrentStory.AddToList(this);
+
             return true;
         }
         /// <summary>
@@ -81,12 +84,12 @@
             UpdatedAt = DateTime.UtcNow;
 
             string SqlText =
-                $"UPDATE {Project.SScene} " +
-                "SET ChapterId = :ChapterId, Name = :Name, BodyText = :BodyText,  " +
+                $"UPDATE {Story.SScene} " +
+                "SET ChapterId = :ChapterId, Name = :Name, BodyText = :BodyText, Synopsis = :Synopsis,  " +
                 "UpdatedAt = :UpdatedAt, OrderIndex = :OrderIndex " +
                 "WHERE Id = :Id";
 
-            var Params = ToDictionary(); // same mapping as in Insert()
+            var Params = ToDictionary();  
             App.SqlStore.ExecSql(SqlText, Params);
 
             return true;
@@ -96,16 +99,17 @@
         /// </summary>
         public bool Delete()
         {
-            string SqlText = $"DELETE FROM {Project.SScene} WHERE Id = :Id";
-            var Params = ToDictionary(); // ToDictionary must at least include :Id
+            string SqlText = $"DELETE FROM {Story.SScene} WHERE Id = :Id";
+            var Params = ToDictionary();  
             App.SqlStore.ExecSql(SqlText, Params);
+            App.CurrentStory.SceneList.Remove(this);
 
             return true;
         }
 
         public bool UpdateOrderIndex()
         {
-            string SqlText = $"UPDATE {Project.SScene} SET OrderIndex = :OrderIndex WHERE Id = :Id";
+            string SqlText = $"UPDATE {Story.SScene} SET OrderIndex = :OrderIndex WHERE Id = :Id";
             var Params = new Dictionary<string, object>
             {
                 ["OrderIndex"] = OrderIndex,
@@ -116,10 +120,21 @@
         }
         public bool UpdateBodyText()
         {
-            string SqlText = $"UPDATE {Project.SScene} SET BodyText = :BodyText WHERE Id = :Id";
+            string SqlText = $"UPDATE {Story.SScene} SET BodyText = :BodyText WHERE Id = :Id";
             var Params = new Dictionary<string, object>
             {
                 ["BodyText"] = BodyText,
+                ["Id"] = Id
+            };
+            App.SqlStore.ExecSql(SqlText, Params);
+            return true;
+        }
+        public bool UpdateSynopsisText()
+        {
+            string SqlText = $"UPDATE {Story.SScene} SET Synopsis = :Synopsis WHERE Id = :Id";
+            var Params = new Dictionary<string, object>
+            {
+                ["Synopsis"] = Synopsis,
                 ["Id"] = Id
             };
             App.SqlStore.ExecSql(SqlText, Params);
@@ -131,13 +146,13 @@
         /// </summary>
         public override bool RichTextContainsTerm(string Term)
         {
-            return App.RichTextContainsTerm(BodyText, Term);
+            return App.RichTextContainsTerm(BodyText, Term) || App.RichTextContainsTerm(Synopsis, Term);
         }
 
         /// <summary>
         /// The parent Chapter of this scene.
         /// </summary>
-        public Chapter Chapter => App.CurrentProject?.ChapterList.FirstOrDefault(ch => ch.Id == ChapterId);
+        public Chapter Chapter => App.CurrentStory?.ChapterList.FirstOrDefault(ch => ch.Id == ChapterId);
 
 
         /// <summary>
@@ -148,6 +163,10 @@
         /// Full text body of the scene
         /// </summary>
         public string BodyText { get; set; } = string.Empty;
+        /// <summary>
+        /// Synopsis of the scene
+        /// </summary>
+        public string Synopsis { get; set; } = string.Empty;
         /// <summary>
         /// Creation timestamp (UTC)
         /// </summary>
@@ -161,5 +180,15 @@
         /// </summary>
         public int OrderIndex { get; set; } = 0;
     }
-
 }
+
+/*
+Id
+Name
+ChapterId
+BodyText
+Synopsis
+OrderIndex
+CreatedAt
+UpdatedAt 
+ */

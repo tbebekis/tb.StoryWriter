@@ -14,7 +14,7 @@
             ParentTabPage.Text = "Quick View";
 
             lblItemTitle.Text = "No selection";
-            ucRichText.Editor.Clear();
+            ucRichText.Clear();
             Grid.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
 
             ucRichText.SetTopPanelVisible(false);
@@ -23,6 +23,10 @@
             btnEditRtfText.Click += (s, e) => ShowLinkItemPage();
             btnRemoveItem.Click += (s, e) => RemoveLinkItem();
             btnRemoveAll.Click += (s, e) => RemoveAllLinkItems();
+
+            btnUp.Click += (s, e) => MoveRow(Up: true);
+            btnDown.Click += (s, e) => MoveRow(Up: false);
+
             Grid.MouseDoubleClick += (s, e) => ShowLinkItemPage();
 
             tblList = new DataTable("Results");
@@ -38,8 +42,8 @@
             Grid.InitializeReadOnly();
             Grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
-            App.ProjectClosed += ProjectClosed;
-            App.ProjectOpened += ProjectOpened; 
+            App.StoryClosed += StoryClosed;
+            App.StoryOpened += StoryOpened; 
 
             bsList.PositionChanged += (s, e) => SelectedLinkItemRowChanged();
 
@@ -48,7 +52,7 @@
         void SelectedLinkItemRowChanged()
         {
             lblItemTitle.Text = "No selection";
-            ucRichText.Editor.Clear();
+            ucRichText.Clear();
 
             DataRow Row = bsList.CurrentDataRow();
             if (Row != null)
@@ -60,17 +64,17 @@
                     case ItemType.Component:
                         Component Component = LinkItem.Item as Component;
                         lblItemTitle.Text = $"Component: {Component}"; // Component.ToString();
-                        ucRichText.Editor.Rtf = Component.BodyText;
+                        ucRichText.RtfText = Component.BodyText;
                         break;
                     case ItemType.Chapter:
                         Chapter Chapter = LinkItem.Item as Chapter;
                         lblItemTitle.Text = $"Chapter: {Chapter}"; // Chapter.ToString();
-                        ucRichText.Editor.Rtf = Chapter.BodyText;
+                        ucRichText.RtfText = Chapter.BodyText;
                         break;
                     case ItemType.Scene:
                         Scene Scene = LinkItem.Item as Scene;
                         lblItemTitle.Text = $"Scene: {Scene}"; // Scene.ToString();
-                        ucRichText.Editor.Rtf = Scene.BodyText;
+                        ucRichText.RtfText = Scene.BodyText;
                         break;
                 }
 
@@ -84,14 +88,14 @@
             bsList.ResumeBinding();
 
             lblItemTitle.Text = "No selection";
-            ucRichText.Editor.Clear(); 
+            ucRichText.Clear(); 
         }
         /// <summary>
         /// Shows the page for a specified link item, i.e. shows a component page or a chapter page.
         /// </summary>
         void ShowLinkItemPage()
         {
-            if (App.CurrentProject == null)
+            if (App.CurrentStory == null)
                 return;
 
             DataRow Row = bsList.CurrentDataRow();
@@ -112,7 +116,7 @@
                     break;
                 case ItemType.Scene:
                     Scene Scene = LinkItem.Item as Scene;
-                    App.ContentPagerHandler.ShowPage(typeof(UC_Chapter), Scene.Chapter.Id, Scene.Chapter);
+                    App.ContentPagerHandler.ShowPage(typeof(UC_Scene), Scene.Id, Scene);
                     break;
             }
         }
@@ -146,18 +150,26 @@
             SaveQuickViewList();
         }
  
-        static string GetQuickViewListFilePath()
+        void MoveRow(bool Up)
         {
-            string FileName = Project.ProjectNameToProjectFileName(App.CurrentProject.Name);
-            FileName = "QuickViewList_" + FileName;
-            FileName = Path.ChangeExtension(FileName, ".json");
-            string QuickViewListFilePath = Path.Combine(App.ProjectsPath, FileName);
-            return QuickViewListFilePath;
+            if (App.CurrentStory == null)
+                return;
+
+            DataRow Row = bsList.CurrentDataRow();
+            if (Row == null)
+                return;
+
+            if (Up)
+                bsList.MoveRowUp();
+            else
+                bsList.MoveRowDown();
+
+            SaveQuickViewList();
         }
- 
+
         public void SaveQuickViewList()
         {
-            if (App.CurrentProject == null)
+            if (App.CurrentStory == null)
                 return;            
 
             List<LinkItem> LinkItems = tblList.Rows.Cast<DataRow>().Select(x => x["OBJECT"] as LinkItem).ToList();
@@ -171,16 +183,19 @@
                 ProxyList.List.Add(LinkItemProxy);
             }
 
-            string QuickViewListFilePath = GetQuickViewListFilePath();
+            string QuickViewListFilePath = App.QuickViewListFilePath;
 
             Json.SaveToFile(ProxyList, QuickViewListFilePath);
+
+            string Message = $"Quick View List saved to {QuickViewListFilePath}";
+            LogBox.AppendLine(Message);
         }
         public void LoadQuickViewList()
         {
-            if (App.CurrentProject == null)
+            if (App.CurrentStory == null)
                 return;
 
-            string QuickViewListFilePath = GetQuickViewListFilePath();
+            string QuickViewListFilePath = App.QuickViewListFilePath;
 
             if (File.Exists(QuickViewListFilePath))
             {
@@ -194,15 +209,18 @@
                 }
 
                 tblList.AcceptChanges();
+
+                string Message = $"Quick View List loaded from {QuickViewListFilePath}";
+                LogBox.AppendLine(Message);
             }
         }
 
         // ● event handlers
-        void ProjectClosed(object sender, EventArgs e)
+        void StoryClosed(object sender, EventArgs e)
         {
             ClearResults();
         }
-        void ProjectOpened(object sender, EventArgs e)
+        void StoryOpened(object sender, EventArgs e)
         {
             ClearResults();
             LoadQuickViewList();
@@ -227,8 +245,8 @@
         // ● public
         public void Close()
         {
-            App.ProjectClosed -= ProjectClosed;
-            App.ProjectOpened -= ProjectOpened;
+            App.StoryClosed -= StoryClosed;
+            App.StoryOpened -= StoryOpened;
 
             TabControl Pager = ParentTabPage.Parent as TabControl;
             if ((Pager != null) && (Pager.TabPages.Contains(ParentTabPage)))
@@ -236,7 +254,7 @@
         }
         public void AddToQuickView(LinkItem LinkItem)
         {
-            if (App.CurrentProject == null)
+            if (App.CurrentStory == null)
                 return;
 
             List<LinkItem> LinkItems = tblList.Rows.Cast<DataRow>().Select(x => x["OBJECT"] as LinkItem).ToList();

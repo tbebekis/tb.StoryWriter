@@ -10,7 +10,7 @@
         {
             return Name;
         }
-        
+
 
         /// <summary>
         /// Returns true if any of this instance rich texts contains a specified term.

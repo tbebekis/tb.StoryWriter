@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             MainMenu = new MenuStrip();
-            StatusBar = new StatusStrip();
             ToolBar = new ToolStrip();
             btnNewProject = new ToolStripButton();
             btnOpenProject = new ToolStripButton();
@@ -43,6 +42,7 @@
             btnImport = new ToolStripButton();
             toolStripSeparator6 = new ToolStripSeparator();
             btnExit = new ToolStripButton();
+            StatusBar = new StatusStrip();
             splitMain = new SplitContainer();
             pagerSideBar = new TabControl();
             tabPage3 = new TabPage();
@@ -69,17 +69,9 @@
             // 
             MainMenu.Location = new Point(0, 0);
             MainMenu.Name = "MainMenu";
-            MainMenu.Size = new Size(930, 24);
+            MainMenu.Size = new Size(871, 24);
             MainMenu.TabIndex = 0;
             MainMenu.Text = "menuStrip1";
-            // 
-            // StatusBar
-            // 
-            StatusBar.Location = new Point(0, 611);
-            StatusBar.Name = "StatusBar";
-            StatusBar.Size = new Size(930, 22);
-            StatusBar.TabIndex = 1;
-            StatusBar.Text = "statusStrip1";
             // 
             // ToolBar
             // 
@@ -87,8 +79,8 @@
             ToolBar.Items.AddRange(new ToolStripItem[] { btnNewProject, btnOpenProject, toolStripSeparator1, btnSettings, toolStripSeparator3, btnToggleSideBar, btnToggleLog, toolStripSeparator2, btnExport, btnImport, toolStripSeparator6, btnExit });
             ToolBar.Location = new Point(0, 24);
             ToolBar.Name = "ToolBar";
-            ToolBar.Size = new Size(930, 31);
-            ToolBar.TabIndex = 2;
+            ToolBar.Size = new Size(871, 31);
+            ToolBar.TabIndex = 3;
             ToolBar.Text = "toolStrip1";
             // 
             // btnNewProject
@@ -183,6 +175,14 @@
             btnExit.Size = new Size(28, 28);
             btnExit.Text = "Exit";
             // 
+            // StatusBar
+            // 
+            StatusBar.Location = new Point(0, 638);
+            StatusBar.Name = "StatusBar";
+            StatusBar.Size = new Size(871, 22);
+            StatusBar.TabIndex = 4;
+            StatusBar.Text = "statusStrip1";
+            // 
             // splitMain
             // 
             splitMain.BorderStyle = BorderStyle.FixedSingle;
@@ -197,10 +197,10 @@
             // splitMain.Panel2
             // 
             splitMain.Panel2.Controls.Add(splitContent);
-            splitMain.Size = new Size(930, 556);
-            splitMain.SplitterDistance = 233;
+            splitMain.Size = new Size(871, 583);
+            splitMain.SplitterDistance = 250;
             splitMain.SplitterWidth = 6;
-            splitMain.TabIndex = 3;
+            splitMain.TabIndex = 5;
             // 
             // pagerSideBar
             // 
@@ -210,7 +210,7 @@
             pagerSideBar.Location = new Point(0, 0);
             pagerSideBar.Name = "pagerSideBar";
             pagerSideBar.SelectedIndex = 0;
-            pagerSideBar.Size = new Size(231, 554);
+            pagerSideBar.Size = new Size(248, 581);
             pagerSideBar.TabIndex = 0;
             // 
             // tabPage3
@@ -218,7 +218,7 @@
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(223, 526);
+            tabPage3.Size = new Size(240, 553);
             tabPage3.TabIndex = 0;
             tabPage3.Text = "tabPage3";
             tabPage3.UseVisualStyleBackColor = true;
@@ -228,7 +228,7 @@
             tabPage4.Location = new Point(4, 24);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(223, 526);
+            tabPage4.Size = new Size(255, 553);
             tabPage4.TabIndex = 1;
             tabPage4.Text = "tabPage4";
             tabPage4.UseVisualStyleBackColor = true;
@@ -248,8 +248,8 @@
             // splitContent.Panel2
             // 
             splitContent.Panel2.Controls.Add(edtLog);
-            splitContent.Size = new Size(691, 556);
-            splitContent.SplitterDistance = 502;
+            splitContent.Size = new Size(615, 583);
+            splitContent.SplitterDistance = 526;
             splitContent.SplitterWidth = 6;
             splitContent.TabIndex = 0;
             // 
@@ -261,7 +261,7 @@
             pagerContent.Location = new Point(0, 0);
             pagerContent.Name = "pagerContent";
             pagerContent.SelectedIndex = 0;
-            pagerContent.Size = new Size(689, 500);
+            pagerContent.Size = new Size(613, 524);
             pagerContent.TabIndex = 0;
             // 
             // tabPage1
@@ -269,7 +269,7 @@
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(681, 472);
+            tabPage1.Size = new Size(605, 496);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "tabPage1";
             tabPage1.UseVisualStyleBackColor = true;
@@ -279,7 +279,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(681, 472);
+            tabPage2.Size = new Size(590, 496);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
@@ -291,7 +291,7 @@
             edtLog.Font = new Font("Courier New", 9F);
             edtLog.Location = new Point(0, 0);
             edtLog.Name = "edtLog";
-            edtLog.Size = new Size(689, 46);
+            edtLog.Size = new Size(613, 49);
             edtLog.TabIndex = 0;
             edtLog.Text = "";
             // 
@@ -299,14 +299,13 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(930, 633);
+            ClientSize = new Size(871, 660);
             Controls.Add(splitMain);
-            Controls.Add(ToolBar);
             Controls.Add(StatusBar);
+            Controls.Add(ToolBar);
             Controls.Add(MainMenu);
             MainMenuStrip = MainMenu;
             Name = "MainForm";
-            StartPosition = FormStartPosition.CenterScreen;
             Text = "Story Writer";
             WindowState = FormWindowState.Maximized;
             ToolBar.ResumeLayout(false);
@@ -328,28 +327,28 @@
         #endregion
 
         private MenuStrip MainMenu;
-        private StatusStrip StatusBar;
         private ToolStrip ToolBar;
+        private ToolStripButton btnNewProject;
         private ToolStripButton btnOpenProject;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripButton btnSettings;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripButton btnToggleSideBar;
+        private ToolStripButton btnToggleLog;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripButton btnExport;
+        private ToolStripButton btnImport;
+        private ToolStripSeparator toolStripSeparator6;
+        private ToolStripButton btnExit;
+        private StatusStrip StatusBar;
         private SplitContainer splitMain;
+        private TabControl pagerSideBar;
+        private TabPage tabPage3;
+        private TabPage tabPage4;
         private SplitContainer splitContent;
         private TabControl pagerContent;
         private TabPage tabPage1;
         private TabPage tabPage2;
         private RichTextBox edtLog;
-        private TabControl pagerSideBar;
-        private TabPage tabPage3;
-        private TabPage tabPage4;
-        private ToolStripButton btnNewProject;
-        private ToolStripSeparator toolStripSeparator1;
-        private ToolStripButton btnSettings;
-        private ToolStripSeparator toolStripSeparator2;
-        private ToolStripButton btnExit;
-        private ToolStripSeparator toolStripSeparator3;
-        private ToolStripButton btnToggleSideBar;
-        private ToolStripButton btnToggleLog;
-        private ToolStripButton btnExport;
-        private ToolStripButton btnImport;
-        private ToolStripSeparator toolStripSeparator6;
     }
 }

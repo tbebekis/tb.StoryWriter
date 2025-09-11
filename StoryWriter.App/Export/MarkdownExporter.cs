@@ -1,164 +1,78 @@
 ﻿namespace StoryWriter
 {
- 
     public class MarkdownExporter
     {
-        ExportService Service;
+        ExportContext ExportContext;
         StringBuilder SB;
-        ProjectProxy Project;
- 
 
         static readonly string[] NewLines = new[] { "\r\n", "\r", "\n" };
+        static string[] ToLines(string Text) => Text.Split(NewLines, StringSplitOptions.None);
 
-        void AppendLine(string Text) => SB.AppendLine(Text);
-        void AppendHeader(string Text) => AppendLine($"# {Text}");
-        void AppendHeader2(string Text) => AppendLine($"## {Text}");
-        void AppendHeader3(string Text) => AppendLine($"### {Text}");
-        void EmptyLine() => AppendLine("");
- 
-        string[] ToLines(string Text) => Text.Split(NewLines, StringSplitOptions.None);
-        string ReplaceStartingBullet(string Text)
-        {
-            string S = Text.TrimStart();
-            if (S.StartsWith('●'))
-            {
-                int i = Text.IndexOf('●');
-                Text = Text.Remove(i, "●".Length);
-                Text = Text.Insert(i, "-");
-            }
-            else if (S.StartsWith('•'))
-            {
-                int i = Text.IndexOf('•');
-                Text = Text.Remove(i, "•".Length);
-                Text = Text.Insert(i, "-");
-            }
-
-            return Text;
-        }
-        void ProcessText(string PlainText)
+        string GetText(string PlainText)
         {
             if (!string.IsNullOrWhiteSpace(PlainText))
             {
                 string[] Lines = ToLines(PlainText);
-
                 string Line;
+                bool LastStartsWithDash = false;
+                bool StartsWithDash = false;
                 for (int i = 0; i < Lines.Length; i++)
                 {
-                    Line = ReplaceStartingBullet(Lines[i]);
-                    AppendLine(Line);
+                    Line = Lines[i].TrimStart();
+
+                    StartsWithDash = Line.StartsWith("-");
+                    if (StartsWithDash)
+                        Line = Line.Replace("-", "—");
+
+                    Lines[i] = Line + Environment.NewLine;
+
+                    LastStartsWithDash = StartsWithDash;
+   
                 }
+
+                PlainText = string.Join(Environment.NewLine, Lines);
+
+                // —
             }
-            else
-            {
-                EmptyLine();
-            }
+
+            return PlainText;
         }
-
-        void ProcessCapters()
-        {
-            AppendHeader("CHAPTERS");
-            EmptyLine();
-            EmptyLine();
-
-            foreach (var Chapter in Project.ChapterList)
-            {
-                AppendHeader2(Chapter.ToString());
-                EmptyLine();
-                ProcessText(Chapter.BodyText);
-            }
-
-            EmptyLine();
-            EmptyLine();
-        }
-
-        void ProcessChapterProperties()
-        {
-            AppendHeader("CHAPTER PROPERTIES");
-            EmptyLine();
-            EmptyLine();
-
-            foreach (var Chapter in Project.ChapterList)
-            {
-                AppendHeader2($"{Chapter} - Synopsis");
-                EmptyLine();
-                ProcessText(Chapter.Synopsis);
-
-                AppendHeader2($"{Chapter} - Concept");
-                EmptyLine();
-                ProcessText(Chapter.Concept);
-
-                AppendHeader2($"{Chapter} - Outcome");
-                EmptyLine();
-                ProcessText(Chapter.Outcome);
-            }
-
-            EmptyLine();
-            EmptyLine();
-        }
-        void ProcessScenes()
-        {
-            AppendHeader("CHAPTER SCENES");
-            EmptyLine();
-            EmptyLine();
-
-            foreach (var Chapter in Project.ChapterList)
-            {
-                AppendHeader2($"{Chapter} - SCENES");
-                EmptyLine();
-
-                foreach (var Scene in Chapter.SceneList)
-                {
-                    AppendHeader3($"{Scene}");
-                    EmptyLine();
-                    ProcessText(Scene.BodyText);
-                }
-            }
-
-            EmptyLine();
-            EmptyLine();
-        }
-        void ProcessComponents()
-        {
-            AppendHeader("COMPONENTS");
-            EmptyLine();
-            EmptyLine();
-
-            foreach (var Component in Project.ComponentList)
-            {
-                AppendHeader2(Component.Title);
-                EmptyLine();
-                ProcessText(Component.BodyText);
-            }
-
-            EmptyLine();
-            EmptyLine();
-        }
-
 
         // ● construction
-        public MarkdownExporter(ExportService Service)
+        public MarkdownExporter(ExportContext ExportContext)
         {
-            this.Service = Service;
+            this.ExportContext = ExportContext;
         }
-
 
         // ● public
         public void Execute()
         {
-            SB = new StringBuilder();
+            ExportContext.InPlainText = true;        
 
-            this.Project = Service.Project;
+            SB = new();
 
-            AppendHeader(Project.Title);
-            EmptyLine();
-            EmptyLine();
+            string BodyText;
 
-            ProcessComponents();
-            ProcessCapters();
-            ProcessChapterProperties();
-            ProcessScenes();
+            foreach (var Chapter in ExportContext.Story.ChapterList)
+            {
+                SB.AppendLine($"# {Chapter.Title}");
+                SB.AppendLine();
 
-            File.WriteAllText(Service.FilePath, SB.ToString());
+                foreach (var Scene in Chapter.SceneList)
+                {
+                    BodyText = GetText(Scene.BodyText);
+                    SB.AppendLine($"## {Scene.Title}");
+                    SB.AppendLine(BodyText);
+                    SB.AppendLine();
+                    SB.AppendLine();
+                }
+            }
+
+            string FilePath = Path.Combine(ExportContext.ExportFolderPath, "Story.md");
+            File.WriteAllText(FilePath, SB.ToString());
+            App.WaitForFileAvailable(FilePath);
+
+ 
         }
     }
 }

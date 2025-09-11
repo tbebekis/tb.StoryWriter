@@ -23,6 +23,8 @@
             Dict["Id"] = Id;
             Dict["Name"] = Name;
             Dict["BodyText"] = BodyText;
+            Dict["TypeId"] = TypeId;
+            Dict["OrderIndex"] = OrderIndex;
             return Dict;
         }
         /// <summary>
@@ -30,9 +32,11 @@
         /// </summary>
         public void LoadFrom(DataRow Row)
         {
-            Id = Row.AsString("Id");            
+            Id = Row.AsString("Id");
             Name = Row.AsString("Name");
             BodyText = Row.AsString("BodyText");
+            TypeId = Row.AsString("TypeId");
+            OrderIndex = Row.AsInteger("OrderIndex");
         }
 
         /// <summary>
@@ -40,11 +44,11 @@
         /// </summary>
         public bool Insert()
         {
-            string SqlText = $"INSERT INTO {Project.SComponent} (Id, Name, BodyText) VALUES (:Id, :Name, :BodyText)";    
-            
+            string SqlText = $"INSERT INTO {Story.SComponent} (Id, Name, BodyText, TypeId, OrderIndex) VALUES (:Id, :Name, :BodyText, :TypeId, :OrderIndex)";
+
             var Params = ToDictionary();
             App.SqlStore.ExecSql(SqlText, Params);
-            App.CurrentProject.AddToList(this);
+            App.CurrentStory.AddToList(this);
             return true;
         }
         /// <summary>
@@ -52,9 +56,9 @@
         /// </summary>
         public bool Update()
         {
-            string SqlText = $"UPDATE {Project.SComponent} SET Name = :Name, BodyText = :BodyText WHERE Id = :Id";    
-            
-            var Params = ToDictionary(); 
+            string SqlText = $"UPDATE {Story.SComponent} SET Name = :Name, BodyText = :BodyText, TypeId = :TypeId, OrderIndex = :OrderIndex WHERE Id = :Id";
+
+            var Params = ToDictionary();
             App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
@@ -63,50 +67,68 @@
         /// </summary>
         public bool Delete()
         {
-            string SqlText = $"delete from {Project.SComponent} where Id = :Id";
+            string SqlText = $"delete from {Story.SComponent} where Id = :Id";
 
             var Params = ToDictionary();
             App.SqlStore.ExecSql(SqlText, Params);
-            App.CurrentProject.ComponentList.Remove(this);
+            App.CurrentStory.ComponentList.Remove(this);
             return true;
         }
 
-
-        static public DataTable GetComponentTagsTable()
+        /// <summary>
+        /// Updates the order index of this instance in the database.
+        /// </summary>
+        public bool UpdateOrderIndex()
         {
-            string SqlText = $@"
-select 
-  co.Id        as ComponentId,
-  co.Name      as Component,
-  t.Id         as TagId, 
-  t.Name       as Tag  
-from 
-  {Project.STag} t
-     inner join {Project.STagToComponent} tc on tc.TagId = t.Id
-     inner join {Project.SComponent} co on co.Id = tc.ComponentId
-order by
-  co.Name 
-";
-            DataTable Table = App.SqlStore.Select(SqlText);
-
-            return Table;
+            string SqlText = $"UPDATE {Story.SComponent} SET OrderIndex = :OrderIndex WHERE Id = :Id";
+            var Params = new Dictionary<string, object>
+            {
+                ["OrderIndex"] = OrderIndex,
+                ["Id"] = Id
+            };
+            App.SqlStore.ExecSql(SqlText, Params);
+            return true;
+        }
+        /// <summary>
+        /// Updates the body text of this instance in the database.
+        /// </summary>
+        public bool UpdateBodyText()
+        {
+            string SqlText = $"UPDATE {Story.SComponent} SET BodyText = :BodyText WHERE Id = :Id";
+            var Params = new Dictionary<string, object>
+            {
+                ["BodyText"] = BodyText,
+                ["Id"] = Id
+            };
+            App.SqlStore.ExecSql(SqlText, Params);
+            return true;
         }
 
+        /// <summary>
+        /// Returns true if any of this instance rich texts contains a specified term.
+        /// </summary>
+        public override bool RichTextContainsTerm(string Term)
+        {
+            if (string.IsNullOrWhiteSpace(BodyText))
+                return false;
+
+            return App.RichTextContainsTerm(BodyText, Term);
+        }
+
+        // ● tags related
         public List<Tag> GetTagList()
         {
-            DataTable Table = GetComponentTagsTable();
+            List<Tag> TagList = new();
+            var TagToComponentList = App.CurrentStory.TagToComponentList.Where(x => x.ComponentId == Id).ToList();
 
-            DataRow[] Rows = Table.Select($"ComponentId = '{Id}'");  
-
-            List<Tag> TagList = new List<Tag>();
-            foreach (DataRow Row in Rows)
+            foreach (TagToComponent TagToComponent in TagToComponentList)
             {
-                Tag item = new Tag();
-
-                item.Id = Row.AsString("TagId");
-                item.Name = Row.AsString("Tag");
-                TagList.Add(item);
+                Tag Tag = TagToComponent.GetTag();
+                if (Tag != null)
+                    TagList.Add(Tag);
             }
+
+
             return TagList;
         }
         public string GetTagsAsLine()
@@ -120,24 +142,36 @@ order by
 
             return Result;
         }
-
-
-        /// <summary>
-        /// Returns true if any of this instance rich texts contains a specified term.
-        /// </summary>
-        public override bool RichTextContainsTerm(string Term)
-        {
-            if (string.IsNullOrWhiteSpace(BodyText))
-                return false;
-
-            return App.RichTextContainsTerm(BodyText, Term);
-        }
+ 
 
         // ● properties
+        /// <summary>
+        /// The parent ComponentType of this scene.
+        /// </summary>
+        public ComponentType ComponentType => App.CurrentStory?.ComponentTypeList.FirstOrDefault(ch => ch.Id == TypeId);
+        public string Category => ComponentType != null ? ComponentType.Name : "";
+
+        /// <summary>
+        /// Foreign key reference to the parent ComponentType
+        /// </summary>
+        public string TypeId { get; set; }
         /// <summary>
         /// The text of this instance.  
         /// </summary>
         public string BodyText { get; set; }
+        /// <summary>
+        /// Sort order of this item.
+        /// <para><strong>NOTE: </strong> >0 means is displayed in Quick View</para>
+        /// </summary>
+        public int OrderIndex { get; set; } = 0;
 
     }
 }
+/*
+TABLE: Component
+Id
+Name
+BodyText
+TypeId
+OrderIndex  ( >0 means is displayed in Quick View) 
+ */

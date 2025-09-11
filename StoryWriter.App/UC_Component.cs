@@ -5,29 +5,21 @@
         // ● private
         TabPage ParentTabPage { get { return this.Parent as TabPage; } }
         Component Component;
-        bool IsFirstTimeModified = false;
-
-
         string TitleText;
 
         void ControlInitialize()
         {
             this.Component = Info as Component;
-            TitleText = this.Component.Name;
-            ParentTabPage.Text = TitleText;
+            TitleChanged();
 
-            ucComponentText.RtfText = this.Component.BodyText;       
-            App.ZoomFactorChanged += (e, a) => ucComponentText.Editor.ZoomFactor = (float)App.ZoomFactor;
+            ucBodyText.RtfText = this.Component.BodyText;       
 
             Ui.RunOnce((Info) => {
-                ucComponentText.Editor.Modified = false;
-                ucComponentText.InitializeEditor(true);
-                ucComponentText.Editor.ModifiedChanged += EditorModifiedChanged;             
-                ucComponentText.EditorHandler = this;
-                ucComponentText.Focus();
-
-                ucComponentText.Title = Component.Name;
-
+                ucBodyText.Modified = false;
+                ucBodyText.InitializeEditor(true);
+                ucBodyText.EditorModifiedChanged += EditorModifiedChanged;             
+                ucBodyText.EditorHandler = this;
+                ucBodyText.Focus();
             }, 1500, null);
         }
 
@@ -56,18 +48,12 @@
 
         void AdjustTabTitle()
         {
-            ParentTabPage.Text = ucComponentText.Editor.Modified ? TitleText + "*": TitleText;
+            ParentTabPage.Text = ucBodyText.Modified ? TitleText + "*": TitleText;
         }
 
         public void EditorModifiedChanged(object Sender, EventArgs e)
         {
-            RichTextBox Editor = Sender as RichTextBox;            
-
-            if (!IsFirstTimeModified)
-            {
-                IsFirstTimeModified = true;
-                Editor.Modified = false;
-            } 
+            RichTextBox Editor = Sender as RichTextBox;           
 
             if (Editor.Modified)
                 App.AddDirtyEditor(Editor);
@@ -77,12 +63,18 @@
         public void SaveEditorText(RichTextBox Editor)
         {
             Component.BodyText = Editor.Rtf;
-            Component.Update();
+            Component.UpdateBodyText();
             Editor.Modified = false;
-            ucComponentText.Editor.Modified = false;
+            ucBodyText.Modified = false;
 
-            string Message = $"Component: {Component.Name}. - saved";
+            string Message = $"Component: {Component.ToString()}. - saved";
             LogBox.AppendLine(Message);
+        }
+        public void TitleChanged()
+        {
+            TitleText = Component.ToString();
+            ParentTabPage.Text = $"Component: " + (ucBodyText.Modified ? TitleText + "*" : TitleText);
+            ucBodyText.Title = TitleText;
         }
 
         // ● properties
@@ -91,7 +83,7 @@
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public object Info { get; set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public UC_RichText ucRichText { get { return ucComponentText; } }
+        public UC_RichText ucRichText { get { return ucBodyText; } }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool CloseableByUser { get; set; } = true;
     }

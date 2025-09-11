@@ -1,10 +1,9 @@
 ﻿namespace StoryWriter
 {
-
     /// <summary>
-    /// Represents a group.
+    /// Represents a tag.
     /// </summary>
-    public class Tag: BaseEntity
+    public class Tag : BaseEntity
     {
         // ● public 
         /// <summary>
@@ -31,11 +30,11 @@
         /// </summary>
         public bool Insert()
         {
-            string SqlText = $"INSERT INTO {Project.STag} (Id, Name) VALUES (:Id, :Name)";
+            string SqlText = $"INSERT INTO {Story.STag} (Id, Name) VALUES (:Id, :Name)";
 
-            var Params = ToDictionary(); // see helper below
+            var Params = ToDictionary();  
             App.SqlStore.ExecSql(SqlText, Params);
-            App.CurrentProject.AddToList(this);
+            App.CurrentStory.AddToList(this);
             return true;
         }
         /// <summary>
@@ -43,9 +42,9 @@
         /// </summary>
         public bool Update()
         {
-            string SqlText = $"UPDATE {Project.STag} SET Name = :Name WHERE Id = :Id";
+            string SqlText = $"UPDATE {Story.STag} SET Name = :Name WHERE Id = :Id";
 
-            var Params = ToDictionary(); // see helper below
+            var Params = ToDictionary();  
             App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
@@ -54,13 +53,29 @@
         /// </summary>
         public bool Delete()
         {
-            string SqlText = $"delete from {Project.STag} where Id = :Id";
+            string SqlText = $"delete from {Story.STag} where Id = :Id";
 
             var Params = ToDictionary();
             App.SqlStore.ExecSql(SqlText, Params);
-            App.CurrentProject.TagList.Remove(this);
+            App.CurrentStory.TagList.Remove(this);
             return true;
         }
-      
+
+        public List<Component> GetComponentList()
+        {
+            List<Component> ComponentList = new();
+            var TagToComponentList = App.CurrentStory.TagToComponentList.Where(x => x.TagId == Id).ToList();
+
+            foreach (TagToComponent TagToComponent in TagToComponentList)
+            {
+                Component Component = TagToComponent.GetComponent();
+                if (Component != null)
+                    ComponentList.Add(Component);
+            }       
+
+
+            return ComponentList;
+        }
+
     }
 }

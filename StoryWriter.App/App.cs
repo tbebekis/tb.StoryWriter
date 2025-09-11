@@ -3,11 +3,11 @@
     static public partial class App
     {
         // ● private
-        const string SProjectsFolder = "Projects";
+        const string SStoriesFolder = "Stories";
         static SqlProvider SqlProvider;
         static decimal fZoomFactor = 1.0M;
 
-        static RichTextBox Editor;
+        
 
         static AutoSaveService AutoSaveService;
         static System.Threading.Lock syncLock = new();
@@ -17,7 +17,7 @@
         {
             lock (syncLock)
             {
-                if (CurrentProject != null)
+                if (CurrentStory != null)
                 {
                     if (DirtyEditors.Count > 0)
                     {
@@ -27,7 +27,7 @@
                             DirtyEditors.RemoveAt(0);
                             try
                             {
-                                if (ucRichText.Editor.Modified)
+                                if (ucRichText.Modified)
                                     ucRichText.SaveText();
                             }
                             catch
@@ -47,59 +47,21 @@
         {
             if (!IsInitialized)
             {
-                App.MainForm = MainForm; 
+                App.MainForm = MainForm;
 
-                SqlProvider = SqlProviders.GetSqlProvider(SqlProvider.SQLite); 
+                SqlProvider = SqlProviders.GetSqlProvider(SqlProvider.SQLite);
 
-                if (!Directory.Exists(ProjectsPath))
-                    Directory.CreateDirectory(ProjectsPath);
+                if (!Directory.Exists(StoriesFolderPath))
+                    Directory.CreateDirectory(StoriesFolderPath);
 
                 ZoomFactor = Settings.ZoomFactor;
 
-                LoadLastProject();
+                LoadLastStory();
 
                 AutoSaveService = new AutoSaveService(AutoSaveProc);
                 AutoSaveService.Enabled = Settings.AutoSave;
             }
         }
- 
-        /// <summary>
-        /// Closes all opened UI.
-        /// </summary>
-        static public void CloseAllUi()
-        {
-            SideBarPagerHandler.CloseAll();
-            ContentPagerHandler.CloseAll();
-        }
-
-        /// <summary>
-        /// Shows the settings dialog
-        /// </summary>
-        static public void ShowSettingsDialog()
-        {
-            string Message = @"This will close all opened UI. 
-Any unsaved changes will be lost. 
-Do you want to continue?
-";
-            if (!App.QuestionBox(Message))
-                return;
-
-            App.CloseProject();
-            Application.DoEvents();
-
-            if (AppSettingDialog.ShowModal())
-            {
-                AutoSaveService.Enabled = false;
-
-                App.Settings.Load();                
-
-                AutoSaveService.AutoSaveSecondsInterval = Settings.AutoSaveSecondsInterval;
-                AutoSaveService.Enabled = Settings.AutoSave;
-            }
-
-            App.LoadLastProject();
-        }
- 
 
         // ● message boxes
         /// <summary>
@@ -131,328 +93,19 @@ Do you want to continue?
             return MessageBox.Show(Message, "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
         }
 
-        // ● tag to components relation
-        /// <summary>
-        /// Edits the tags of the given component
-        /// </summary>
-        static public void AddTagsToComponent(Component Component)
-        {
-            List<string> ComponentTagList = CurrentProject.TagToComponentList
-                .Where(x => x.Component.Id == Component.Id)
-                .Select(x => x.Tag.Id)
-                .ToList();
-
-            List<Tag> TagList = new(CurrentProject.TagList);
-
-            TagList.Sort((x, y) => x.Name.CompareTo(y.Name));
-
-            if (SelectTagsForComponentDialog.ShowModal(TagList, Component, ComponentTagList))
-            {
-                CurrentProject.AdjustComponentTags(Component, TagList);
-                TagToComponetsChanged?.Invoke(null, EventArgs.Empty);
-            } 
-        }
-        static public void AddComponentsToTag(Tag Tag)
-        {
-            // List<string> TagComponentList;  // Component Ids under this Tag
-            List<string> TagComponentsList = CurrentProject.TagToComponentList
-                .Where(x => x.Tag.Id == Tag.Id)
-                .Select(x => x.Component.Id)
-                .ToList();
-
-            List<Component> ComponentList = new(CurrentProject.ComponentList);
-
-            ComponentList.Sort((x, y) => x.Name.CompareTo(y.Name));
-
-            if (SelectComponentsForTagDialog.ShowModal(ComponentList, Tag, TagComponentsList))
-            {
-                CurrentProject.AdjustTagComponents(Tag, ComponentList);
-                TagToComponetsChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-
-        // ● project related
-        /// <summary>
-        /// Returns a list of all project names found in the Projects folder
-        /// </summary>
-        static public List<string> GetProjectNameList()
-        {
-            string[] ProjectDatabases = System.IO.Directory.GetFiles(ProjectsPath, "*.db3", System.IO.SearchOption.TopDirectoryOnly);
-            List<string> ProjectNames = new ();
-            foreach (string ProjectDatabasePath in ProjectDatabases)
-            {
-                string ProjectName = Project.ProjectFileNameToProjectName(Path.GetFileName(ProjectDatabasePath));
-                ProjectNames.Add(ProjectName);
-            }
-            return ProjectNames;
-        }
-        /// <summary>
-        /// Returns true if a project with the given name exists
-        /// </summary>
-        static public bool ProjectExists(string ProjectName)
-        {
-            return GetProjectNameList().Contains(ProjectName);
-        }
-        /// <summary>
-        /// Loads the last opened project
-        /// </summary>
-        static public void LoadLastProject()
-        {
-            CloseAllUi();
-
-            if (Settings.LoadLastProjectOnStartup && !string.IsNullOrWhiteSpace(Settings.LastProject) && ProjectExists(Settings.LastProject))
-            {
-                LoadProject(Settings.LastProject);
-            } 
-        }
-        /// <summary>
-        /// Loads a project by name
-        /// </summary>
-        static public void LoadProject(string ProjectName)
-        {
-            string Message;
-            CloseProject();
-
-            if (!ProjectExists(ProjectName))
-            {
-                Message = $"Project '{ProjectName}' does not exist.";
-                ErrorBox(Message);
-                LogBox.AppendLine(Message);
-                return;
-            }
-
-            string ProjectFileName = Project.ProjectNameToProjectFileName(ProjectName);
-            string ProjectFilePath = Path.Combine(ProjectsPath, ProjectFileName);
-            SqlConnectionInfo CI = new(ProjectName, SqlProvider.Name, "", ProjectFilePath, "", "");
-            SqlStore = new SqlStore(CI);
-            CurrentProject = new Project(ProjectName);
-
-            CurrentProject.Open();
-            ProjectOpened?.Invoke(null, EventArgs.Empty);
-
-            Settings.LastProject = ProjectName;
-            Settings.Save();
-
-            SideBarPagerHandler.ShowPage(typeof(UC_TagList), nameof(UC_TagList), null);
-            SideBarPagerHandler.ShowPage(typeof(UC_ComponentList), nameof(UC_ComponentList), null);
-            SideBarPagerHandler.ShowPage(typeof(UC_Search), nameof(UC_Search), null);
-            SideBarPagerHandler.ShowPage(typeof(UC_QuickViewList), nameof(UC_QuickViewList), null);            
-            var Page = SideBarPagerHandler.ShowPage(typeof(UC_ChapterList), nameof(UC_ChapterList), null);
-            (Page.Parent as TabControl).SelectTab(0);
-
-            Message = $"Project '{ProjectName}' opened.";
-            LogBox.AppendLine(Message);
-          
-        }
-        /// <summary>
-        /// Closes the current project. Closes all open UI too.
-        /// </summary>
-        static public void CloseProject()
-        {
-            if (CurrentProject != null)
-            {
-                ProjectClosed?.Invoke(null, EventArgs.Empty);
-
-                string ProjectName = CurrentProject.Name;
-
-                CloseAllUi();
-                CurrentProject.Close();
-                CurrentProject = null;
-                SqlStore = null;
-
-                string Message = $"Project '{ProjectName}' closed.";
-                LogBox.AppendLine(Message);
-            } 
-        }
-        /// <summary>
-        /// Opens an existing project and makes it the current project
-        /// </summary>
-        static public void OpenProject()
-        {
-            List<string> List = GetProjectNameList();
-
-            if (List.Count == 0)
-            {
-                string Message = "No projects found. Please create a new project.";
-                ErrorBox(Message);
-                LogBox.AppendLine(Message);
-                return;
-            }
-        
-            if (SelectProjectDialog.ShowModal(List, out string ProjectName))
-            {
-                LoadProject(ProjectName);
-            }    
-
-        }
-        /// <summary>
-        /// Creates a new project and makes it the current project
-        /// </summary>
-        static public void CreateNewProject(bool LoadToo)
-        {
-            if (NewProjectDialog.ShowModal(out string ProjectName))
-            {
-                string Message;
-
-                if (ProjectExists(ProjectName))
-                {
-                    Message = $"Project '{ProjectName}' already exists. Please choose another name.";
-                    ErrorBox(Message);
-                    LogBox.AppendLine(Message);
-                    return;
-                }
-
-                string ProjectFileName = Project.ProjectNameToProjectFileName(ProjectName);
-                string ProjectFilePath = Path.Combine(ProjectsPath, ProjectFileName);
- 
-                SqlConnectionInfo CI = new (Sys.DEFAULT, SqlProvider.Name, "", ProjectFilePath, "", "");                
-                SqlProvider.CreateDatabase(CI.ConnectionString);
-
-                Db.Connections = null;
-                Db.Connections = new List<SqlConnectionInfo>() { CI };                    
-
-                //Db.Connections.Add(CI); // add the connection info to the global connections list 
-
-                SqlStore = new SqlStore(CI);
-                CurrentProject = new Project(ProjectName);
-                CurrentProject.CreateSchema();
-
-                CurrentProject.Open();
-                ProjectOpened?.Invoke(null, EventArgs.Empty);
-
-                Settings.LastProject = ProjectName;
-                Settings.Save();
-
-                Message = $"Project '{ProjectName}' created.";
-                LogBox.AppendLine(Message);
-
-                if (LoadToo)
-                    LoadProject(ProjectName);
-                
-            }           
-        }
-
-        // ● export - import
-        /// <summary>
-        /// Converts RTF to plain text
-        /// </summary>
-        static public string ToPlainText(string RtfText)
-        {
-            if (Editor == null)
-                Editor = new RichTextBox { DetectUrls = false };
-
-            Editor.Clear();
-            Editor.Rtf = RtfText;
-            return Editor.Text;
-        }
-        /// <summary>
-        /// Converts plain text to RTF
-        /// </summary>
-        static public string ToRtfText(string PlainText)
-        {
-            if (IsRtf(PlainText))
-                return PlainText;
-
-            if (Editor == null)
-                Editor = new RichTextBox { DetectUrls = false };
-
-            Editor.Clear();
-            Editor.Text = PlainText;
-
-            return Editor.Rtf;
-        }
-        /// <summary>
-        /// Checks if the given string is an RTF text.
-        /// </summary>
-        static public bool IsRtf(string PlainText)
-        {
-            if (string.IsNullOrWhiteSpace(PlainText))
-                return true;
-
-            return PlainText.TrimStart().StartsWith(@"{\rtf", StringComparison.Ordinal);
-        }
-        /// <summary>
-        /// Returns true if the given RTF text contains the given term
-        /// </summary>
-        static public bool RichTextContainsTerm(string RtfText, string PlainTextTerm)
-        {
-            if (string.IsNullOrWhiteSpace(RtfText))
-                return false;
-            string PlainText = ToPlainText(RtfText);
-            return PlainText.Contains(PlainTextTerm, StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// Exports the current project
-        /// </summary>
-        static public void ExportProject()
-        {
-            ExportService Service = new();
-            if (Service.Export())
-            {
-                string Message = Service.GetExportMessage();
-                LogBox.AppendLine(Message);
-                App.InfoBox(Message);
-
-
-            }
-        }
-        /// <summary>
-        /// Imports a project. It creates a new project and makes it the current one.
-        /// </summary>
-        static public void ImportProject()
-        {
-            string Message = @"This will close all opened UI. 
-Any unsaved changes will be lost. 
-Do you want to continue?
-";
-            if (!App.QuestionBox(Message))
-                return;
-
-            App.CloseProject();
-            Application.DoEvents();
-
-            // get the file
-            string FilePath = string.Empty;
-            
-            using (OpenFileDialog dlg = new())
-            {
-                string Filter = "JSON Files (*.json)|*.json|XML Files (*.xml)|*.xml|All Files (*.*)|*.*";
-                dlg.Filter = Filter;
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    FilePath = dlg.FileName;
-                }
-                else
-                {
-                    return;
-                }
-            }
-
-            // create a new empty project 
-            CreateNewProject(LoadToo: false);
-
-            // import
-            ImportService Service = new();
-            Service.Import(FilePath);
-            Application.DoEvents();
-
-            Message = $"{App.CurrentProject.Name} imported from {FilePath}";
-            LogBox.AppendLine(Message);
-            App.InfoBox(Message);
-
-            LoadProject(CurrentProject.Name);
-        }
- 
+        // ● miscs
         /// <summary>
         /// Adds a dirty editor to the list or dirty editors for auto-save.
         /// </summary>
         static public void AddDirtyEditor(RichTextBox Editor)
         {
-            lock(syncLock)
+            lock (syncLock)
             {
                 try
                 {
+                    if (AutoSaveService == null)
+                        return;
+
                     if (Editor.Modified && Editor.Parent is UC_RichText)
                     {
                         UC_RichText ucRichText = Editor.Parent as UC_RichText;
@@ -460,7 +113,7 @@ Do you want to continue?
                         {
                             DirtyEditors.Add(ucRichText);
                             AutoSaveService.MarkAsDirty();
-                        }                            
+                        }
                     }
                 }
                 catch
@@ -469,22 +122,14 @@ Do you want to continue?
             }
 
         }
-
-        // ● miscs
         /// <summary>
-        /// Returns the current <see cref="DataRow"/> of a BindingSource
+        /// Triggers the <see cref="SearchTermIsSet"/> event
         /// </summary>
-        static public DataRow CurrentDataRow(this BindingSource BS)
+        static public void SetSearchTerm(string Term)
         {
-            if (BS.Position >= 0)
-            {
-                DataRowView DRV = BS.Current as DataRowView;
-                if (DRV != null)
-                    return DRV.Row;
-            }
-
-            return null;
+            SearchTermIsSet?.Invoke(null, Term);
         }
+
         /// <summary>
         /// Returns the <see cref="DataRow"/> with the given Id
         /// </summary>
@@ -531,44 +176,53 @@ Do you want to continue?
                 Thread.Sleep(checkIntervalMilliseconds);
             }
         }
-        /// <summary>
-        /// Triggers the <see cref="SearchTermIsSet"/> event
-        /// </summary>
-        static public void SetSearchTerm(string Term)
-        {
-            SearchTermIsSet?.Invoke(null, Term);
-        }
+
+        // ● event triggers
         /// <summary>
         /// Triggers the <see cref="SearchResultsChanged"/> event
         /// </summary>
-        static public void DisplaySearchResults(List<LinkItem> LinkItems)
+        static public void PerformSearchResultsChanged(List<LinkItem> LinkItems)
         {
             SearchResultsChanged?.Invoke(null, LinkItems);
         }
-
-        static public string NormalizeFileName(string FileName)
+        /// <summary>
+        /// Triggers the <see cref="ItemListChanged"/> event
+        /// </summary>
+        static public void PerformItemListChanged(ItemType ItemType)
         {
-            var InvalidChars = System.IO.Path.GetInvalidFileNameChars();
-            FileName = String.Join("_", FileName.Split(InvalidChars, StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
-            return FileName;
+            ItemListChanged?.Invoke(null, ItemType);
         }
 
-        // ●
-        /// <summary>
-        /// Returns the user control of the given type, if any, else null
-        /// </summary>
-        static public T GetUserControl<T>(this PagerHandler PagerHandler) where T : UserControl
+        // ● import / export
+        static public void Export()
         {
-            Type UserControlClass = typeof(T);
-            string PageId = UserControlClass.Name;
-            TabPage Page = PagerHandler.FindTabPage(PageId);
-            if (Page != null)
+            LogBox.AppendLine("Exporting current Story...Please wait...");
+            Application.DoEvents();
+
+            Cursor.Current = Cursors.WaitCursor;
+            Application.DoEvents();
+            try
             {
-                UserControl Result = Page.Tag as T;
-                return Result as T;
+                ExportContext Context = new();
+                Context.Execute();
+                string Message = @$"Current Story exported to 
+{Context.ExportFolderPath}";
+                LogBox.AppendLine(Message);
+                Application.DoEvents();
+
+                App.InfoBox(Message);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+                Application.DoEvents();
             }
 
-            return null;
+
+        }
+        static public void Import()
+        {
+
         }
 
         // ● properties 
@@ -582,17 +236,13 @@ Do you want to continue?
         /// </summary>
         static public string BinPath => System.AppContext.BaseDirectory;
         /// <summary>
-        /// The physical path of the Projects folder
+        /// The physical path of the Storys folder
         /// </summary>
-        static public string ProjectsPath => Path.Combine(BinPath, SProjectsFolder);
+        static public string StoriesFolderPath => Path.Combine(BinPath, SStoriesFolder);
         /// <summary>
         /// Application settings
         /// </summary>
         static public AppSettings Settings { get; } = new AppSettings();
-        /// <summary>
-        /// The currently opened project, could be null.
-        /// </summary>
-        static public Project CurrentProject { get; private set; }
 
         /// <summary>
         /// The SQL store of the currently opened project, could be null.
@@ -617,22 +267,27 @@ Do you want to continue?
         static public decimal ZoomFactor
         {
             get { return fZoomFactor; }
-            set 
+            set
             {
                 fZoomFactor = value;
-                ZoomFactorChanged?.Invoke(null, EventArgs.Empty);                
+                ZoomFactorChanged?.Invoke(null, EventArgs.Empty);
             }
         }
- 
+
+        /// <summary>
+        /// The currently opened story, could be null.
+        /// </summary>
+        static public Story CurrentStory { get; private set; }
+
         // ● events
         /// <summary>
         /// Triggered when a new project is closed
         /// </summary>
-        static public event EventHandler ProjectClosed;
+        static public event EventHandler StoryClosed;
         /// <summary>
         /// Triggered when a new project is opened
         /// </summary>
-        static public event EventHandler ProjectOpened;
+        static public event EventHandler StoryOpened;
         /// <summary>
         /// Triggered when a tag is added to a component
         /// </summary>
@@ -642,14 +297,16 @@ Do you want to continue?
         /// </summary>
         static public event EventHandler ZoomFactorChanged;
         /// <summary>
+        /// Triggered when the search term is set
+        /// </summary>
+        static public event EventHandler<string> SearchTermIsSet;
+        /// <summary>
         /// Triggered when the search results are changed
         /// </summary>
         static public event EventHandler<List<LinkItem>> SearchResultsChanged;
         /// <summary>
-        /// Triggered when the search term is set
+        /// Triggered when the item list is changed
         /// </summary>
-        static public event EventHandler<string> SearchTermIsSet;
-
-
+        static public event EventHandler<ItemType> ItemListChanged;
     }
 }

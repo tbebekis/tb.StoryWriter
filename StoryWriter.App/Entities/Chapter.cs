@@ -3,7 +3,7 @@
     /// <summary>
     /// Book chapter data model
     /// </summary>
-    public class Chapter: BaseEntity
+    public class Chapter : BaseEntity
     {
         // ● construction
         /// <summary>
@@ -18,7 +18,7 @@
         /// </summary>
         public override string ToString()
         {
-            return $"{OrderIndex}.{Name}"; 
+            return $"{OrderIndex}.{Name}";
         }
 
         /// <summary>
@@ -32,8 +32,6 @@
                 ["Id"] = Id,
                 ["Name"] = Name,
                 ["Synopsis"] = Synopsis,
-                ["Concept"] = Concept,
-                ["Outcome"] = Outcome,
                 ["BodyText"] = BodyText,
                 ["CreatedAt"] = CreatedAt,   // stored as TEXT/ISO8601 or per your CDATE_TIME
                 ["UpdatedAt"] = UpdatedAt,
@@ -48,8 +46,6 @@
             Id = Row.AsString("Id");
             Name = Row.AsString("Name");
             Synopsis = Row.AsString("Synopsis");
-            Concept = Row.AsString("Concept");
-            Outcome = Row.AsString("Outcome");
             BodyText = Row.AsString("BodyText");
             CreatedAt = Row.AsDateTime("CreatedAt");
             UpdatedAt = Row.AsDateTime("UpdatedAt");
@@ -60,22 +56,21 @@
         /// Inserts this instance into the database.
         /// </summary>
         public bool Insert()
-        {            
-            // Set timestamps if not already set
-            if (CreatedAt == default) 
+        {
+            if (CreatedAt == default)
                 CreatedAt = DateTime.UtcNow;
             UpdatedAt = DateTime.UtcNow;
 
-            OrderIndex = App.CurrentProject.ChapterList.Count + 1;
+            OrderIndex = App.CurrentStory.ChapterList.Count + 1;
 
             string SqlText = @$"
-        INSERT INTO {Project.SChapter} (Id, Name, Synopsis, Concept, Outcome, BodyText, CreatedAt, UpdatedAt, OrderIndex)
-        VALUES (:Id, :Name, :Synopsis, :Concept, :Outcome, :BodyText, :CreatedAt, :UpdatedAt, :OrderIndex)
-    "; 
+        INSERT INTO {Story.SChapter} (Id, Name, Synopsis, BodyText, CreatedAt, UpdatedAt, OrderIndex)
+        VALUES (:Id, :Name, :Synopsis, :BodyText, :CreatedAt, :UpdatedAt, :OrderIndex)
+    ";
 
-            var Params = ToDictionary(); 
+            var Params = ToDictionary();
             App.SqlStore.ExecSql(SqlText, Params);
-            App.CurrentProject.AddToList(this);            
+            App.CurrentStory.AddToList(this);
             return true;
         }
         /// <summary>
@@ -87,12 +82,12 @@
             UpdatedAt = DateTime.UtcNow;
 
             string SqlText =
-                $"UPDATE {Project.SChapter} " +
-                "SET Name = :Name, Synopsis = :Synopsis, Concept = :Concept, Outcome = :Outcome, " +
+                $"UPDATE {Story.SChapter} " +
+                "SET Name = :Name, Synopsis = :Synopsis, " +
                 "BodyText = :BodyText, UpdatedAt = :UpdatedAt, OrderIndex = :OrderIndex " +
                 "WHERE Id = :Id";
 
-            var Params = ToDictionary(); 
+            var Params = ToDictionary();
             App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
@@ -101,10 +96,17 @@
         /// </summary>
         public bool Delete()
         {
-            string SqlText = $"DELETE FROM {Project.SChapter} WHERE Id = :Id";
+            string SqlText = $"DELETE FROM {Story.SScene} WHERE ChapterId = :Id";
+            App.SqlStore.ExecSql(SqlText, new Dictionary<string, object> { ["Id"] = Id });
 
-            var Params = ToDictionary(); 
+            SqlText = $"DELETE FROM {Story.SChapter} WHERE Id = :Id";
+
+            var Params = ToDictionary();
             App.SqlStore.ExecSql(SqlText, Params);
+
+            //App.CurrentStory.ChapterList.Remove(this);
+            App.CurrentStory.ChapterDeleted(this); // re-loads all needed item lists
+
             return true;
         }
 
@@ -113,7 +115,7 @@
         /// </summary>
         public bool UpdateOrderIndex()
         {
-            string SqlText = $"UPDATE {Project.SChapter} SET OrderIndex = :OrderIndex WHERE Id = :Id";
+            string SqlText = $"UPDATE {Story.SChapter} SET OrderIndex = :OrderIndex WHERE Id = :Id";
             var Params = new Dictionary<string, object>
             {
                 ["OrderIndex"] = OrderIndex,
@@ -122,9 +124,12 @@
             App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
+        /// <summary>
+        /// Updates only the body text of this instance
+        /// </summary>
         public bool UpdateBodyText()
         {
-            string SqlText = $"UPDATE {Project.SChapter} SET BodyText = :BodyText WHERE Id = :Id";
+            string SqlText = $"UPDATE {Story.SChapter} SET BodyText = :BodyText WHERE Id = :Id";
             var Params = new Dictionary<string, object>
             {
                 ["BodyText"] = BodyText,
@@ -133,9 +138,12 @@
             App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
-        public bool UpdateSynopsis()
+        /// <summary>
+        /// Updates only the synopsis of this instance
+        /// </summary>
+        public bool UpdateSynopsisText()
         {
-            string SqlText = $"UPDATE {Project.SChapter} SET Synopsis = :Synopsis WHERE Id = :Id";
+            string SqlText = $"UPDATE {Story.SChapter} SET Synopsis = :Synopsis WHERE Id = :Id";
             var Params = new Dictionary<string, object>
             {
                 ["Synopsis"] = Synopsis,
@@ -144,56 +152,39 @@
             App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
-        public bool UpdateConcept()
-        {
-            string SqlText = $"UPDATE {Project.SChapter} SET Concept = :Concept WHERE Id = :Id";
-            var Params = new Dictionary<string, object>
-            {
-                ["Concept"] = Concept,
-                ["Id"] = Id
-            };
-            App.SqlStore.ExecSql(SqlText, Params);
-            return true;
-        }
-        public bool UpdateOutcome()
-        {
-            string SqlText = $"UPDATE {Project.SChapter} SET Outcome = :Outcome WHERE Id = :Id";
-            var Params = new Dictionary<string, object>
-            {
-                ["Outcome"] = Outcome,
-                ["Id"] = Id
-            };
-            App.SqlStore.ExecSql(SqlText, Params);
-            return true;
-        }
+ 
 
         /// <summary>
         /// Returns true if any of this instance rich texts contains a specified term.
         /// </summary>
         public override bool RichTextContainsTerm(string Term)
         {
-            if (App.RichTextContainsTerm(BodyText, Term)
-                || App.RichTextContainsTerm(Synopsis, Term)
-                || App.RichTextContainsTerm(Concept, Term)
-                || App.RichTextContainsTerm(Outcome, Term))
+            if (App.RichTextContainsTerm(BodyText, Term) || App.RichTextContainsTerm(Synopsis, Term))
                 return true;
-                
+
             return false;
         }
 
         // ● scenes
         /// <summary>
-        /// True if a chapter exists by name
+        /// The scenes in this chapter
         /// </summary>
-        public bool SceneExists(string Name, string Id = "")
+        public List<Scene> GetSceneList()
         {
-            return Project.ItemExists(SceneList.Cast<BaseEntity>(), Name, Id);
+            List<Scene> SceneList = App.CurrentStory.SceneList;
+
+            SceneList = SceneList.Where(x => x.ChapterId == Id).ToList();
+            SceneList.Sort((x, y) => x.OrderIndex.CompareTo(y.OrderIndex));
+            return SceneList;
         }
         /// <summary>
         /// Renumbers the scenes in this chapter
         /// </summary>
-        public void RenumberScenes()
+        public void RenumberScenes(List<Scene> SceneList = null)
         {
+            if (SceneList == null)
+                SceneList = GetSceneList();
+
             int OrderIndex = 0;
             foreach (var Scene in SceneList)
             {
@@ -205,25 +196,11 @@
                 Scene.UpdateOrderIndex();
         }
 
-
-        /// <summary>
-        /// The project/book this chapter belongs to.
-        /// </summary>
-        public Project Project => App.CurrentProject;
-
- 
+        // ● properties
         /// <summary>
         /// Short summary / plot abstraction
         /// </summary>
         public string Synopsis { get; set; } = string.Empty;
-        /// <summary>
-        /// Main concept / key idea of the chapter
-        /// </summary>
-        public string Concept { get; set; } = string.Empty;
-        /// <summary>
-        /// Final outcome / status at the end of the chapter
-        /// </summary>
-        public string Outcome { get; set; } = string.Empty;
         /// <summary>
         /// Full manuscript text of the chapter
         /// </summary>
@@ -241,9 +218,6 @@
         /// </summary>
         public int OrderIndex { get; set; } = 0;
 
-        /// <summary>
-        /// The list of scenes that belong to this chapter.
-        /// </summary>
-        public List<Scene> SceneList { get; private set; } = new List<Scene>();
+ 
     }
 }

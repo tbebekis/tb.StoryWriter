@@ -1,0 +1,58 @@
+﻿TABLE: Tag
+Id
+Name
+ 
+TABLE: ComponentType
+Id
+Name 
+
+
+TABLE: Component
+Id
+Name
+BodyText
+TypeId
+OrderIndex  ( >0 means is displayed in Quick View)
+
+TABLE: Chapter
+Id
+Name
+BodyText
+Synopsis
+OrderIndex
+CreatedAt
+UpdatedAt
+
+TABLE: Scene
+Id
+Name
+ChapterId
+BodyText
+Synopsis
+OrderIndex
+CreatedAt
+UpdatedAt
+
+TABLE: TagToComponent
+TagId
+ComponentId
+
+TABLE: ComponentToScene
+ComponentId
+SceneId
+
+TABLE: Notes (general notes)
+Id
+Name
+BodyText
+OrderIndex
+
+--------------------------
+LISTS
+--------------------------
+TagList
+ComponentTypeList
+ComponentList
+ChapterList + Scenes
+NoteList
+ 

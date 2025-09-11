@@ -37,8 +37,6 @@
             btnCancel = new Button();
             label1 = new Label();
             edtAutoSaveSecondsInterval = new NumericUpDown();
-            mmoDefaultTags = new TextBox();
-            label2 = new Label();
             ((ISupportInitialize)nudFontSize).BeginInit();
             ((ISupportInitialize)edtAutoSaveSecondsInterval).BeginInit();
             SuspendLayout();
@@ -105,7 +103,7 @@
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(180, 342);
+            btnOK.Location = new Point(180, 179);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(80, 32);
             btnOK.TabIndex = 9;
@@ -116,7 +114,7 @@
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new Point(262, 342);
+            btnCancel.Location = new Point(262, 179);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(80, 32);
             btnCancel.TabIndex = 10;
@@ -142,32 +140,12 @@
             edtAutoSaveSecondsInterval.TabIndex = 12;
             edtAutoSaveSecondsInterval.Value = new decimal(new int[] { 10, 0, 0, 0 });
             // 
-            // mmoDefaultTags
-            // 
-            mmoDefaultTags.Location = new Point(179, 162);
-            mmoDefaultTags.Multiline = true;
-            mmoDefaultTags.Name = "mmoDefaultTags";
-            mmoDefaultTags.ScrollBars = ScrollBars.Both;
-            mmoDefaultTags.Size = new Size(149, 167);
-            mmoDefaultTags.TabIndex = 13;
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new Point(102, 165);
-            label2.Name = "label2";
-            label2.Size = new Size(71, 15);
-            label2.TabIndex = 14;
-            label2.Text = "Default Tags";
-            // 
             // AppSettingDialog
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(348, 380);
-            Controls.Add(label2);
-            Controls.Add(mmoDefaultTags);
+            ClientSize = new Size(348, 217);
             Controls.Add(edtAutoSaveSecondsInterval);
             Controls.Add(label1);
             Controls.Add(btnCancel);
@@ -195,7 +173,5 @@
 
         private Label label1;
         private NumericUpDown edtAutoSaveSecondsInterval;
-        private TextBox mmoDefaultTags;
-        private Label label2;
     }
 }

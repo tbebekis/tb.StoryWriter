@@ -32,34 +32,33 @@
             btnAddTag = new ToolStripButton();
             btnDeleteTag = new ToolStripButton();
             toolStripSeparator1 = new ToolStripSeparator();
-            btnAddDefaultTags = new ToolStripButton();
             toolStripSeparator2 = new ToolStripSeparator();
             btnAddComponentsToTag = new ToolStripButton();
             panel1 = new Panel();
             edtFilter = new TextBox();
             label1 = new Label();
             splitContainer1 = new SplitContainer();
-            gridTags = new DataGridView();
+            Grid = new DataGridView();
             coTagName = new DataGridViewTextBoxColumn();
-            gridComponents = new DataGridView();
-            coComponent = new DataGridViewTextBoxColumn();
-            toolStrip1 = new ToolStrip();
+            lboComponents = new ListBox();
+            ToolBar2 = new ToolStrip();
             btnAddToQuickView = new ToolStripButton();
+            toolStripLabel1 = new ToolStripLabel();
+            toolStripSeparator3 = new ToolStripSeparator();
             ToolBar.SuspendLayout();
             panel1.SuspendLayout();
             ((ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
-            ((ISupportInitialize)gridTags).BeginInit();
-            ((ISupportInitialize)gridComponents).BeginInit();
-            toolStrip1.SuspendLayout();
+            ((ISupportInitialize)Grid).BeginInit();
+            ToolBar2.SuspendLayout();
             SuspendLayout();
             // 
             // ToolBar
             // 
             ToolBar.ImageScalingSize = new Size(24, 24);
-            ToolBar.Items.AddRange(new ToolStripItem[] { btnAddTag, btnDeleteTag, toolStripSeparator1, btnAddDefaultTags, toolStripSeparator2, btnAddComponentsToTag });
+            ToolBar.Items.AddRange(new ToolStripItem[] { btnAddTag, btnDeleteTag, toolStripSeparator1, toolStripSeparator2, btnAddComponentsToTag });
             ToolBar.Location = new Point(0, 0);
             ToolBar.Name = "ToolBar";
             ToolBar.Size = new Size(350, 31);
@@ -88,15 +87,6 @@
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new Size(6, 31);
-            // 
-            // btnAddDefaultTags
-            // 
-            btnAddDefaultTags.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnAddDefaultTags.Image = Properties.Resources.textfield_add;
-            btnAddDefaultTags.ImageTransparentColor = Color.Magenta;
-            btnAddDefaultTags.Name = "btnAddDefaultTags";
-            btnAddDefaultTags.Size = new Size(28, 28);
-            btnAddDefaultTags.Text = "Add default tags";
             // 
             // toolStripSeparator2
             // 
@@ -149,26 +139,26 @@
             // 
             // splitContainer1.Panel1
             // 
-            splitContainer1.Panel1.Controls.Add(gridTags);
+            splitContainer1.Panel1.Controls.Add(Grid);
             // 
             // splitContainer1.Panel2
             // 
-            splitContainer1.Panel2.Controls.Add(gridComponents);
-            splitContainer1.Panel2.Controls.Add(toolStrip1);
+            splitContainer1.Panel2.Controls.Add(lboComponents);
+            splitContainer1.Panel2.Controls.Add(ToolBar2);
             splitContainer1.Size = new Size(350, 598);
             splitContainer1.SplitterDistance = 375;
             splitContainer1.SplitterWidth = 6;
             splitContainer1.TabIndex = 7;
             // 
-            // gridTags
+            // Grid
             // 
-            gridTags.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            gridTags.Columns.AddRange(new DataGridViewColumn[] { coTagName });
-            gridTags.Dock = DockStyle.Fill;
-            gridTags.Location = new Point(0, 0);
-            gridTags.Name = "gridTags";
-            gridTags.Size = new Size(348, 373);
-            gridTags.TabIndex = 0;
+            Grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            Grid.Columns.AddRange(new DataGridViewColumn[] { coTagName });
+            Grid.Dock = DockStyle.Fill;
+            Grid.Location = new Point(0, 0);
+            Grid.Name = "Grid";
+            Grid.Size = new Size(348, 373);
+            Grid.TabIndex = 0;
             // 
             // coTagName
             // 
@@ -176,31 +166,24 @@
             coTagName.HeaderText = "Tag";
             coTagName.Name = "coTagName";
             // 
-            // gridComponents
+            // lboComponents
             // 
-            gridComponents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            gridComponents.Columns.AddRange(new DataGridViewColumn[] { coComponent });
-            gridComponents.Dock = DockStyle.Fill;
-            gridComponents.Location = new Point(0, 31);
-            gridComponents.Name = "gridComponents";
-            gridComponents.Size = new Size(348, 184);
-            gridComponents.TabIndex = 0;
+            lboComponents.Dock = DockStyle.Fill;
+            lboComponents.FormattingEnabled = true;
+            lboComponents.Location = new Point(0, 31);
+            lboComponents.Name = "lboComponents";
+            lboComponents.Size = new Size(348, 184);
+            lboComponents.TabIndex = 2;
             // 
-            // coComponent
+            // ToolBar2
             // 
-            coComponent.DataPropertyName = "Name";
-            coComponent.HeaderText = "Component";
-            coComponent.Name = "coComponent";
-            // 
-            // toolStrip1
-            // 
-            toolStrip1.ImageScalingSize = new Size(24, 24);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { btnAddToQuickView });
-            toolStrip1.Location = new Point(0, 0);
-            toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(348, 31);
-            toolStrip1.TabIndex = 1;
-            toolStrip1.Text = "toolStrip1";
+            ToolBar2.ImageScalingSize = new Size(24, 24);
+            ToolBar2.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripSeparator3, btnAddToQuickView });
+            ToolBar2.Location = new Point(0, 0);
+            ToolBar2.Name = "ToolBar2";
+            ToolBar2.Size = new Size(348, 31);
+            ToolBar2.TabIndex = 1;
+            ToolBar2.Text = "toolStrip1";
             // 
             // btnAddToQuickView
             // 
@@ -210,6 +193,18 @@
             btnAddToQuickView.Name = "btnAddToQuickView";
             btnAddToQuickView.Size = new Size(28, 28);
             btnAddToQuickView.Text = "Add selected item to Quick View List";
+            // 
+            // toolStripLabel1
+            // 
+            toolStripLabel1.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            toolStripLabel1.Name = "toolStripLabel1";
+            toolStripLabel1.Size = new Size(77, 28);
+            toolStripLabel1.Text = "Components";
+            // 
+            // toolStripSeparator3
+            // 
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new Size(6, 31);
             // 
             // UC_TagList
             // 
@@ -229,10 +224,9 @@
             splitContainer1.Panel2.PerformLayout();
             ((ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
-            ((ISupportInitialize)gridTags).EndInit();
-            ((ISupportInitialize)gridComponents).EndInit();
-            toolStrip1.ResumeLayout(false);
-            toolStrip1.PerformLayout();
+            ((ISupportInitialize)Grid).EndInit();
+            ToolBar2.ResumeLayout(false);
+            ToolBar2.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -246,15 +240,15 @@
         private Label label1;
         private TextBox edtFilter;
         private SplitContainer splitContainer1;
-        private DataGridView gridTags;
-        private DataGridView gridComponents;
+        private DataGridView Grid;
         private DataGridViewTextBoxColumn coTagName;
-        private DataGridViewTextBoxColumn coComponent;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripButton btnAddComponentsToTag;
-        private ToolStripButton btnAddDefaultTags;
         private ToolStripSeparator toolStripSeparator2;
-        private ToolStrip toolStrip1;
+        private ToolStrip ToolBar2;
         private ToolStripButton btnAddToQuickView;
+        private ListBox lboComponents;
+        private ToolStripLabel toolStripLabel1;
+        private ToolStripSeparator toolStripSeparator3;
     }
 }

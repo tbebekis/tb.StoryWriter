@@ -2,9 +2,9 @@
 {
     public partial class MainForm : Form
     {
+
         PagerHandler SideBarPagerHandler;
         PagerHandler ContentPagerHandler;
-        
 
         const string STitle = "Story Writer";
 
@@ -23,37 +23,38 @@
             SideBarPagerHandler = new PagerHandler(pagerSideBar, typeof(TabPage));
             ContentPagerHandler = new PagerHandler(pagerContent, typeof(TabPage));
 
-            SideBarPagerHandler.SelectedTabColor = Color.LemonChiffon; 
-            ContentPagerHandler.SelectedTabColor = Color.LemonChiffon;
+            SideBarPagerHandler.SelectedTabColor = Color.Orange; // Color.Coral; // Color.LemonChiffon;
+            ContentPagerHandler.SelectedTabColor = Color.Orange; // Color.Coral; // Color.LemonChiffon;
 
             SideBarPagerHandler.SelectedFontColor = Color.Black;
             ContentPagerHandler.SelectedFontColor = Color.Black;
 
             App.SideBarPagerHandler = SideBarPagerHandler;
-            App.ContentPagerHandler = ContentPagerHandler;      
-            
-            App.ProjectClosed += (s, e) => this.Text = $"{STitle} - [none]"; 
-            App.ProjectOpened += (s, e) => this.Text = $"{STitle} - [{App.CurrentProject.Name}]";
+            App.ContentPagerHandler = ContentPagerHandler;
 
-            AddToolBarControls();            
+            App.StoryClosed += (s, e) => this.Text = $"{STitle} - [none]";
+            App.StoryOpened += (s, e) => this.Text = $"{STitle} - [{App.CurrentStory.Name}]";
 
-            btnNewProject.Click += (s, e) => App.CreateNewProject(LoadToo: true);
-            btnOpenProject.Click += (s, e) => App.OpenProject();
+            AddToolBarControls();
+            /// 
+            btnNewProject.Click += (s, e) => App.CreateNewStory(LoadToo: true);
+            btnOpenProject.Click += (s, e) => App.SelectStoryToOpen();
             btnSettings.Click += (s, e) => App.ShowSettingsDialog();
             btnToggleSideBar.Click += (s, e) => ToggleSideBar();
             btnToggleLog.Click += (s, e) => ToggleLog();
-            btnExport.Click += (s, e) => App.ExportProject();
-            btnImport.Click += (s, e) => App.ImportProject();
-            
-            btnExit.Click += (s, e) => Close(); 
+            btnExport.Click += (s, e) => App.Export();
+            btnImport.Click += (s, e) => App.Import();
+
+            btnExit.Click += (s, e) => Close();
 
             App.ZoomFactor = App.Settings.ZoomFactor;
             App.Initialize(this);
         }
+
         void AddToolBarControls()
         {
             // ● Zoom Factor
-            NumericUpDown nudZoom = new() 
+            NumericUpDown nudZoom = new()
             {
                 Minimum = 0.5M,
                 Maximum = 5.0M,
@@ -63,14 +64,14 @@
                 BorderStyle = BorderStyle.FixedSingle,
 
             };
-            nudZoom.ValueChanged += (s, e) => 
-            { 
+            nudZoom.ValueChanged += (s, e) =>
+            {
                 App.ZoomFactor = nudZoom.Value;
                 App.Settings.ZoomFactor = nudZoom.Value;
                 App.Settings.Save();
             };
 
-            ToolStripControlHost hostZoom = new (nudZoom)
+            ToolStripControlHost hostZoom = new(nudZoom)
             {
                 AutoSize = false,
                 Width = 50
@@ -95,9 +96,11 @@
         }
         void ToggleLog()
         {
-            splitContent.Panel2Collapsed = !splitContent.Panel2Collapsed;            
+            splitContent.Panel2Collapsed = !splitContent.Panel2Collapsed;
         }
  
+
+
         // ● overrides
         protected override void OnShown(EventArgs e)
         {

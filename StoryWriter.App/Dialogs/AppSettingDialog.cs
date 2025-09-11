@@ -53,27 +53,18 @@
                 Control.Value = Math.Max((int)Control.Minimum, Math.Min((int)Control.Maximum, SettingsValue));
             }
 
-            chkLoadLast.Checked = Settings.LoadLastProjectOnStartup;
+            chkLoadLast.Checked = Settings.LoadLastStoryOnStartup;
             chkAutoSave.Checked = Settings.AutoSave;
             SetNumericValue(edtAutoSaveSecondsInterval, Settings.AutoSaveSecondsInterval);
-            SetNumericValue(nudFontSize, Settings.FontSize); 
-
-            mmoDefaultTags.Text = string.Join(Environment.NewLine, Settings.DefaultTags);
+            SetNumericValue(nudFontSize, Settings.FontSize);  
         }
         void ControlsToItem()
         {
-            Settings.LoadLastProjectOnStartup = chkLoadLast.Checked;
+            Settings.LoadLastStoryOnStartup = chkLoadLast.Checked;
             Settings.AutoSave = chkAutoSave.Checked;
             Settings.AutoSaveSecondsInterval = (int)edtAutoSaveSecondsInterval.Value;
             Settings.FontFamily = string.IsNullOrWhiteSpace(cboFontFamily.Text) ? "Arial" : cboFontFamily.Text.Trim();
-            Settings.FontSize = (int)nudFontSize.Value;
-
-            Settings.DefaultTags.Clear();
-            foreach (string Line in mmoDefaultTags.Lines)
-            {
-                if (!string.IsNullOrWhiteSpace(Line))
-                    Settings.DefaultTags.Add(Line.Trim());
-            }
+            Settings.FontSize = (int)nudFontSize.Value; 
 
             Settings.Save();
 

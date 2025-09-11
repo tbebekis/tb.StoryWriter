@@ -10,8 +10,8 @@
         /// <summary>
         /// Constructor
         /// </summary>
-        public LinkItem() 
-        { 
+        public LinkItem()
+        {
         }
         /// <summary>
         /// Constructor
@@ -34,7 +34,7 @@
         /// Indicates the type of a link, i.e. group, subgroup, component, chapter, scene, tag
         /// <para>Valid values are component and chapter. </para>
         /// </summary>
-        public ItemType ItemType { get; set; } 
+        public ItemType ItemType { get; set; }
         public LinkPlace Place { get; set; } // title or text
         public string Name { get; set; }
         /// <summary>
@@ -67,23 +67,16 @@
             switch (ItemType)
             {
                 case ItemType.Component:
-                    Result.Item = App.CurrentProject.ComponentList.FirstOrDefault(item => item.Id == ItemId);
+                    Result.Item = App.CurrentStory.ComponentList.FirstOrDefault(item => item.Id == ItemId);
                     break;
                 case ItemType.Chapter:
-                    Result.Item = App.CurrentProject.ChapterList.FirstOrDefault(item => item.Id == ItemId);
+                    Result.Item = App.CurrentStory.ChapterList.FirstOrDefault(item => item.Id == ItemId);
                     break;
                 case ItemType.Scene:
-                    foreach (var Chapter in App.CurrentProject.ChapterList)
-                    {
-                        foreach (var Scene in Chapter.SceneList)
-                        {
-                            if (Scene.Id == ItemId)
-                            {
-                                Result.Item = Scene;
-                                break;
-                            }
-                        }
-                    }
+                    Result.Item = App.CurrentStory.SceneList.FirstOrDefault(item => item.Id == ItemId);
+                    break;
+                case ItemType.Note:
+                    Result.Item = App.CurrentStory.NoteList.FirstOrDefault(item => item.Id == ItemId);
                     break;
             }
 

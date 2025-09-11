@@ -9,17 +9,17 @@
 
         <Title>tbStoryWriter</Title>
         <Product>tbStoryWriter</Product>
-        <Version>5.25.08.26</Version>
-        <AssemblyVersion>5.25.08.26</AssemblyVersion>
-        <Authors>Theodoros Bebekis</Authors>      
+        <Version>5.25.09.11</Version>
+        <AssemblyVersion>5.25.09.11</AssemblyVersion>
+        <Authors>Theodoros Bebekis</Authors>
         <Description>A lightweight Windows app that helps novelists plan, write, and organize long-form fiction.</Description>
-        <Copyright>Theodoros Bebekis 2025</Copyright>        
+        <Copyright>Theodoros Bebekis 2025</Copyright>
     </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
-      <PackageReference Include="System.Data.SQLite" Version="1.0.119" />
+    <ItemGroup>        
+        <PackageReference Include="System.Data.SQLite" Version="1.0.119" />
         <!--
+        <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
               <PackageReference Include="Tripous5" Version="5.25.8.24" />
       <PackageReference Include="Tripous5.Forms" Version="5.25.8.24" />
         -->
@@ -27,12 +27,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Tripous5">
-        <HintPath>X:\_Dev\CSharp\Libs.Tripous5\Tripous\bin\Debug\net9.0\Tripous5.dll</HintPath>
-      </Reference>
-      <Reference Include="Tripous5.Forms">
-        <HintPath>X:\_Dev\CSharp\Libs.Tripous5\Tripous.Forms\bin\Debug\net9.0-windows\Tripous5.Forms.dll</HintPath>
-      </Reference>
+        <Reference Include="Tripous5">
+            <HintPath>X:\_Dev\CSharp\Libs.Tripous5\Tripous\bin\Debug\net9.0\Tripous5.dll</HintPath>
+        </Reference>
+        <Reference Include="Tripous5.Forms">
+            <HintPath>X:\_Dev\CSharp\Libs.Tripous5\Tripous.Forms\bin\Debug\net9.0-windows\Tripous5.Forms.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>

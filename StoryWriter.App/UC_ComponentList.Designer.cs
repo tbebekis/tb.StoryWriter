@@ -35,15 +35,21 @@
             toolStripSeparator1 = new ToolStripSeparator();
             btnEditRtfText = new ToolStripButton();
             btnAdjustComponentTags = new ToolStripButton();
+            btnAddToQuickView = new ToolStripButton();
             panel2 = new Panel();
             edtFilter = new TextBox();
             label2 = new Label();
             gridComponents = new DataGridView();
             coComponent = new DataGridViewTextBoxColumn();
+            coCategory = new DataGridViewTextBoxColumn();
             splitContainer1 = new SplitContainer();
-            gridTags = new DataGridView();
-            coTag = new DataGridViewTextBoxColumn();
-            btnAddToQuickView = new ToolStripButton();
+            lboTags = new ListBox();
+            Pager = new TabControl();
+            tabText = new TabPage();
+            tabTags = new TabPage();
+            panel1 = new Panel();
+            lblTitle = new Label();
+            ucRichText = new UC_RichText();
             ToolBar.SuspendLayout();
             panel2.SuspendLayout();
             ((ISupportInitialize)gridComponents).BeginInit();
@@ -51,7 +57,10 @@
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
-            ((ISupportInitialize)gridTags).BeginInit();
+            Pager.SuspendLayout();
+            tabText.SuspendLayout();
+            tabTags.SuspendLayout();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // ToolBar
@@ -114,6 +123,15 @@
             btnAdjustComponentTags.Size = new Size(28, 28);
             btnAdjustComponentTags.Text = "Adjust Component Tags";
             // 
+            // btnAddToQuickView
+            // 
+            btnAddToQuickView.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnAddToQuickView.Image = Properties.Resources.wishlist_add;
+            btnAddToQuickView.ImageTransparentColor = Color.Magenta;
+            btnAddToQuickView.Name = "btnAddToQuickView";
+            btnAddToQuickView.Size = new Size(28, 28);
+            btnAddToQuickView.Text = "Add selected item to Quick View List";
+            // 
             // panel2
             // 
             panel2.Controls.Add(edtFilter);
@@ -144,7 +162,7 @@
             // gridComponents
             // 
             gridComponents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            gridComponents.Columns.AddRange(new DataGridViewColumn[] { coComponent });
+            gridComponents.Columns.AddRange(new DataGridViewColumn[] { coComponent, coCategory });
             gridComponents.Dock = DockStyle.Fill;
             gridComponents.Location = new Point(0, 0);
             gridComponents.Name = "gridComponents";
@@ -156,6 +174,12 @@
             coComponent.DataPropertyName = "Name";
             coComponent.HeaderText = "Component";
             coComponent.Name = "coComponent";
+            // 
+            // coCategory
+            // 
+            coCategory.DataPropertyName = "Category";
+            coCategory.HeaderText = "Category";
+            coCategory.Name = "coCategory";
             // 
             // splitContainer1
             // 
@@ -170,36 +194,81 @@
             // 
             // splitContainer1.Panel2
             // 
-            splitContainer1.Panel2.Controls.Add(gridTags);
+            splitContainer1.Panel2.Controls.Add(Pager);
+            splitContainer1.Panel2.Controls.Add(panel1);
             splitContainer1.Size = new Size(351, 563);
             splitContainer1.SplitterDistance = 281;
             splitContainer1.SplitterWidth = 6;
             splitContainer1.TabIndex = 8;
             // 
-            // gridTags
+            // lboTags
             // 
-            gridTags.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            gridTags.Columns.AddRange(new DataGridViewColumn[] { coTag });
-            gridTags.Dock = DockStyle.Fill;
-            gridTags.Location = new Point(0, 0);
-            gridTags.Name = "gridTags";
-            gridTags.Size = new Size(351, 276);
-            gridTags.TabIndex = 7;
+            lboTags.Dock = DockStyle.Fill;
+            lboTags.FormattingEnabled = true;
+            lboTags.Location = new Point(3, 3);
+            lboTags.Name = "lboTags";
+            lboTags.Size = new Size(337, 218);
+            lboTags.TabIndex = 4;
             // 
-            // coTag
+            // Pager
             // 
-            coTag.DataPropertyName = "Name";
-            coTag.HeaderText = "Tag";
-            coTag.Name = "coTag";
+            Pager.Controls.Add(tabText);
+            Pager.Controls.Add(tabTags);
+            Pager.Dock = DockStyle.Fill;
+            Pager.Location = new Point(0, 24);
+            Pager.Name = "Pager";
+            Pager.SelectedIndex = 0;
+            Pager.Size = new Size(351, 252);
+            Pager.TabIndex = 5;
             // 
-            // btnAddToQuickView
+            // tabText
             // 
-            btnAddToQuickView.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnAddToQuickView.Image = Properties.Resources.wishlist_add;
-            btnAddToQuickView.ImageTransparentColor = Color.Magenta;
-            btnAddToQuickView.Name = "btnAddToQuickView";
-            btnAddToQuickView.Size = new Size(28, 28);
-            btnAddToQuickView.Text = "Add selected item to Quick View List";
+            tabText.Controls.Add(ucRichText);
+            tabText.Location = new Point(4, 24);
+            tabText.Name = "tabText";
+            tabText.Padding = new Padding(3);
+            tabText.Size = new Size(343, 224);
+            tabText.TabIndex = 0;
+            tabText.Text = "Text";
+            tabText.UseVisualStyleBackColor = true;
+            // 
+            // tabTags
+            // 
+            tabTags.Controls.Add(lboTags);
+            tabTags.Location = new Point(4, 24);
+            tabTags.Name = "tabTags";
+            tabTags.Padding = new Padding(3);
+            tabTags.Size = new Size(343, 224);
+            tabTags.TabIndex = 1;
+            tabTags.Text = "Tags";
+            tabTags.UseVisualStyleBackColor = true;
+            // 
+            // panel1
+            // 
+            panel1.Controls.Add(lblTitle);
+            panel1.Dock = DockStyle.Top;
+            panel1.Location = new Point(0, 0);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(351, 24);
+            panel1.TabIndex = 6;
+            // 
+            // lblTitle
+            // 
+            lblTitle.AutoSize = true;
+            lblTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblTitle.Location = new Point(2, 2);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Size = new Size(97, 20);
+            lblTitle.TabIndex = 0;
+            lblTitle.Text = "No Selection";
+            // 
+            // ucRichText
+            // 
+            ucRichText.Dock = DockStyle.Fill;
+            ucRichText.Location = new Point(3, 3);
+            ucRichText.Name = "ucRichText";
+            ucRichText.Size = new Size(337, 218);
+            ucRichText.TabIndex = 0;
             // 
             // UC_ComponentList
             // 
@@ -219,7 +288,11 @@
             splitContainer1.Panel2.ResumeLayout(false);
             ((ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
-            ((ISupportInitialize)gridTags).EndInit();
+            Pager.ResumeLayout(false);
+            tabText.ResumeLayout(false);
+            tabTags.ResumeLayout(false);
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -235,12 +308,18 @@
         private DataGridView gridComponents;
         private TextBox edtFilter;
         private SplitContainer splitContainer1;
-        private DataGridView gridTags;
-        private DataGridViewTextBoxColumn coTag;
-        private DataGridViewTextBoxColumn coComponent;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripButton btnEditRtfText;
         private ToolStripButton btnAdjustComponentTags;
         private ToolStripButton btnAddToQuickView;
+        private DataGridViewTextBoxColumn coComponent;
+        private DataGridViewTextBoxColumn coCategory;
+        private ListBox lboTags;
+        private TabControl Pager;
+        private TabPage tabText;
+        private TabPage tabTags;
+        private Panel panel1;
+        private Label lblTitle;
+        private UC_RichText ucRichText;
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
-
-namespace StoryWriter
+﻿namespace StoryWriter
 {
     public partial class UC_ComponentList : UserControl, IPanel
     {
@@ -9,18 +6,15 @@ namespace StoryWriter
         TabPage ParentTabPage { get { return this.Parent as TabPage; } }
 
         DataTable tblComponents;
-        DataTable tblTagToComponents;
-
         BindingSource bsComponents = new ();
-        BindingSource bsTagToComponents = new();
-
-
+ 
         void ControlInitialize()
         {
             ParentTabPage.Text = "Components";
+            ucRichText.SetTopPanelVisible(false);
+            ucRichText.SetEditorReadOnly(true);
 
             gridComponents.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
-            gridTags.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
 
             btnAddComponent.Click += (s, e) => AddComponent();
             btnEditComponent.Click += (s, e) => EditComponent();
@@ -33,13 +27,13 @@ namespace StoryWriter
 
             btnAdjustComponentTags.Click += (s, e) => AdjustComponentTags(); 
 
-            ReLoadComponents();
+            ReLoad();
 
-            App.ProjectClosed += ProjectClosed;
-            App.ProjectOpened += ProjectOpened;
-            App.TagToComponetsChanged += (s, e) => ReLoadComponents();
+            App.StoryClosed += StoryClosed;
+            App.StoryOpened += StoryOpened;
+            App.TagToComponetsChanged += (s, e) => ReLoad();
         }
-        void ReLoadComponents()
+        void ReLoad()
         {
             if (tblComponents == null)
             {
@@ -47,6 +41,7 @@ namespace StoryWriter
 
                 tblComponents.Columns.Add("Id", typeof(string));
                 tblComponents.Columns.Add("Name", typeof(string));
+                tblComponents.Columns.Add("Category", typeof(string));
                 tblComponents.Columns.Add("OBJECT", typeof(object));
 
                 bsComponents.DataSource = tblComponents;
@@ -55,67 +50,50 @@ namespace StoryWriter
                 gridComponents.DataSource = bsComponents;
                 gridComponents.InitializeReadOnly();                
 
-                bsComponents.PositionChanged += (s, e) => SelectedComponentChanged();
+                bsComponents.PositionChanged += (s, e) => SelectedItemChanged();
             }
 
-            if (tblTagToComponents == null)
-            {
-                tblTagToComponents = new DataTable("TagToComponents");
-                tblTagToComponents.Columns.Add("TagId", typeof(string));
-                tblTagToComponents.Columns.Add("ComponentId", typeof(string));
-                tblTagToComponents.Columns.Add("Name", typeof(string));
-                tblTagToComponents.Columns.Add("OBJECT", typeof(object));
 
-                bsTagToComponents.DataSource = tblTagToComponents;
-
-                gridTags.AutoGenerateColumns = false;
-                gridTags.DataSource = bsTagToComponents;
-                gridTags.InitializeReadOnly();
-            }
-
-            if (App.CurrentProject != null)
+            if (App.CurrentStory != null)
             { 
                 bsComponents.SuspendBinding();
-                bsTagToComponents.SuspendBinding();
-
                 tblComponents.Rows.Clear();
-                tblTagToComponents.Rows.Clear();
 
-                foreach (Component item in App.CurrentProject.ComponentList)
+                foreach (Component item in App.CurrentStory.ComponentList)
                 {
-                    tblComponents.Rows.Add(item.Id, item.Name, item);
-                }
-
-                foreach (TagToComponent item in App.CurrentProject.TagToComponentList)
-                {
-                    tblTagToComponents.Rows.Add(item.Tag.Id, item.Component.Id, item.Tag.Name, item);
+                    tblComponents.Rows.Add(item.Id, item.Name, item.Category, item);
                 }
 
                 tblComponents.AcceptChanges();
-                tblTagToComponents.AcceptChanges();
-
                 gridComponents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-                gridTags.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-
-                bsTagToComponents.ResumeBinding();
                 bsComponents.ResumeBinding(); 
 
-                SelectedComponentChanged();
+                SelectedItemChanged();
             }
         }
-        void SelectedComponentChanged()
+        void SelectedItemChanged()
         {
+            lblTitle.Text = "No selection";
+            ucRichText.Clear();
+            lboTags.Items.Clear();
+
             DataRow Row = bsComponents.CurrentDataRow();
 
             if (Row != null)
             {
-                bsTagToComponents.Filter = $"ComponentId = '{Row["Id"]}'";
+                Component Component = Row["OBJECT"] as Component;
+                if (Component == null)
+                    return;
+
+                lblTitle.Text = Component.ToString();
+                ucRichText.RtfText = Component.BodyText;
+
+                lboTags.BeginUpdate();
+                lboTags.Items.Clear();
+                lboTags.Items.AddRange(Component.GetTagList().ToArray());
+                lboTags.EndUpdate();
             }
-            else
-            {
-                bsTagToComponents.Filter = $"ComponentId = 'NOT EXISTEND ID'";
-                
-            }
+ 
         }
         void FilterChanged()
         {
@@ -123,8 +101,8 @@ namespace StoryWriter
 
             if (!string.IsNullOrWhiteSpace(S) && S.Length > 2)
             {
-                bsComponents.Filter = $"Name LIKE '%{S}%'";
-                SelectedComponentChanged();
+                bsComponents.Filter = $"Name LIKE '%{S}%' OR Category LIKE '%{S}%'";
+                SelectedItemChanged();
             }
             else
             {
@@ -135,32 +113,47 @@ namespace StoryWriter
         // ● add/edit/delete
         void AddComponent()
         {
-            string ResultName = "";
+            string Message;
 
-            if (EditItemDialog.ShowModal("Add Component", App.CurrentProject.Name, ref ResultName))
+            if (App.CurrentStory == null)
+                return;
+
+            if (App.CurrentStory.ComponentTypeList.Count == 0)
             {
+                Message = "You need to add at least one Component Type.";
+                App.ErrorBox(Message);
+                LogBox.AppendLine(Message);
+                return;  
+            }
+ 
+            Component Component = new();
+            Component.Id = Sys.GenId(UseBrackets: false);
+            Component.Name = "New Component";
 
-                if (App.CurrentProject.ComponentExists(ResultName))
+
+            if (EditComponentDialog.ShowModal("Add Component", Component))
+            {
+                if (App.CurrentStory.ComponentExists(Component))
                 {
-                    string Message = $"Component '{ResultName}' already exists.";
+                    Message = $"Component '{Component.Name}' already exists.";
                     App.ErrorBox(Message);
                     LogBox.AppendLine(Message);
                     return;
-                }
-
-                Component Component = new();
-                Component.Name = ResultName;
-                Component.Id = Sys.GenId(UseBrackets: false);
+                }              
+                
 
                 if (Component.Insert())
                 {
-                    DataRow Row = tblComponents.Rows.Add(Component.Id, Component.Name, Component);                    
+                    DataRow Row = tblComponents.Rows.Add(Component.Id, Component.Name, Component.Category, Component);
                     tblComponents.AcceptChanges();
                     gridComponents.PositionToRow(Row);
+
+                    Message = $"Component '{Component.Name}' added.";
+                    LogBox.AppendLine(Message);                    
                 }
                 else
                 {
-                    string Message = "Add Component. Operation failed.";
+                    Message = "Add Component. Operation failed.";
                     App.ErrorBox(Message);
                     LogBox.AppendLine(Message);
                 }
@@ -176,35 +169,36 @@ namespace StoryWriter
             if (Component == null)
                 return;
 
-            string ResultName = Component.Name;
+            string Message; 
 
-            if (EditItemDialog.ShowModal("Component Chapter", App.CurrentProject.Name, ref ResultName))
+            if (EditComponentDialog.ShowModal("Edit Component", Component))
             {
-                if (App.CurrentProject.ComponentExists(ResultName, Component.Id))
+                if (App.CurrentStory.ComponentExists(Component))
                 {
-                    string Message = $"Component '{ResultName}' already exists.";
+                    Message = $"Component '{Component.Name}' already exists.";
                     App.ErrorBox(Message);
                     LogBox.AppendLine(Message);
                     return;
-                }
-
-                Component.Name = ResultName;
+                } 
 
                 if (Component.Update())
                 {
                     Row["Name"] = Component.Name;
+                    Row["Category"] = Component.Category;
                     TabPage Page = App.ContentPagerHandler.FindTabPage(Component.Id);
                     if (Page != null)
                     {
-                        UC_Component ucComponent = Page.Tag as UC_Component;
-                        if (ucComponent != null)
-                            ucComponent.ucRichText.Title = Component.Name;
+                        UC_Component UC = Page.Tag as UC_Component;
+                        if (UC != null)
+                            UC.TitleChanged();
                     }                  
                     
+                    Message = $"Component '{Component.Name}' updated.";
+                    LogBox.AppendLine(Message);
                 }
                 else
                 {
-                    string Message = "Component Chapter. Operation failed.";
+                    Message = "Edit Component. Operation failed.";
                     App.ErrorBox(Message);
                     LogBox.AppendLine(Message);
                 }
@@ -221,9 +215,19 @@ namespace StoryWriter
                 return;
 
             if (!App.QuestionBox($"Are you sure you want to delete the component '{Component.Name}'?"))
-                return;
+                return;             
 
-            App.InfoBox("Delete Component. NOT YET IMPLEMENTED.");
+            App.ContentPagerHandler.ClosePage(Component.Id);
+
+            TagToComponent.DeleteByComponent(Component.Id);
+            ComponentToScene.DeleteByComponent(Component.Id);
+
+            Component.Delete();
+            Row.Delete();
+            tblComponents.AcceptChanges();
+
+            string Message = $"Component '{Component.Name}' deleted.";
+            LogBox.AppendLine(Message);
         }
         void EditComponentText()
         {
@@ -239,6 +243,11 @@ namespace StoryWriter
         }
         void AdjustComponentTags()
         {
+            string Message;
+
+            if (App.CurrentStory == null)
+                return;
+
             DataRow Row = bsComponents.CurrentDataRow();
             if (Row == null)
                 return;
@@ -246,6 +255,14 @@ namespace StoryWriter
             Component Component = Row["OBJECT"] as Component;
             if (Component == null)
                 return;
+
+            if (App.CurrentStory.TagList.Count == 0)
+            {
+                Message = "You need to add at least one Tag.";
+                App.ErrorBox(Message);
+                LogBox.AppendLine(Message);
+                return;
+            }
 
             App.AddTagsToComponent(Component);
 
@@ -259,7 +276,7 @@ namespace StoryWriter
             if (Row != null)
             {
                 string ComponentId = Row.AsString("Id");
-                Component Component = App.CurrentProject.ComponentList.FirstOrDefault(x => x.Id == ComponentId);
+                Component Component = App.CurrentStory.ComponentList.FirstOrDefault(x => x.Id == ComponentId);
                 if (Component != null)
                 {
                     LinkItem LinkItem = new();
@@ -279,15 +296,14 @@ namespace StoryWriter
         }
 
         // ● event handlers
-        void ProjectClosed(object sender, EventArgs e)
+        void StoryClosed(object sender, EventArgs e)
         {
-
-            SelectedComponentChanged();
+            SelectedItemChanged();
         }
-        void ProjectOpened(object sender, EventArgs e)
+        void StoryOpened(object sender, EventArgs e)
         {
-            ReLoadComponents();
-            SelectedComponentChanged();
+            ReLoad();
+            SelectedItemChanged();
         }
  
         // ● overrides  
@@ -308,8 +324,8 @@ namespace StoryWriter
         // ● public
         public void Close()
         {
-            App.ProjectClosed -= ProjectClosed;
-            App.ProjectOpened -= ProjectOpened;
+            App.StoryClosed -= StoryClosed;
+            App.StoryOpened -= StoryOpened;
 
             TabControl Pager = ParentTabPage.Parent as TabControl;
             if ((Pager != null) && (Pager.TabPages.Contains(ParentTabPage)))
