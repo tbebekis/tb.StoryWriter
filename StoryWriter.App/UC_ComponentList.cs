@@ -1,4 +1,6 @@
-﻿namespace StoryWriter
+﻿using System;
+
+namespace StoryWriter
 {
     public partial class UC_ComponentList : UserControl, IPanel
     {
@@ -42,6 +44,7 @@
                 tblComponents.Columns.Add("Id", typeof(string));
                 tblComponents.Columns.Add("Name", typeof(string));
                 tblComponents.Columns.Add("Category", typeof(string));
+                tblComponents.Columns.Add("TagList", typeof(string));
                 tblComponents.Columns.Add("OBJECT", typeof(object));
 
                 bsComponents.DataSource = tblComponents;
@@ -61,7 +64,7 @@
 
                 foreach (Component item in App.CurrentStory.ComponentList)
                 {
-                    tblComponents.Rows.Add(item.Id, item.Name, item.Category, item);
+                    tblComponents.Rows.Add(item.Id, item.Name, item.Category, item.GetTagsAsLine(), item);
                 }
 
                 tblComponents.AcceptChanges();
@@ -101,7 +104,7 @@
 
             if (!string.IsNullOrWhiteSpace(S) && S.Length > 2)
             {
-                bsComponents.Filter = $"Name LIKE '%{S}%' OR Category LIKE '%{S}%'";
+                bsComponents.Filter = $"Name LIKE '%{S}%' OR Category LIKE '%{S}%' OR TagList LIKE '%{S}%'";
                 SelectedItemChanged();
             }
             else
@@ -144,7 +147,7 @@
 
                 if (Component.Insert())
                 {
-                    DataRow Row = tblComponents.Rows.Add(Component.Id, Component.Name, Component.Category, Component);
+                    DataRow Row = tblComponents.Rows.Add(Component.Id, Component.Name, Component.Category, Component.GetTagsAsLine(), Component);
                     tblComponents.AcceptChanges();
                     gridComponents.PositionToRow(Row);
 
@@ -183,8 +186,15 @@
 
                 if (Component.Update())
                 {
+                    bsComponents.SuspendBinding();
+                    gridComponents.DataSource = null;
                     Row["Name"] = Component.Name;
                     Row["Category"] = Component.Category;
+                    bsComponents.ResumeBinding();
+
+                    gridComponents.DataSource = bsComponents;
+                    gridComponents.PositionToRow(Row);
+
                     TabPage Page = App.ContentPagerHandler.FindTabPage(Component.Id);
                     if (Page != null)
                     {

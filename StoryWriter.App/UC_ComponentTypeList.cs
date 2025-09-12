@@ -1,4 +1,6 @@
-﻿namespace StoryWriter
+﻿using System;
+
+namespace StoryWriter
 {
     public partial class UC_ComponentTypeList : UserControl, IPanel
     {
@@ -149,8 +151,14 @@
                 ComponentType.Name = ResultName;
 
                 if (ComponentType.Update())
-                {
+                {            
+                    bsComponentTypes.SuspendBinding();
+                    Grid.DataSource = null;
                     Row["Name"] = ComponentType.Name;
+                    bsComponentTypes.ResumeBinding();
+
+                    Grid.DataSource = bsComponentTypes;
+                    Grid.PositionToRow(Row);
 
                     Message = $"Component Type '{ComponentType.Name}' updated.";
                     LogBox.AppendLine(Message);
