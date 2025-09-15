@@ -45,11 +45,13 @@
         /// <summary>
         /// Returns true if the given RTF text contains the given term
         /// </summary>
-        static public bool RichTextContainsTerm(string RtfText, string PlainTextTerm)
+        static public bool RichTextContainsTerm(string RtfText, string PlainTextTerm, bool WholeWordOnly)
         {
             if (string.IsNullOrWhiteSpace(RtfText))
                 return false;
             string PlainText = ToPlainText(RtfText);
+            if (WholeWordOnly)
+                return App.ContainsWord(PlainText, PlainTextTerm);
             return PlainText.Contains(PlainTextTerm, StringComparison.OrdinalIgnoreCase);
         }
     }

@@ -128,6 +128,20 @@
         static public void SetSearchTerm(string Term)
         {
             SearchTermIsSet?.Invoke(null, Term);
+            SideBarPagerHandler.ShowPage(typeof(UC_Search), nameof(UC_Search), null);
+        }
+
+        /// <summary>
+        /// Returns true if the text contains the specified whole word
+        /// </summary>
+        public static bool ContainsWord(string Text, string WordToFind)
+        {
+            // Χρησιμοποιούμε Regular Expressions για να βρούμε ολόκληρη τη λέξη.
+            // Το \b συμβολίζει το όριο λέξης (word boundary).
+            // Το RegexOptions.IgnoreCase αγνοεί την περίπτωση των γραμμάτων.
+            string pattern = @"\b" + Regex.Escape(WordToFind) + @"\b";
+
+            return Regex.IsMatch(Text, pattern, RegexOptions.IgnoreCase);
         }
 
         /// <summary>

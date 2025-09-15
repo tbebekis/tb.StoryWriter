@@ -20,7 +20,11 @@
             ucRichText.SetEditorReadOnly(true);
 
             btnAddToQuickView.Click += (s, e) => AddToQuickView();
-            edtSearch.TextChanged += (s, e) => SearchTextChanged();
+            //edtSearch.TextChanged += (s, e) => SearchTextChanged();
+            edtSearch.KeyDown += (s, e) => {
+                if (e.KeyData == Keys.Enter)
+                    SearchTextChanged();
+            };
             Grid.MouseDoubleClick += (s, e) => ShowLinkItemPage(); 
 
             tblList = new DataTable("Results");
@@ -52,6 +56,7 @@
  
             if (Term.Length > 2)
             {
+                ClearAll();
                 App.CurrentStory.SearchItems(Term);
             }
             else
@@ -157,6 +162,7 @@
         void SearchTermIsSet(object sender, string NewTerm)
         {
             this.edtSearch.Text = NewTerm;
+            SearchTextChanged();
         }
         void SearchResultsChanged(object sender, List<LinkItem> LinkItems)
         {

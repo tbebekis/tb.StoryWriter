@@ -23,8 +23,12 @@ namespace StoryWriter
             btnDeleteComponent.Click += (s, e) => DeleteComponent();
             btnEditRtfText.Click += (s, e) => EditComponentText();
             btnAddToQuickView.Click += (s, e) => AddToQuickView();
+ 
+            edtFilter.KeyDown += (s, e) => {
+                if (e.KeyData == Keys.Enter)
+                    FilterChanged();
+            };
 
-            edtFilter.TextChanged += (s, e) => FilterChanged();
             gridComponents.MouseDoubleClick += (s, e) => EditComponentText();
 
             btnAdjustComponentTags.Click += (s, e) => AdjustComponentTags(); 

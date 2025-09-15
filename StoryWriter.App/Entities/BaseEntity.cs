@@ -15,7 +15,7 @@
         /// <summary>
         /// Returns true if any of this instance rich texts contains a specified term.
         /// </summary>
-        public virtual bool RichTextContainsTerm(string Term)
+        public virtual bool RichTextContainsTerm(string Term, bool WholeWordOnly)
         {
             return false;
         }

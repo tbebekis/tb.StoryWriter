@@ -397,7 +397,7 @@ Select a smaller part of the sentence or individual words and reapply the format
 
             if (!string.IsNullOrWhiteSpace(Term) && Term.Length > 2)
             {                
-                App.SetSearchTerm(Term);   //App.CurrentStory.SearchItems(Term);
+                App.SetSearchTerm(Term);    
             }
  
         }

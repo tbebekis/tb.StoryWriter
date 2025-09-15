@@ -101,12 +101,12 @@
         /// <summary>
         /// Returns true if any of this instance rich texts contains a specified term.
         /// </summary>
-        public override bool RichTextContainsTerm(string Term)
+        public override bool RichTextContainsTerm(string Term, bool WholeWordOnly)
         {
             if (string.IsNullOrWhiteSpace(BodyText))
                 return false;
 
-            return App.RichTextContainsTerm(BodyText, Term);
+            return App.RichTextContainsTerm(BodyText, Term, WholeWordOnly);
         }
 
         // ● properties

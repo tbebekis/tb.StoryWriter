@@ -159,30 +159,7 @@ Do you want me to continue from the beginning?",
         }
 
 
-        /// <summary>
-        /// Finds the previous occurrence with wrap-around.
-        /// </summary>
-        public void FindPrev_OLD()
-        {
-            if (Editor == null) return;
-            var query = txtFind.Text ?? string.Empty;
-            if (query.Length == 0) return;
-
-            var opts = RichTextBoxFinds.Reverse;
-            if (chkMatchCase.Checked) opts |= RichTextBoxFinds.MatchCase;
-            if (chkWholeWord.Checked) opts |= RichTextBoxFinds.WholeWord;
-
-            var start = Editor.SelectionStart;
-            var idx = Editor.Find(query, 0, start, opts);
-            if (idx < 0)
-            {
-                var end = Editor.TextLength;
-                idx = Editor.Find(query, 0, end, opts);
-            }
-
-            if (idx >= 0)
-                Editor.ScrollToCaret();
-        }
+ 
 
         /// <summary>
         /// Finds the previous occurrence; selects it. If beginning is reached, prompts to wrap to the end.
@@ -250,7 +227,7 @@ Do you want me to continue from the end?",
         {
             if (Editor == null) return;
             var query = txtFind.Text ?? string.Empty;
-            var repl = txtReplace.Text ?? string.Empty;
+            var Term = txtReplace.Text ?? string.Empty;
             if (query.Length == 0) return;
 
             var opts = RichTextBoxFinds.None;
@@ -267,14 +244,18 @@ Do you want me to continue from the end?",
             {
                 var idx = Editor.Find(query, pos, opts);
                 if (idx < 0) break;
-                Editor.SelectedText = repl;
-                pos = idx + repl.Length;
+                Editor.SelectedText = Term;
+                pos = idx + Term.Length;
                 count++;
             }
 
             Editor.SelectionStart = Math.Min(caret, Editor.TextLength);
             Editor.SelectionLength = 0;
             Editor.ScrollToCaret();
+
+            string Message = count == 0? $"No matches found for '{Term}'" : string.Format("Replaced {0} matches.", count);
+            LogBox.AppendLine(Message);
+            MessageBox.Show(this, Message, "Replace", MessageBoxButtons.OK, MessageBoxIcon.Information);            
         }
 
         /// <summary>

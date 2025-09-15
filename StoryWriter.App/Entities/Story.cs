@@ -269,7 +269,7 @@
         /// </summary>
         public void SearchItems(string Term)
         {
-            LogBox.AppendLine($"Searching for '{Term}'");
+            
 
             List<LinkItem> LinkItems = new();
             List<LinkItem> TextLinkItems = new();
@@ -277,16 +277,17 @@
             if (!string.IsNullOrWhiteSpace(Term))
             {
                 // ---------------------------------------------------------------------
-                void AddLinks(IEnumerable<BaseEntity> EntityList, ItemType ItemType)
+                void AddLinks(IEnumerable<BaseEntity> EntityList, ItemType ItemType, bool WholeWordOnly)
                 {
                     foreach (var Item in EntityList)
                     {
-                        if (Item.Name.ContainsText(Term))
+
+                        if (WholeWordOnly? App.ContainsWord(Item.Name, Term) : Item.Name.ContainsText(Term))
                         {
                             var Link = new LinkItem(ItemType, LinkPlace.Title, Item.ToString(), Item);
                             LinkItems.Add(Link);
                         }
-                        else if (Item.RichTextContainsTerm(Term))
+                        else if (Item.RichTextContainsTerm(Term, WholeWordOnly))
                         {
                             var Link = new LinkItem(ItemType, LinkPlace.Text, Item.ToString(), Item);
                             TextLinkItems.Add(Link);
@@ -295,17 +296,30 @@
                 }
                 // ---------------------------------------------------------------------
 
-                AddLinks(ComponentList.Cast<BaseEntity>(), ItemType.Component);
-                AddLinks(ChapterList.Cast<BaseEntity>(), ItemType.Chapter);
-                AddLinks(SceneList.Cast<BaseEntity>(), ItemType.Scene);
-                AddLinks(NoteList.Cast<BaseEntity>(), ItemType.Note);
+                bool WholeWordOnly = Term.StartsWith("\"") && Term.EndsWith("\"");
+                if (WholeWordOnly)
+                {
+                    Term = Term.TrimStart('"').TrimEnd('"');
+                    LogBox.AppendLine($"Searching for whole word: '{Term}'");
+                }
+                else
+                {
+                    LogBox.AppendLine($"Searching for term: '{Term}'");
+                }
+
+
+
+                AddLinks(ComponentList.Cast<BaseEntity>(), ItemType.Component, WholeWordOnly);
+                AddLinks(ChapterList.Cast<BaseEntity>(), ItemType.Chapter, WholeWordOnly);
+                AddLinks(SceneList.Cast<BaseEntity>(), ItemType.Scene, WholeWordOnly);
+                AddLinks(NoteList.Cast<BaseEntity>(), ItemType.Note, WholeWordOnly);
             }
 
             LinkItems.AddRange(TextLinkItems);
 
             if (LinkItems.Count == 0)
             {
-                string Message = "No search results for '{Term}'";
+                string Message = $"No search results for '{Term}'";
                 LogBox.AppendLine(Message);
                 App.InfoBox(Message);
             }
