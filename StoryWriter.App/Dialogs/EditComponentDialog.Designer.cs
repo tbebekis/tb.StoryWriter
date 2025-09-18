@@ -34,6 +34,8 @@
             btnCancel = new Button();
             label1 = new Label();
             lboComponentTypes = new ListBox();
+            label3 = new Label();
+            edtDescription = new TextBox();
             SuspendLayout();
             // 
             // edtName
@@ -56,7 +58,7 @@
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(303, 387);
+            btnOK.Location = new Point(303, 521);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(75, 32);
             btnOK.TabIndex = 9;
@@ -67,7 +69,7 @@
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new Point(381, 387);
+            btnCancel.Location = new Point(381, 521);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(75, 32);
             btnCancel.TabIndex = 8;
@@ -77,7 +79,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(50, 54);
+            label1.Location = new Point(52, 155);
             label1.Name = "label1";
             label1.Size = new Size(31, 15);
             label1.TabIndex = 12;
@@ -87,16 +89,38 @@
             // 
             lboComponentTypes.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             lboComponentTypes.FormattingEnabled = true;
-            lboComponentTypes.Location = new Point(89, 51);
+            lboComponentTypes.Location = new Point(89, 155);
             lboComponentTypes.Name = "lboComponentTypes";
-            lboComponentTypes.Size = new Size(358, 319);
+            lboComponentTypes.Size = new Size(358, 349);
             lboComponentTypes.TabIndex = 13;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(16, 51);
+            label3.Name = "label3";
+            label3.Size = new Size(67, 15);
+            label3.TabIndex = 14;
+            label3.Text = "Description";
+            // 
+            // edtDescription
+            // 
+            edtDescription.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            edtDescription.Location = new Point(89, 51);
+            edtDescription.MaxLength = 250;
+            edtDescription.Multiline = true;
+            edtDescription.Name = "edtDescription";
+            edtDescription.ScrollBars = ScrollBars.Both;
+            edtDescription.Size = new Size(358, 97);
+            edtDescription.TabIndex = 15;
             // 
             // EditComponentDialog
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(459, 423);
+            ClientSize = new Size(459, 557);
+            Controls.Add(edtDescription);
+            Controls.Add(label3);
             Controls.Add(lboComponentTypes);
             Controls.Add(label1);
             Controls.Add(edtName);
@@ -122,5 +146,7 @@
         private Button btnCancel;
         private Label label1;
         private ListBox lboComponentTypes;
+        private Label label3;
+        private TextBox edtDescription;
     }
 }

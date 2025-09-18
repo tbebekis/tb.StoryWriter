@@ -28,7 +28,14 @@
             App.StoryClosed += StoryClosed;
             App.StoryOpened += StoryOpened;  
             App.TagToComponetsChanged += (s, e) => ReLoad();
-            
+            App.ItemChanged += (object Sender, BaseEntity Item) =>
+            {
+                if (Sender != this)
+                {
+                    // nothing, this user control updates itself on changes
+                }
+            };
+
             SelectedItemChanged();
         }
         void ReLoad()

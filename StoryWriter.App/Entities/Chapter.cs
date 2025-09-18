@@ -18,7 +18,7 @@
         /// </summary>
         public override string ToString()
         {
-            return $"{OrderIndex}.{Name}";
+            return $"{OrderIndex}. {Name}";
         }
 
         /// <summary>
@@ -157,7 +157,7 @@
         /// <summary>
         /// Returns true if any of this instance rich texts contains a specified term.
         /// </summary>
-        public override bool RichTextContainsTerm(string Term, bool WholeWordOnly)
+        public override bool BodyTextContainsTerm(string Term, bool WholeWordOnly)
         {
             if (App.RichTextContainsTerm(BodyText, Term, WholeWordOnly) || App.RichTextContainsTerm(Synopsis, Term, WholeWordOnly))
                 return true;

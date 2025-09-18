@@ -31,6 +31,13 @@
 
             App.StoryClosed += StoryClosed;
             App.StoryOpened += StoryOpened;
+            App.ItemChanged += (object Sender, BaseEntity Item) =>
+            {
+                if (Sender != this)
+                {
+                    // nothing, this user control updates itself on changes
+                }
+            };
 
             ReLoad();
         }

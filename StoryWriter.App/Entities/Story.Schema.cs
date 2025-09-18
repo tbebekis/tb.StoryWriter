@@ -55,13 +55,16 @@ create table {TableName} (
     Id						{SysConfig.PrimaryKeyStr()} 
     ,TypeId                 {SysConfig.ForeignKeyStr()}   
     ,Name                   @NVARCHAR(128)       @NOT_NULL  
-    ,BodyText               @BLOB_TEXT           @NULL        
-    ,OrderIndex             integer default 0    @NOT_NULL 
+    ,Description            @NVARCHAR(256)       @NULL
+    ,BodyText               @BLOB_TEXT           @NULL       
 
     ,constraint UK_{TableName}_00 unique (Name)
 )
 ";
             sv.AddTable(SqlText);
+
+
+            // REMOVED: ,OrderIndex             integer default 0    @NOT_NULL 
 
         }
         /// <summary>

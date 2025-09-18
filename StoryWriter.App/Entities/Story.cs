@@ -282,12 +282,12 @@
                     foreach (var Item in EntityList)
                     {
 
-                        if (WholeWordOnly? App.ContainsWord(Item.Name, Term) : Item.Name.ContainsText(Term))
+                        if (Item.NameContainsTerm(Term, WholeWordOnly)) //(WholeWordOnly? App.ContainsWord(Item.Name, Term) : Item.Name.ContainsText(Term))
                         {
                             var Link = new LinkItem(ItemType, LinkPlace.Title, Item.ToString(), Item);
                             LinkItems.Add(Link);
                         }
-                        else if (Item.RichTextContainsTerm(Term, WholeWordOnly))
+                        else if (Item.BodyTextContainsTerm(Term, WholeWordOnly))
                         {
                             var Link = new LinkItem(ItemType, LinkPlace.Text, Item.ToString(), Item);
                             TextLinkItems.Add(Link);

@@ -38,6 +38,13 @@ namespace StoryWriter
             App.StoryClosed += StoryClosed;
             App.StoryOpened += StoryOpened;
             App.TagToComponetsChanged += (s, e) => ReLoad();
+            App.ItemChanged += (object Sender, BaseEntity Item) =>
+            {
+                if (Sender != this)
+                {
+                    // nothing, this user control updates itself on changes
+                }
+            };
         }
         void ReLoad()
         {
@@ -47,6 +54,7 @@ namespace StoryWriter
 
                 tblComponents.Columns.Add("Id", typeof(string));
                 tblComponents.Columns.Add("Name", typeof(string));
+                tblComponents.Columns.Add("Description", typeof(string));
                 tblComponents.Columns.Add("Category", typeof(string));
                 tblComponents.Columns.Add("TagList", typeof(string));
                 tblComponents.Columns.Add("OBJECT", typeof(object));
@@ -66,9 +74,11 @@ namespace StoryWriter
                 bsComponents.SuspendBinding();
                 tblComponents.Rows.Clear();
 
-                foreach (Component item in App.CurrentStory.ComponentList)
+                List<Component> ComponentList = App.CurrentStory.ComponentList.OrderBy(x => x.Category).ToList();
+
+                foreach (Component item in ComponentList)
                 {
-                    tblComponents.Rows.Add(item.Id, item.Name, item.Category, item.GetTagsAsLine(), item);
+                    tblComponents.Rows.Add(item.Id, item.Name, item.Description, item.Category, item.GetTagsAsLine(), item);
                 }
 
                 tblComponents.AcceptChanges();
@@ -108,7 +118,7 @@ namespace StoryWriter
 
             if (!string.IsNullOrWhiteSpace(S) && S.Length > 2)
             {
-                bsComponents.Filter = $"Name LIKE '%{S}%' OR Category LIKE '%{S}%' OR TagList LIKE '%{S}%'";
+                bsComponents.Filter = $"Name LIKE '%{S}%' OR Description LIKE '%{S}%' OR Category LIKE '%{S}%' OR TagList LIKE '%{S}%'";
                 SelectedItemChanged();
             }
             else
@@ -151,7 +161,7 @@ namespace StoryWriter
 
                 if (Component.Insert())
                 {
-                    DataRow Row = tblComponents.Rows.Add(Component.Id, Component.Name, Component.Category, Component.GetTagsAsLine(), Component);
+                    DataRow Row = tblComponents.Rows.Add(Component.Id, Component.Name, Component.Description, Component.Category, Component.GetTagsAsLine(), Component);
                     tblComponents.AcceptChanges();
                     gridComponents.PositionToRow(Row);
 
@@ -194,6 +204,7 @@ namespace StoryWriter
                     gridComponents.DataSource = null;
                     Row["Name"] = Component.Name;
                     Row["Category"] = Component.Category;
+                    Row["Description"] = Component.Description;
                     bsComponents.ResumeBinding();
 
                     gridComponents.DataSource = bsComponents;

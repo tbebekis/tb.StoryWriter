@@ -144,7 +144,7 @@
         /// <summary>
         /// Returns true if any of this instance rich texts contains a specified term.
         /// </summary>
-        public override bool RichTextContainsTerm(string Term, bool WholeWordOnly)
+        public override bool BodyTextContainsTerm(string Term, bool WholeWordOnly)
         {
             return App.RichTextContainsTerm(BodyText, Term, WholeWordOnly) || App.RichTextContainsTerm(Synopsis, Term, WholeWordOnly);
         }

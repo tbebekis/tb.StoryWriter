@@ -27,6 +27,13 @@
 
         public void Execute()
         {
+            string DatabaseFileName = Path.GetFileName(App.StoryDatabaseFilePath);
+            string DatabaseFolderPath = Path.Combine(ExportFolderPath, DatabaseFileName);
+
+            File.Copy(App.StoryDatabaseFilePath, DatabaseFolderPath);
+            App.WaitForFileAvailable(DatabaseFolderPath);
+
+
             Story = new StoryProxy();
             Story.Export(this);
 
@@ -40,7 +47,10 @@
             OdtExporter.Execute();
 
             MarkdownExporter MarkdownExporter = new MarkdownExporter(this);
-            MarkdownExporter.Execute();            
+            MarkdownExporter.Execute();
+
+            WikiExporter WikiExporter = new WikiExporter(this);
+            WikiExporter.Execute();
 
             DisplayFileExplorer();
         }

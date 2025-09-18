@@ -13,11 +13,18 @@
 
 
         /// <summary>
-        /// Returns true if any of this instance rich texts contains a specified term.
+        /// Returns true if any of this instance body text contains a specified term.
         /// </summary>
-        public virtual bool RichTextContainsTerm(string Term, bool WholeWordOnly)
+        public virtual bool BodyTextContainsTerm(string Term, bool WholeWordOnly)
         {
             return false;
+        }
+        /// <summary>
+        /// Returns true if any of this instance name contains a specified term.
+        /// </summary>
+        public virtual bool NameContainsTerm(string Term, bool WholeWordOnly)
+        {
+            return WholeWordOnly ? App.ContainsWord(Name, Term) : Name.ContainsText(Term);
         }
 
         // ● properties

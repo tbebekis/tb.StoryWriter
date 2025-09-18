@@ -135,6 +135,7 @@
 
             this.Id = Source.Id;
             this.Title = Source.ToString();
+            
         }
         public void Import(ImportService Service)
         {
@@ -148,6 +149,7 @@
 
         public string Id { get; set; }
         public string Title { get; set; }
+        
     }
 
 
@@ -163,7 +165,9 @@
 
             this.Id = Source.Id;
             this.TypeId = Source.TypeId;
-            this.Title = Source.ToString();
+            this.Category = Source.Category;
+            this.Title = Source.Name;
+            this.Description = Source.Description;
             this.TypeName = Source.Category;
             this.BodyText = Source.BodyText;
         }
@@ -175,6 +179,7 @@
             Dest.Id = this.Id;
             Dest.TypeId = this.TypeId;
             Dest.Name = this.Title;
+            Dest.Description = this.Description;
             Dest.BodyText = this.BodyText;
             Dest.Insert();
         }
@@ -187,7 +192,9 @@
 
         public string Id { get; set; }
         public string TypeId { get; set; }
+        public string Category { get; set; }
         public string Title { get; set; }
+        public string Description { get; set; }
         public string TypeName { get; set; }
         public string BodyText
         {
@@ -212,7 +219,7 @@
             ExportContext = Service;
 
             this.Id = Source.Id;
-            this.Title = Source.ToString();
+            this.Title = Source.ToString();            
             this.BodyText = Source.BodyText;
             this.Synopsis = Source.Synopsis;
             this.CreatedAt = Source.CreatedAt;
@@ -250,7 +257,7 @@
         }
 
         public string Id { get; set; }
-        public string Title { get; set; }
+        public string Title { get; set; }        
         public string BodyText
         {
             get => GetText(fBodyText);

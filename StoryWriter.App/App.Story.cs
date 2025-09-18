@@ -126,8 +126,8 @@
                 return;
             }
 
-            string StoryDatabaseFilePath = StoryNameToStoryDatabaseFilePath(StoryName);
-            SqlConnectionInfo CI = new(StoryName, SqlProvider.Name, "", StoryDatabaseFilePath, "", "");
+            string DatabaseFilePath = StoryNameToStoryDatabaseFilePath(StoryName);
+            SqlConnectionInfo CI = new(StoryName, SqlProvider.Name, "", DatabaseFilePath, "", "");
             SqlStore = new SqlStore(CI);
 
             CurrentStory = new Story(StoryName);
@@ -230,6 +230,16 @@
 
                 string FolderPath = App.StoryNameToStoryFolderPath(App.CurrentStory.Name);
                 return FolderPath;
+            }
+        }
+        static public string StoryDatabaseFilePath
+        {
+            get
+            {
+                if (CurrentStory == null)
+                    return string.Empty;
+                string FilePath = App.StoryNameToStoryDatabaseFilePath(App.CurrentStory.Name);
+                return FilePath;
             }
         }
         static public string QuickViewListFilePath

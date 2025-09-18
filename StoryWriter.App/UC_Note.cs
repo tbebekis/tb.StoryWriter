@@ -22,6 +22,12 @@
                 ucBodyText.Focus();
 
             }, 1500, null);
+
+            App.ItemChanged += (object Sender, BaseEntity Item) =>
+            {
+                if (Item == Note && Sender != this)
+                    TitleChanged();
+            };
         }
 
         // ● overrides  
@@ -73,7 +79,7 @@
         }
         public void TitleChanged()
         {
-            TitleText = $"Note: {Note.ToString()}";
+            TitleText = $"{Note.ToString()}";
             ParentTabPage.Text = ucBodyText.Modified ? TitleText + "*" : TitleText;
             ucBodyText.Title = TitleText;
         }

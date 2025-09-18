@@ -26,6 +26,12 @@
                     return;
                 }
 
+                if (string.IsNullOrEmpty(edtDescription.Text.Trim()))
+                {
+                    App.WarningBox("Please enter a description.");
+                    return;
+                }
+
                 DialogResult = DialogResult.OK;
             };
             lboComponentTypes.MouseDoubleClick += (s, e) => btnOK.PerformClick();
@@ -52,13 +58,16 @@
 
             using (EditComponentDialog dlg = new())
             {
-                dlg.edtName.Text = Component.Name;
                 dlg.Text = Title;
+                dlg.edtName.Text = Component.Name;    
+                dlg.edtDescription.Text = !string.IsNullOrWhiteSpace(Component.Description)? Component.Description : Component.Name;
+            
                 dlg.Component = Component;
  
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     Component.Name = dlg.edtName.Text.Trim();
+                    Component.Description = !string.IsNullOrWhiteSpace(dlg.edtDescription.Text.Trim()) ? dlg.edtDescription.Text.Trim() : Component.Name;
                     Component.TypeId = (dlg.lboComponentTypes.SelectedItem as ComponentType).Id;
                     return true;
                 }

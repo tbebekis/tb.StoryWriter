@@ -206,6 +206,13 @@
         {
             ItemListChanged?.Invoke(null, ItemType);
         }
+        /// <summary>
+        /// Triggers the <see cref="ItemChanged"/> event
+        /// </summary>
+        static public void PerformItemChanged(object Sender, BaseEntity Item)
+        {
+            ItemChanged?.Invoke(Sender, Item);
+        }
 
         // ● import / export
         static public void Export()
@@ -322,5 +329,9 @@
         /// Triggered when the item list is changed
         /// </summary>
         static public event EventHandler<ItemType> ItemListChanged;
+        /// <summary>
+        /// Triggered when an item is changed its name, description or body text
+        /// </summary>
+        static public event EventHandler<BaseEntity> ItemChanged;
     }
 }

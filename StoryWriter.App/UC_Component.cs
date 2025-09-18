@@ -21,6 +21,12 @@
                 ucBodyText.EditorHandler = this;
                 ucBodyText.Focus();
             }, 1500, null);
+
+            App.ItemChanged += (object Sender, BaseEntity Item) =>
+            {
+                if (Item == Component && Sender != this)
+                    TitleChanged();
+            };
         }
 
         // ● overrides  
@@ -73,7 +79,7 @@
         public void TitleChanged()
         {
             TitleText = Component.ToString();
-            ParentTabPage.Text = $"Component: " + (ucBodyText.Modified ? TitleText + "*" : TitleText);
+            ParentTabPage.Text = (ucBodyText.Modified ? TitleText + "*" : TitleText);
             ucBodyText.Title = TitleText;
         }
 

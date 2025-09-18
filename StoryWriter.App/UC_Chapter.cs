@@ -30,6 +30,12 @@
                 //ucSynopsis.Title = Chapter.ToString();
 
             }, 1500, null);
+
+            App.ItemChanged += (object Sender, BaseEntity Item) => 
+            { 
+                if (Item == Chapter && Sender != this) 
+                    TitleChanged(); 
+            };
         }
 
         // ● overrides  
@@ -95,7 +101,7 @@
         public void TitleChanged()
         {
             TitleText = Chapter.ToString();
-            ParentTabPage.Text = $"Chapter: " + (ucBodyText.Modified ? TitleText + "*" : TitleText);
+            ParentTabPage.Text = (ucBodyText.Modified ? TitleText + "*" : TitleText);
             ucBodyText.Title = TitleText;
             ucSynopsis.Title = TitleText;
         }

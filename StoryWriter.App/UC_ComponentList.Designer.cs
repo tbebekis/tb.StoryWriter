@@ -40,16 +40,17 @@
             edtFilter = new TextBox();
             label2 = new Label();
             gridComponents = new DataGridView();
-            coComponent = new DataGridViewTextBoxColumn();
-            coCategory = new DataGridViewTextBoxColumn();
             splitContainer1 = new SplitContainer();
-            lboTags = new ListBox();
             Pager = new TabControl();
             tabText = new TabPage();
+            ucRichText = new UC_RichText();
             tabTags = new TabPage();
+            lboTags = new ListBox();
             panel1 = new Panel();
             lblTitle = new Label();
-            ucRichText = new UC_RichText();
+            coCategory = new DataGridViewTextBoxColumn();
+            coComponent = new DataGridViewTextBoxColumn();
+            coDescription = new DataGridViewTextBoxColumn();
             ToolBar.SuspendLayout();
             panel2.SuspendLayout();
             ((ISupportInitialize)gridComponents).BeginInit();
@@ -162,24 +163,12 @@
             // gridComponents
             // 
             gridComponents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            gridComponents.Columns.AddRange(new DataGridViewColumn[] { coComponent, coCategory });
+            gridComponents.Columns.AddRange(new DataGridViewColumn[] { coCategory, coComponent, coDescription });
             gridComponents.Dock = DockStyle.Fill;
             gridComponents.Location = new Point(0, 0);
             gridComponents.Name = "gridComponents";
             gridComponents.Size = new Size(351, 281);
             gridComponents.TabIndex = 7;
-            // 
-            // coComponent
-            // 
-            coComponent.DataPropertyName = "Name";
-            coComponent.HeaderText = "Component";
-            coComponent.Name = "coComponent";
-            // 
-            // coCategory
-            // 
-            coCategory.DataPropertyName = "Category";
-            coCategory.HeaderText = "Category";
-            coCategory.Name = "coCategory";
             // 
             // splitContainer1
             // 
@@ -200,15 +189,6 @@
             splitContainer1.SplitterDistance = 281;
             splitContainer1.SplitterWidth = 6;
             splitContainer1.TabIndex = 8;
-            // 
-            // lboTags
-            // 
-            lboTags.Dock = DockStyle.Fill;
-            lboTags.FormattingEnabled = true;
-            lboTags.Location = new Point(3, 3);
-            lboTags.Name = "lboTags";
-            lboTags.Size = new Size(337, 218);
-            lboTags.TabIndex = 4;
             // 
             // Pager
             // 
@@ -232,6 +212,14 @@
             tabText.Text = "Text";
             tabText.UseVisualStyleBackColor = true;
             // 
+            // ucRichText
+            // 
+            ucRichText.Dock = DockStyle.Fill;
+            ucRichText.Location = new Point(3, 3);
+            ucRichText.Name = "ucRichText";
+            ucRichText.Size = new Size(337, 218);
+            ucRichText.TabIndex = 0;
+            // 
             // tabTags
             // 
             tabTags.Controls.Add(lboTags);
@@ -242,6 +230,15 @@
             tabTags.TabIndex = 1;
             tabTags.Text = "Tags";
             tabTags.UseVisualStyleBackColor = true;
+            // 
+            // lboTags
+            // 
+            lboTags.Dock = DockStyle.Fill;
+            lboTags.FormattingEnabled = true;
+            lboTags.Location = new Point(3, 3);
+            lboTags.Name = "lboTags";
+            lboTags.Size = new Size(337, 218);
+            lboTags.TabIndex = 4;
             // 
             // panel1
             // 
@@ -262,13 +259,23 @@
             lblTitle.TabIndex = 0;
             lblTitle.Text = "No Selection";
             // 
-            // ucRichText
+            // coCategory
             // 
-            ucRichText.Dock = DockStyle.Fill;
-            ucRichText.Location = new Point(3, 3);
-            ucRichText.Name = "ucRichText";
-            ucRichText.Size = new Size(337, 218);
-            ucRichText.TabIndex = 0;
+            coCategory.DataPropertyName = "Category";
+            coCategory.HeaderText = "Category";
+            coCategory.Name = "coCategory";
+            // 
+            // coComponent
+            // 
+            coComponent.DataPropertyName = "Name";
+            coComponent.HeaderText = "Component";
+            coComponent.Name = "coComponent";
+            // 
+            // coDescription
+            // 
+            coDescription.DataPropertyName = "Description";
+            coDescription.HeaderText = "Description";
+            coDescription.Name = "coDescription";
             // 
             // UC_ComponentList
             // 
@@ -312,8 +319,6 @@
         private ToolStripButton btnEditRtfText;
         private ToolStripButton btnAdjustComponentTags;
         private ToolStripButton btnAddToQuickView;
-        private DataGridViewTextBoxColumn coComponent;
-        private DataGridViewTextBoxColumn coCategory;
         private ListBox lboTags;
         private TabControl Pager;
         private TabPage tabText;
@@ -321,5 +326,8 @@
         private Panel panel1;
         private Label lblTitle;
         private UC_RichText ucRichText;
+        private DataGridViewTextBoxColumn coCategory;
+        private DataGridViewTextBoxColumn coComponent;
+        private DataGridViewTextBoxColumn coDescription;
     }
 }

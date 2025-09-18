@@ -44,6 +44,22 @@
             App.StoryOpened += StoryOpened;
             App.SearchTermIsSet += SearchTermIsSet;
             App.SearchResultsChanged += SearchResultsChanged;
+            App.ItemChanged += (object Sender, BaseEntity Item) =>
+            {
+                if (Sender != this)
+                {
+                    foreach (DataRow Row in tblList.Rows)
+                    {
+                        LinkItem LinkItem = Row["OBJECT"] as LinkItem;
+                        BaseEntity RowItem = LinkItem.Item as BaseEntity;
+                        if (RowItem != null && RowItem.Id == Item.Id)
+                        {
+                            Row["Name"] = Item.ToString();
+                            break;
+                        }
+                    }
+                }
+            };
 
             bsList.PositionChanged += (s, e) => SelectedLinkItemRowChanged();
         }

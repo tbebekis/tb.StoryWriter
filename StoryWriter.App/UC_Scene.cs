@@ -30,6 +30,12 @@
                 //ucSynopsis.Title = Scene.ToString();
 
             }, 1500, null);
+
+            App.ItemChanged += (object Sender, BaseEntity Item) =>
+            {
+                if (Item == Scene && Sender != this)
+                    TitleChanged();
+            };
         }
 
         // ● overrides  
@@ -94,7 +100,7 @@
         public void TitleChanged()
         {
             TitleText = Scene.ToString();
-            ParentTabPage.Text = $"Scene: " + (ucBodyText.Modified ? TitleText + "*" : TitleText);
+            ParentTabPage.Text = (ucBodyText.Modified ? TitleText + "*" : TitleText);
             ucBodyText.Title = TitleText;
             ucSynopsis.Title = TitleText;
         }

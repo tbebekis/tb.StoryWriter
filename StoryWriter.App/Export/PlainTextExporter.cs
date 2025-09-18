@@ -31,6 +31,7 @@ namespace StoryWriter
                 BodyText = GetText(Component.BodyText);
                
                 SB.AppendLine($"● COMPONENT: {Component.Title}");
+                SB.AppendLine($"Description: {Component.Description}");
                 SB.AppendLine($"Type: {Component.TypeName}");
                 SB.AppendLine($"Tags: {Component.GetTagsAsLine()}");
                 SB.AppendLine();

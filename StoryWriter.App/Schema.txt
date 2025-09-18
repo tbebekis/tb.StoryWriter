@@ -10,6 +10,7 @@ Name
 TABLE: Component
 Id
 Name
+Description
 BodyText
 TypeId
 OrderIndex  ( >0 means is displayed in Quick View)

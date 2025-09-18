@@ -12,7 +12,7 @@
         /// </summary>
         public override string ToString()
         {
-            return Name;
+            return Name; // !string.IsNullOrWhiteSpace(Description) ? $"{Name} - {Description}" : Name;
         }
         /// <summary>
         /// Builds a dictionary of properties of this instance for database operations.
@@ -21,10 +21,10 @@
         {
             var Dict = new Dictionary<string, object>();
             Dict["Id"] = Id;
-            Dict["Name"] = Name;
+            Dict["Name"] = Name;  
+            Dict["Description"] = Description;
             Dict["BodyText"] = BodyText;
             Dict["TypeId"] = TypeId;
-            Dict["OrderIndex"] = OrderIndex;
             return Dict;
         }
         /// <summary>
@@ -34,9 +34,9 @@
         {
             Id = Row.AsString("Id");
             Name = Row.AsString("Name");
+            Description = Row.AsString("Description");
             BodyText = Row.AsString("BodyText");
             TypeId = Row.AsString("TypeId");
-            OrderIndex = Row.AsInteger("OrderIndex");
         }
 
         /// <summary>
@@ -44,7 +44,7 @@
         /// </summary>
         public bool Insert()
         {
-            string SqlText = $"INSERT INTO {Story.SComponent} (Id, Name, BodyText, TypeId, OrderIndex) VALUES (:Id, :Name, :BodyText, :TypeId, :OrderIndex)";
+            string SqlText = $"INSERT INTO {Story.SComponent} (Id, Name, Description, BodyText, TypeId) VALUES (:Id, :Name, :Description, :BodyText, :TypeId)";
 
             var Params = ToDictionary();
             App.SqlStore.ExecSql(SqlText, Params);
@@ -56,7 +56,7 @@
         /// </summary>
         public bool Update()
         {
-            string SqlText = $"UPDATE {Story.SComponent} SET Name = :Name, BodyText = :BodyText, TypeId = :TypeId, OrderIndex = :OrderIndex WHERE Id = :Id";
+            string SqlText = $"UPDATE {Story.SComponent} SET Name = :Name,  Description = :Description, BodyText = :BodyText, TypeId = :TypeId WHERE Id = :Id";
 
             var Params = ToDictionary();
             App.SqlStore.ExecSql(SqlText, Params);
@@ -74,7 +74,7 @@
             App.CurrentStory.ComponentList.Remove(this);
             return true;
         }
-
+        /*
         /// <summary>
         /// Updates the order index of this instance in the database.
         /// </summary>
@@ -89,6 +89,7 @@
             App.SqlStore.ExecSql(SqlText, Params);
             return true;
         }
+        */
         /// <summary>
         /// Updates the body text of this instance in the database.
         /// </summary>
@@ -105,9 +106,16 @@
         }
 
         /// <summary>
+        /// Returns true if any of this instance name contains a specified term.
+        /// </summary>
+        public override bool NameContainsTerm(string Term, bool WholeWordOnly)
+        {
+            return base.NameContainsTerm(Term, WholeWordOnly) ||  (WholeWordOnly ? App.ContainsWord(Description, Term) : Description.ContainsText(Term));
+        }
+        /// <summary>
         /// Returns true if any of this instance rich texts contains a specified term.
         /// </summary>
-        public override bool RichTextContainsTerm(string Term, bool WholeWordOnly)
+        public override bool BodyTextContainsTerm(string Term, bool WholeWordOnly)
         {
             if (string.IsNullOrWhiteSpace(BodyText))
                 return false;
@@ -156,14 +164,20 @@
         /// </summary>
         public string TypeId { get; set; }
         /// <summary>
+        /// The description of this instance.  
+        /// </summary>
+        public string Description { get; set; }
+        /// <summary>
         /// The text of this instance.  
         /// </summary>
         public string BodyText { get; set; }
+        /*
         /// <summary>
         /// Sort order of this item.
         /// <para><strong>NOTE: </strong> >0 means is displayed in Quick View</para>
         /// </summary>
         public int OrderIndex { get; set; } = 0;
+        */
 
     }
 }
@@ -171,7 +185,8 @@
 TABLE: Component
 Id
 Name
+Description
 BodyText
 TypeId
-OrderIndex  ( >0 means is displayed in Quick View) 
+ 
  */
