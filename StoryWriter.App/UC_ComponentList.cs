@@ -156,8 +156,7 @@ namespace StoryWriter
                     App.ErrorBox(Message);
                     LogBox.AppendLine(Message);
                     return;
-                }              
-                
+                }        
 
                 if (Component.Insert())
                 {
@@ -166,7 +165,9 @@ namespace StoryWriter
                     gridComponents.PositionToRow(Row);
 
                     Message = $"Component '{Component.Name}' added.";
-                    LogBox.AppendLine(Message);                    
+                    LogBox.AppendLine(Message);
+
+                    App.PerformItemListChanged(this, ItemType.Component);
                 }
                 else
                 {
@@ -220,6 +221,8 @@ namespace StoryWriter
                     
                     Message = $"Component '{Component.Name}' updated.";
                     LogBox.AppendLine(Message);
+
+                    App.PerformItemChanged(this, Component);
                 }
                 else
                 {
@@ -253,6 +256,8 @@ namespace StoryWriter
 
             string Message = $"Component '{Component.Name}' deleted.";
             LogBox.AppendLine(Message);
+
+            App.PerformItemListChanged(this, ItemType.Component);
         }
         void EditComponentText()
         {

@@ -202,9 +202,9 @@
         /// <summary>
         /// Triggers the <see cref="ItemListChanged"/> event
         /// </summary>
-        static public void PerformItemListChanged(ItemType ItemType)
+        static public void PerformItemListChanged(object Sender, ItemType ItemType)
         {
-            ItemListChanged?.Invoke(null, ItemType);
+            ItemListChanged?.Invoke(Sender, ItemType);
         }
         /// <summary>
         /// Triggers the <see cref="ItemChanged"/> event

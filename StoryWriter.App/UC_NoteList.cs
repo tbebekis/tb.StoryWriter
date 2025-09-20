@@ -147,6 +147,8 @@
 
                     Message = $"Note '{ResultName}' added.";
                     LogBox.AppendLine(Message);
+
+                    App.PerformItemListChanged(this, ItemType.Scene);
                 }
                 else
                 {
@@ -197,6 +199,8 @@
 
                     Message = $"Note '{Note.Name}' updated.";
                     LogBox.AppendLine(Message);
+
+                    App.PerformItemChanged(this, Note);
                 }
                 else
                 {
@@ -233,6 +237,8 @@
 
                 Message = $"Note '{Note.Name}' deleted.";
                 LogBox.AppendLine(Message);
+
+                App.PerformItemListChanged(this, ItemType.Scene);
             }
             else
             {

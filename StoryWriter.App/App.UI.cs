@@ -1,4 +1,6 @@
-﻿namespace StoryWriter
+﻿using System.Linq;
+
+namespace StoryWriter
 {
     static public partial class App
     {
@@ -161,6 +163,80 @@ Do you want to continue?
                 CurrentStory.AdjustSceneComponents(Scene, ComponentList);
                 TagToComponetsChanged?.Invoke(null, EventArgs.Empty);
             }
+        }
+    
+        static public void ShowLinkItemPage(LinkItem LinkItem)
+        {
+            if (LinkItem == null || LinkItem.Item == null || CurrentStory == null)
+                return;
+
+            switch (LinkItem.ItemType)
+            {
+                case ItemType.Component:
+                    Component Component = LinkItem.Item as Component;
+                    App.ContentPagerHandler.ShowPage(typeof(UC_Component), Component.Id, Component);
+                    break;
+                case ItemType.Chapter:
+                    Chapter Chapter = LinkItem.Item as Chapter;
+                    App.ContentPagerHandler.ShowPage(typeof(UC_Chapter), Chapter.Id, Chapter);
+                    break;
+                case ItemType.Scene:
+                    Scene Scene = LinkItem.Item as Scene;
+                    App.ContentPagerHandler.ShowPage(typeof(UC_Scene), Scene.Id, Scene);
+                    break;
+                case ItemType.Note:
+                    Note Note = LinkItem.Item as Note;
+                    App.ContentPagerHandler.ShowPage(typeof(UC_Note), Note.Id, Note);
+                    break;
+            }
+        }
+        static public void UpdateLinkItemUi(LinkItem LinkItem, Label lblItemTitle, UC_RichText ucRichText)
+        {
+            if (LinkItem == null || LinkItem.Item == null || CurrentStory == null)
+                return;
+
+            switch (LinkItem.ItemType)
+            {
+                case ItemType.Component:
+                    Component Component = LinkItem.Item as Component;
+                    lblItemTitle.Text = $"Component: {Component}";
+                    ucRichText.RtfText = Component.BodyText;
+                    break;
+                case ItemType.Chapter:
+                    Chapter Chapter = LinkItem.Item as Chapter;
+                    lblItemTitle.Text = $"Chapter: {Chapter}";
+                    ucRichText.RtfText = Chapter.BodyText;
+                    break;
+                case ItemType.Scene:
+                    Scene Scene = LinkItem.Item as Scene;
+                    lblItemTitle.Text = $"Scene: {Scene}";
+                    ucRichText.RtfText = Scene.BodyText;
+                    break;
+                case ItemType.Note:
+                    Note Note = LinkItem.Item as Note;
+                    lblItemTitle.Text = $"Note: {Note}";
+                    ucRichText.RtfText = Note.BodyText;
+                    break;
+            }
+        }
+        static public bool ItemExists(LinkItem LinkItem)
+        {
+            if (LinkItem == null || LinkItem.Item == null || CurrentStory == null)
+                return false;
+
+            switch (LinkItem.ItemType)  
+            {
+                case ItemType.Component:
+                    return CurrentStory.ComponentList.Contains(LinkItem.Item as Component);
+                case ItemType.Chapter:
+                    return CurrentStory.ChapterList.Contains(LinkItem.Item as Chapter);
+                case ItemType.Scene:
+                    return CurrentStory.SceneList.Contains(LinkItem.Item as Scene);
+                case ItemType.Note:
+                    return CurrentStory.NoteList.Contains(LinkItem.Item as Note);
+            }
+
+            return false;
         }
     }
 }

@@ -20,7 +20,7 @@
                 AddToList(item);
             }
 
-            App.PerformItemListChanged(ItemType.Tag);
+            App.PerformItemListChanged(this, ItemType.Tag);
         }
         /// <summary>
         /// Loads all component types from the database into ComponentTypeList
@@ -40,7 +40,7 @@
                 AddToList(item);
             }
 
-            App.PerformItemListChanged(ItemType.ComponentType);
+            App.PerformItemListChanged(this, ItemType.ComponentType);
         }
         /// <summary>
         /// Loads all components from the database into FlatComponentList and TreeComponentList.
@@ -60,7 +60,7 @@
                 AddToList(item);
             }
 
-            App.PerformItemListChanged(ItemType.Component);
+            App.PerformItemListChanged(this, ItemType.Component);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@
                 AddToList(ch);
             }
 
-            App.PerformItemListChanged(ItemType.Chapter);
+            App.PerformItemListChanged(this, ItemType.Chapter);
 
         }
         public void ReLoadScenes()
@@ -104,7 +104,7 @@
                 AddToList(sc);
             }
 
-            App.PerformItemListChanged(ItemType.Scene);
+            App.PerformItemListChanged(this, ItemType.Scene);
         }
 
         public void ReLoadNotes()
@@ -126,7 +126,7 @@
                 AddToList(note);
             }
 
-            App.PerformItemListChanged(ItemType.Note);
+            App.PerformItemListChanged(this, ItemType.Note);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@
                     AddToList(item);
             }
 
-            App.PerformItemListChanged(ItemType.TagToComponent);
+            App.PerformItemListChanged(this, ItemType.TagToComponent);
         }
 
         public void ReLoadComponentToScenes()
@@ -167,7 +167,7 @@
                     AddToList(item);
             }
 
-            App.PerformItemListChanged(ItemType.ComponentToScene);
+            App.PerformItemListChanged(this, ItemType.ComponentToScene);
         }
 
  

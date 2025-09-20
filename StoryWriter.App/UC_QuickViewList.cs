@@ -60,6 +60,29 @@
                     }
                 }
             };
+            App.ItemListChanged += (object Sender, ItemType ItemType) =>
+            {
+                if (Sender != this)
+                {
+                    List<DataRow> DeleteRowList = new List<DataRow>();
+
+                    foreach (DataRow Row in tblList.Rows)
+                    {
+                        LinkItem LinkItem = Row["OBJECT"] as LinkItem;
+                        if (!App.ItemExists(LinkItem))
+                            DeleteRowList.Add(Row);
+
+                        if (DeleteRowList.Count > 0)
+                        {
+                            bsList.SuspendBinding();
+                            foreach (DataRow RowToDelete in DeleteRowList)
+                                tblList.Rows.Remove(RowToDelete);
+                            tblList.AcceptChanges();
+                            bsList.ResumeBinding();
+                        }
+                    }
+                }
+            };
 
             bsList.PositionChanged += (s, e) => SelectedLinkItemRowChanged();
 
@@ -74,26 +97,7 @@
             if (Row != null)
             {
                 LinkItem LinkItem = Row["OBJECT"] as LinkItem;
-
-                switch (LinkItem.ItemType)
-                {
-                    case ItemType.Component:
-                        Component Component = LinkItem.Item as Component;
-                        lblItemTitle.Text = $"Component: {Component}"; // Component.ToString();
-                        ucRichText.RtfText = Component.BodyText;
-                        break;
-                    case ItemType.Chapter:
-                        Chapter Chapter = LinkItem.Item as Chapter;
-                        lblItemTitle.Text = $"Chapter: {Chapter}"; // Chapter.ToString();
-                        ucRichText.RtfText = Chapter.BodyText;
-                        break;
-                    case ItemType.Scene:
-                        Scene Scene = LinkItem.Item as Scene;
-                        lblItemTitle.Text = $"Scene: {Scene}"; // Scene.ToString();
-                        ucRichText.RtfText = Scene.BodyText;
-                        break;
-                }
-
+                App.UpdateLinkItemUi(LinkItem, lblItemTitle, ucRichText);
             }
         }
         void ClearResults()
@@ -119,22 +123,8 @@
                 return;
 
             LinkItem LinkItem = Row["OBJECT"] as LinkItem;
-
-            switch (LinkItem.ItemType)
-            {
-                case ItemType.Component:
-                    Component Component = LinkItem.Item as Component;
-                    App.ContentPagerHandler.ShowPage(typeof(UC_Component), Component.Id, Component);
-                    break;
-                case ItemType.Chapter:
-                    Chapter Chapter = LinkItem.Item as Chapter;
-                    App.ContentPagerHandler.ShowPage(typeof(UC_Chapter), Chapter.Id, Chapter);
-                    break;
-                case ItemType.Scene:
-                    Scene Scene = LinkItem.Item as Scene;
-                    App.ContentPagerHandler.ShowPage(typeof(UC_Scene), Scene.Id, Scene);
-                    break;
-            }
+            App.ShowLinkItemPage(LinkItem);
+ 
         }
         void RemoveLinkItem()
         {
