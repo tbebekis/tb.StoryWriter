@@ -22,6 +22,10 @@ namespace StoryWriter
             btnDeleteComponentType.Click += (s, e) => DeleteComponentType();
             btnAddToQuickView.Click += (s, e) => AddToQuickView();
             lboComponents.MouseDoubleClick += (s, e) => EditComponentText();
+            Grid.KeyDown += (s, e) => {
+                if (e.KeyCode == Keys.F2)
+                    btnEditComponentType.PerformClick();
+            };
 
             ReLoad();
 

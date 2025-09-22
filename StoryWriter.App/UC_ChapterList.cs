@@ -27,6 +27,11 @@
 
             tv.MouseDoubleClick += (s, e) => EditNoteText();
             tv.AfterSelect += (s, e) => SelectedNodeChanged();
+            tv.KeyDown += (s, e) => {
+                if (e.KeyCode == Keys.F2)
+                    btnEditItem.PerformClick();
+            };
+
             lboComponents.MouseDoubleClick += (s, e) => ShowComponent();
 
             App.StoryClosed += StoryClosed;

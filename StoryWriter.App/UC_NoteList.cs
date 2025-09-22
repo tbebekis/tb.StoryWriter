@@ -27,6 +27,10 @@
 
             edtFilter.TextChanged += (s, e) => FilterChanged();
             Grid.MouseDoubleClick += (s, e) => EditNoteText();
+            Grid.KeyDown += (s, e) => {
+                if (e.KeyCode == Keys.F2)
+                    btnEditNote.PerformClick();
+            };
 
             App.StoryClosed += StoryClosed;
             App.StoryOpened += StoryOpened;

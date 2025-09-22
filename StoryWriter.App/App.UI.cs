@@ -13,10 +13,10 @@ namespace StoryWriter
         {
             SideBarPagerHandler.ShowPage(typeof(UC_TagList), nameof(UC_TagList), null);
             SideBarPagerHandler.ShowPage(typeof(UC_ComponentTypeList), nameof(UC_ComponentTypeList), null);
-            SideBarPagerHandler.ShowPage(typeof(UC_ComponentList), nameof(UC_ComponentList), null);                     
-            SideBarPagerHandler.ShowPage(typeof(UC_NoteList), nameof(UC_NoteList), null);
+            SideBarPagerHandler.ShowPage(typeof(UC_ComponentList), nameof(UC_ComponentList), null);                    
             SideBarPagerHandler.ShowPage(typeof(UC_Search), nameof(UC_Search), null);
             SideBarPagerHandler.ShowPage(typeof(UC_QuickViewList), nameof(UC_QuickViewList), null);
+            SideBarPagerHandler.ShowPage(typeof(UC_NoteList), nameof(UC_NoteList), null);
             SideBarPagerHandler.ShowPage(typeof(UC_Temp), nameof(UC_Temp), null);
 
             var Page = SideBarPagerHandler.ShowPage(typeof(UC_ChapterList), nameof(UC_ChapterList), null);

@@ -16,20 +16,24 @@ namespace StoryWriter
             ucRichText.SetTopPanelVisible(false);
             ucRichText.SetEditorReadOnly(true);
 
-            gridComponents.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
+            Grid.ColumnHeadersDefaultCellStyle.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
 
             btnAddComponent.Click += (s, e) => AddComponent();
             btnEditComponent.Click += (s, e) => EditComponent();
             btnDeleteComponent.Click += (s, e) => DeleteComponent();
             btnEditRtfText.Click += (s, e) => EditComponentText();
             btnAddToQuickView.Click += (s, e) => AddToQuickView();
- 
+            Grid.KeyDown += (s, e) => {
+                if (e.KeyCode == Keys.F2)
+                    btnEditComponent.PerformClick();
+            };
+
             edtFilter.KeyDown += (s, e) => {
                 if (e.KeyData == Keys.Enter)
                     FilterChanged();
             };
 
-            gridComponents.MouseDoubleClick += (s, e) => EditComponentText();
+            Grid.MouseDoubleClick += (s, e) => EditComponentText();
 
             btnAdjustComponentTags.Click += (s, e) => AdjustComponentTags(); 
 
@@ -61,9 +65,9 @@ namespace StoryWriter
 
                 bsComponents.DataSource = tblComponents;
 
-                gridComponents.AutoGenerateColumns = false;
-                gridComponents.DataSource = bsComponents;
-                gridComponents.InitializeReadOnly();                
+                Grid.AutoGenerateColumns = false;
+                Grid.DataSource = bsComponents;
+                Grid.InitializeReadOnly();                
 
                 bsComponents.PositionChanged += (s, e) => SelectedItemChanged();
             }
@@ -82,7 +86,7 @@ namespace StoryWriter
                 }
 
                 tblComponents.AcceptChanges();
-                gridComponents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                Grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
                 bsComponents.ResumeBinding(); 
 
                 SelectedItemChanged();
@@ -162,7 +166,7 @@ namespace StoryWriter
                 {
                     DataRow Row = tblComponents.Rows.Add(Component.Id, Component.Name, Component.Description, Component.Category, Component.GetTagsAsLine(), Component);
                     tblComponents.AcceptChanges();
-                    gridComponents.PositionToRow(Row);
+                    Grid.PositionToRow(Row);
 
                     Message = $"Component '{Component.Name}' added.";
                     LogBox.AppendLine(Message);
@@ -202,14 +206,14 @@ namespace StoryWriter
                 if (Component.Update())
                 {
                     bsComponents.SuspendBinding();
-                    gridComponents.DataSource = null;
+                    Grid.DataSource = null;
                     Row["Name"] = Component.Name;
                     Row["Category"] = Component.Category;
                     Row["Description"] = Component.Description;
                     bsComponents.ResumeBinding();
 
-                    gridComponents.DataSource = bsComponents;
-                    gridComponents.PositionToRow(Row);
+                    Grid.DataSource = bsComponents;
+                    Grid.PositionToRow(Row);
 
                     TabPage Page = App.ContentPagerHandler.FindTabPage(Component.Id);
                     if (Page != null)
@@ -298,7 +302,7 @@ namespace StoryWriter
 
             Row = tblComponents.FindDataRowById(Component.Id);
             if (Row != null)
-                gridComponents.PositionToRow(Row);
+                Grid.PositionToRow(Row);
         }
         void AddToQuickView()
         {

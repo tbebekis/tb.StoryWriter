@@ -39,7 +39,10 @@
             panel2 = new Panel();
             edtFilter = new TextBox();
             label2 = new Label();
-            gridComponents = new DataGridView();
+            Grid = new DataGridView();
+            coCategory = new DataGridViewTextBoxColumn();
+            coComponent = new DataGridViewTextBoxColumn();
+            coDescription = new DataGridViewTextBoxColumn();
             splitContainer1 = new SplitContainer();
             Pager = new TabControl();
             tabText = new TabPage();
@@ -48,12 +51,9 @@
             lboTags = new ListBox();
             panel1 = new Panel();
             lblTitle = new Label();
-            coCategory = new DataGridViewTextBoxColumn();
-            coComponent = new DataGridViewTextBoxColumn();
-            coDescription = new DataGridViewTextBoxColumn();
             ToolBar.SuspendLayout();
             panel2.SuspendLayout();
-            ((ISupportInitialize)gridComponents).BeginInit();
+            ((ISupportInitialize)Grid).BeginInit();
             ((ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -160,15 +160,33 @@
             label2.TabIndex = 0;
             label2.Text = "Filter";
             // 
-            // gridComponents
+            // Grid
             // 
-            gridComponents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            gridComponents.Columns.AddRange(new DataGridViewColumn[] { coCategory, coComponent, coDescription });
-            gridComponents.Dock = DockStyle.Fill;
-            gridComponents.Location = new Point(0, 0);
-            gridComponents.Name = "gridComponents";
-            gridComponents.Size = new Size(351, 281);
-            gridComponents.TabIndex = 7;
+            Grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            Grid.Columns.AddRange(new DataGridViewColumn[] { coCategory, coComponent, coDescription });
+            Grid.Dock = DockStyle.Fill;
+            Grid.Location = new Point(0, 0);
+            Grid.Name = "Grid";
+            Grid.Size = new Size(351, 281);
+            Grid.TabIndex = 7;
+            // 
+            // coCategory
+            // 
+            coCategory.DataPropertyName = "Category";
+            coCategory.HeaderText = "Category";
+            coCategory.Name = "coCategory";
+            // 
+            // coComponent
+            // 
+            coComponent.DataPropertyName = "Name";
+            coComponent.HeaderText = "Component";
+            coComponent.Name = "coComponent";
+            // 
+            // coDescription
+            // 
+            coDescription.DataPropertyName = "Description";
+            coDescription.HeaderText = "Description";
+            coDescription.Name = "coDescription";
             // 
             // splitContainer1
             // 
@@ -179,7 +197,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            splitContainer1.Panel1.Controls.Add(gridComponents);
+            splitContainer1.Panel1.Controls.Add(Grid);
             // 
             // splitContainer1.Panel2
             // 
@@ -259,24 +277,6 @@
             lblTitle.TabIndex = 0;
             lblTitle.Text = "No Selection";
             // 
-            // coCategory
-            // 
-            coCategory.DataPropertyName = "Category";
-            coCategory.HeaderText = "Category";
-            coCategory.Name = "coCategory";
-            // 
-            // coComponent
-            // 
-            coComponent.DataPropertyName = "Name";
-            coComponent.HeaderText = "Component";
-            coComponent.Name = "coComponent";
-            // 
-            // coDescription
-            // 
-            coDescription.DataPropertyName = "Description";
-            coDescription.HeaderText = "Description";
-            coDescription.Name = "coDescription";
-            // 
             // UC_ComponentList
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -290,7 +290,7 @@
             ToolBar.PerformLayout();
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
-            ((ISupportInitialize)gridComponents).EndInit();
+            ((ISupportInitialize)Grid).EndInit();
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
             ((ISupportInitialize)splitContainer1).EndInit();
@@ -312,7 +312,7 @@
         private ToolStripButton btnDeleteComponent;
         private Panel panel2;
         private Label label2;
-        private DataGridView gridComponents;
+        private DataGridView Grid;
         private TextBox edtFilter;
         private SplitContainer splitContainer1;
         private ToolStripSeparator toolStripSeparator1;
