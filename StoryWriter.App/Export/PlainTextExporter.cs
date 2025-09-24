@@ -62,15 +62,39 @@ namespace StoryWriter
                     SB.AppendLine(BodyText);
                     SB.AppendLine();
                     SB.AppendLine();
-                }
- 
+                } 
             }
 
             string FilePath = Path.Combine(ExportContext.ExportFolderPath, "Story.txt");
             File.WriteAllText(FilePath, SB.ToString());
             App.WaitForFileAvailable(FilePath);
         }
+        void ProcessSynopsis()
+        {
+            SB.Clear();
 
+
+            string SynopsisText;
+
+            foreach (var Chapter in ExportContext.Story.ChapterList)
+            {
+                SB.AppendLine($"● CHAPTER: {Chapter.Title}");
+                SB.AppendLine();
+
+                foreach (var Scene in Chapter.SceneList)
+                {
+                    SynopsisText = GetText(Scene.Synopsis).Trim();
+                    SB.AppendLine($"● SCENE: {Scene.Title}");
+                    SB.AppendLine(SynopsisText);
+                    SB.AppendLine();
+                    SB.AppendLine();
+                }
+            }
+
+            string FilePath = Path.Combine(ExportContext.ExportFolderPath, "Synopsis.txt");
+            File.WriteAllText(FilePath, SB.ToString());
+            App.WaitForFileAvailable(FilePath);
+        }
         // ● construction
         public PlainTextExporter(ExportContext ExportContext)
         {
@@ -85,6 +109,7 @@ namespace StoryWriter
             SB = new();
             ProcessComponents();
             ProcessCapters();
+            ProcessSynopsis();
 
         }
     }
